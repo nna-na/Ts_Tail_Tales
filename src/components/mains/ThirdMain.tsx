@@ -37,9 +37,6 @@ function ThirdMain() {
           <p>about us</p>
         </div>
       </ImageContainer>
-      <div>
-        <IoIosArrowDown />
-      </div>
     </Container>
   );
 }

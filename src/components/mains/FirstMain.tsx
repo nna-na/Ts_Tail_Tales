@@ -19,9 +19,9 @@ const FirstMain = () => {
       </span>
       <br />
       <Button onClick={() => navigate("/home")}>기다리는 친구들</Button>
-      <div>
+      <DownArrow>
         <IoIosArrowDown />
-      </div>
+      </DownArrow>
     </Container>
   );
 };
@@ -41,4 +41,8 @@ const Button = styled.button`
   background-color: #f8b3b3;
   border: none;
   padding: 10px 10px 10px 10px;
+`;
+
+const DownArrow = styled.div`
+  margin-top: 200px;
 `;

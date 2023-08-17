@@ -31,9 +31,6 @@ function SecondMain() {
           alt=""
         />
       </div>
-      <div>
-        <IoIosArrowDown />
-      </div>
     </Container>
   );
 }

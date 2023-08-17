@@ -1,25 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route, Link } from "react-router-dom";
+import Detail from "./pages/Detail";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Mypage from "./pages/Mypage";
+import Main from "./pages/Main";
+import PostCreate from "./pages/PostCreate";
+import PostEdit from "./pages/PostEdit";
+import Community from "./pages/Community";
+import Aboutus from "./pages/Aboutus";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      {/* <Route element={<Layout />}> */}
+      <Route path="/" element={<Main />} />
+      <Route path="/detail/:id" element={<Detail />} />
+      <Route path="/create" element={<PostCreate />} />
+      <Route path="/edit/:id" element={<PostEdit />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/mypage/:id" element={<Mypage />} />
+      <Route path="/community" element={<Community />} />
+      <Route path="/aboutus" element={<Aboutus />} />
+      {/* </Route> */}
+      <Route
+        path="*"
+        element={
+          <>
+            <div>없는 페이지입니다.</div>
+            <Link to="/">홈으로 이동</Link>
+          </>
+        }
+      />
+    </Routes>
   );
 }
 

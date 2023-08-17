@@ -1,5 +1,4 @@
 import React from "react";
-import { IoIosArrowDown } from "react-icons/io";
 import { useNavigate } from "react-router";
 import { styled } from "styled-components";
 

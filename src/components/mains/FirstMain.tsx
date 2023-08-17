@@ -34,6 +34,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   height: 100vh; /* 화면의 높이에 맞게 설정 */
+  background-color: #f0f0f0;
 `;
 
 const Button = styled.button`

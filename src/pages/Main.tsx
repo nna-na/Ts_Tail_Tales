@@ -22,6 +22,7 @@ function Main() {
         <MainFooter />
       </Slide>
     </FullPage>
+
   );
 }
 

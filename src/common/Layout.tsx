@@ -1,6 +1,5 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
-import MainFooter from "../components/mains/MainFooter";
 
 function Layout() {
   return (
@@ -14,6 +13,9 @@ function Layout() {
     >
       <header
         style={{
+          position: "fixed",
+          left: 0,
+          right: 0,
           display: "flex",
           justifyContent: "space-between",
           padding: "24px",
@@ -24,7 +26,6 @@ function Layout() {
         <Link to="/" style={{ color: "black", textDecoration: "none" }}>
           로고
         </Link>
-        {/* 로고 링크 이동하는법! 색이랑 밑줄 꼴보기 싫어서 없애버렸다 고마워 구글 */}
         <div
           style={{
             display: "flex",
@@ -51,7 +52,6 @@ function Layout() {
           </Link>
         </div>
       </header>
-      {/* main */}
       <Outlet />
     </div>
   );

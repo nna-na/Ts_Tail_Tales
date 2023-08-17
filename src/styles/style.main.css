@@ -7,7 +7,8 @@
 }
 
 .slide-navigation button {
-  background-color: gray;
+  background-color: #b29696;
+  border: none;
   border-radius: 50%;
   width: 15px;
   height: 15px;
@@ -29,5 +30,5 @@
 }
 
 .slide-navigation button:disabled {
-  background-color: black;
+  background-color: #dd3a3a;
 }

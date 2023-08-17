@@ -18,10 +18,10 @@ const FirstMain = () => {
         쉽게 찾아볼수있는 모시깽이 입니다
       </span>
       <br />
-      <button onClick={() => navigate("/home")}>기다리는 친구들</button>
-      <div>
+      <Button onClick={() => navigate("/home")}>기다리는 친구들</Button>
+      <DownArrow>
         <IoIosArrowDown />
-      </div>
+      </DownArrow>
     </Container>
   );
 };
@@ -34,4 +34,15 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   height: 100vh; /* 화면의 높이에 맞게 설정 */
+  background-color: #f0f0f0;
+`;
+
+const Button = styled.button`
+  background-color: #f8b3b3;
+  border: none;
+  padding: 10px 10px 10px 10px;
+`;
+
+const DownArrow = styled.div`
+  margin-top: 200px;
 `;

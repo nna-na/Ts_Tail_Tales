@@ -35,16 +35,10 @@ function Layout() {
           <Link to="/home" style={{ color: "black", textDecoration: "none" }}>
             기다리는 친구들 |
           </Link>
-          <Link
-            to="/community"
-            style={{ color: "black", textDecoration: "none" }}
-          >
+          <Link to="/community" style={{ color: "black", textDecoration: "none" }}>
             커뮤니티 |
           </Link>
-          <Link
-            to="/aboutus"
-            style={{ color: "black", textDecoration: "none" }}
-          >
+          <Link to="/aboutus" style={{ color: "black", textDecoration: "none" }}>
             about us |
           </Link>
           <Link to="/login" style={{ color: "black", textDecoration: "none" }}>
@@ -52,7 +46,13 @@ function Layout() {
           </Link>
         </div>
       </header>
-      <Outlet />
+      <div
+        style={{
+          paddingTop: "80px",
+        }}
+      >
+        <Outlet />
+      </div>
     </div>
   );
 }

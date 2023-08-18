@@ -26,6 +26,7 @@
     "react-router-dom": "^6.15.0",
     "react-scripts": "^5.0.1",
     "redux": "^4.2.1",
+    "redux-chunk": "^1.0.11",
     "styled-components": "^6.0.7",
     "typescript": "^4.4.2",
     "web-vitals": "^2.1.0"

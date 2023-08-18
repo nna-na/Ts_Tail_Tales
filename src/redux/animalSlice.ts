@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./configstore";
-import axios from "axios";
 
 export const URL = "https://openapi.gg.go.kr/AbdmAnimalProtect?KEY=029f99a01fbb42dba52abb947db9975e&Type=json";
 
@@ -69,23 +68,6 @@ const animalSlice = createSlice({
     },
   },
 });
-
-// export const fetchAnimals = () => async (dispatch: any) => {
-//   try {
-//     dispatch(fetchAnimalsStart());
-
-//     const response = await axios.get(URL, {
-//       params: {
-//         serviceKey: process.env.REACT_APP_API_KEY,
-//         numOfRows: 10,
-//         pageNo: 10,
-//       },
-//     });;
-//     dispatch(fetchAnimalsSuccess(response.data.AbdmAnimalProtect[1].row));
-//   } catch (error: any) {
-//     dispatch(fetchAnimalsFailure(error.message));
-//   }
-// };
 
 export const { fetchAnimalsStart, fetchAnimalsSuccess, fetchAnimalsFailure } = animalSlice.actions;
 

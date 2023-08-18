@@ -1,54 +1,40 @@
-import React from "react";
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
-import { Animal } from "../redux/animalSlice";
-// import { selectAnimals } from "../redux/animalSlice";
-import axios from "axios";
-// import { fetchAnimalsStart, fetchAnimalsSuccess, fetchAnimalsFailure } from "../redux/animalSlice";
-import { URL } from "../redux/animalSlice";
-import { useQuery } from "react-query";
-
-// interface HomeProps {
-//   animals: Animal[];
-//   loading: boolean;
-//   error: string | null;
-// }
+import React, { useState, useEffect } from "react";
+import { styled } from "styled-components";
+import { useNavigate } from "react-router-dom"; // 수정: useHistory 대신 useNavigate 사용
+import { fetchAnimalData, formatDate, AnimalShelter } from "../api/fetchData";
 
 function Home() {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // 수정: useHistory 대신 useNavigate 사용
+  const [data, setData] = useState<Array<AnimalShelter> | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  function formatDate(dateString: string) {
-    const year = dateString.substring(0, 4);
-    const month = dateString.substring(4, 6);
-    const day = dateString.substring(6, 8);
-    return `${year}-${month}-${day}`;
-  }
+  useEffect(() => {
+    const fetchDataFromApi = async () => {
+      try {
+        setError(null);
+        setData(null);
+        setLoading(true);
+        const fetchedData = await fetchAnimalData();
+        setData(fetchedData);
+      } catch (e: any) {
+        setError(e);
+      }
+      setLoading(false);
+    };
 
-  // serviceKey: process.env.REACT_APP_API_KEY,
-  const {
-    data: animals,
-    isLoading,
-    error,
-  } = useQuery("animals", async () => {
-    const response = await axios.get(URL, {
-      params: {
-        serviceKey: process.env.REACT_APP_API_KEY,
-        numOfRows: 10,
-        pageNo: 10,
-      },
-    });
-    console.log("response", response.data.AbdmAnimalProtect[1].row);
-    return response.data.AbdmAnimalProtect[1].row;
-  });
+    fetchDataFromApi();
+  }, []);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
   if (error) return <div>Error...</div>;
-  if (!animals) return null;
+  if (!data) return null;
 
   return (
     <div className="Home">
+      <button onClick={() => navigate("/")}>뒤로가기</button>
       <Container>
-        {animals?.map((item: Animal) => (
+        {data.map((item: AnimalShelter) => (
           <Box key={item.ABDM_IDNTFY_NO} onClick={() => navigate(`/detail/${item.ABDM_IDNTFY_NO}`, { state: { item } })}>
             <p>고유 번호 : {item.ABDM_IDNTFY_NO}</p>
             <PetImg src={item.IMAGE_COURS} alt="Pet Thumbnail" />
@@ -67,6 +53,7 @@ function Home() {
 
 export default Home;
 
+// 스타일 컴포넌트를 사용한 스타일 정의
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;

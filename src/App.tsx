@@ -10,6 +10,7 @@ import PostCreate from "./pages/PostCreate";
 import PostEdit from "./pages/PostEdit";
 import Community from "./pages/Community";
 import Aboutus from "./pages/Aboutus";
+// animals={[]} loading={false} error={null} />}
 
 function App() {
   return (

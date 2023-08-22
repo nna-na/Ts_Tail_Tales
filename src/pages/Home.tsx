@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { styled } from "styled-components";
-import { useNavigate } from "react-router-dom"; // 수정: useHistory 대신 useNavigate 사용
+import { useNavigate } from "react-router-dom";
 import { fetchAnimalData, formatDate, AnimalShelter } from "../api/fetchData";
 
 function Home() {
-  const navigate = useNavigate(); // 수정: useHistory 대신 useNavigate 사용
+  const navigate = useNavigate();
   const [data, setData] = useState<Array<AnimalShelter> | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+  const totalPages = Math.ceil((data?.length || 0) / itemsPerPage);
 
   useEffect(() => {
     const fetchDataFromApi = async () => {
@@ -17,8 +20,12 @@ function Home() {
         setLoading(true);
         const fetchedData = await fetchAnimalData();
         setData(fetchedData);
-      } catch (e: any) {
-        setError(e);
+      } catch (e: Error | unknown) {
+        if (e instanceof Error) {
+          setError(e);
+        } else {
+          setError(new Error("An error occurred"));
+        }
       }
       setLoading(false);
     };
@@ -27,15 +34,72 @@ function Home() {
   }, []);
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error...</div>;
+  if (error) return <div>Error: {error.message}</div>;
   if (!data) return null;
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+
+  const renderPagination = () => {
+    const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+    // 이전 페이지와 다음 페이지 버튼을 추가합니다.
+    const prevPage = currentPage > 1 ? currentPage - 1 : null;
+    const nextPage = currentPage < totalPages ? currentPage + 1 : null;
+
+    return (
+      <Pagination>
+        {prevPage && (
+          <PageNumber key="prev" onClick={() => setCurrentPage(prevPage)} isActive={false}>
+            이전
+          </PageNumber>
+        )}
+
+        {pageNumbers.map((number) => {
+          if (number === currentPage) {
+            return (
+              <PageNumber key={number} onClick={() => setCurrentPage(number)} isActive={true}>
+                {number}
+              </PageNumber>
+            );
+          } else if (number === 1 || number === totalPages || (number >= currentPage - 2 && number <= currentPage + 2)) {
+            return (
+              <PageNumber key={number} onClick={() => setCurrentPage(number)} isActive={false}>
+                {number}
+              </PageNumber>
+            );
+          } else if (number === totalPages - 1) {
+            return (
+              <PageNumber key="ellipsis" onClick={() => {}} isActive={false}>
+                ...
+              </PageNumber>
+            );
+          }
+          return null;
+        })}
+
+        {nextPage && (
+          <PageNumber key="next" onClick={() => setCurrentPage(nextPage)} isActive={false}>
+            다음
+          </PageNumber>
+        )}
+      </Pagination>
+    );
+  };
 
   return (
     <div className="Home">
-      <button onClick={() => navigate("/")}>뒤로가기</button>
       <Container>
-        {data.map((item: AnimalShelter) => (
-          <Box key={item.ABDM_IDNTFY_NO} onClick={() => navigate(`/detail/${item.ABDM_IDNTFY_NO}`, { state: { item } })}>
+        {currentItems.map((item: AnimalShelter) => (
+          <Box
+            key={item.ABDM_IDNTFY_NO}
+            onClick={() =>
+              navigate(`/detail/${item.ABDM_IDNTFY_NO}`, {
+                state: { item },
+              })
+            }
+          >
             <p>고유 번호 : {item.ABDM_IDNTFY_NO}</p>
             <PetImg src={item.IMAGE_COURS} alt="Pet Thumbnail" />
             <p>접수 일지 : {formatDate(item.RECEPT_DE)}</p>
@@ -47,13 +111,13 @@ function Home() {
           </Box>
         ))}
       </Container>
+      {renderPagination()}
     </div>
   );
 }
 
 export default Home;
 
-// 스타일 컴포넌트를 사용한 스타일 정의
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -74,4 +138,16 @@ const PetImg = styled.img`
   width: 400px;
   height: 250px;
   object-fit: contain;
+`;
+
+const Pagination = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+`;
+
+const PageNumber = styled.div<{ isActive: boolean }>`
+  cursor: pointer;
+  margin: 0 5px;
+  font-weight: ${(props) => (props.isActive ? "bold" : "normal")};
 `;

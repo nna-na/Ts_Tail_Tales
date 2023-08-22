@@ -13,6 +13,7 @@ export interface AnimalShelter {
   IMAGE_COURS: any;
   STATE_NM: string;
   ABDM_IDNTFY_NO: string | undefined;
+  SIGUN_NM: string;
 }
 
 const API_KEY = process.env.REACT_APP_API_KEY;

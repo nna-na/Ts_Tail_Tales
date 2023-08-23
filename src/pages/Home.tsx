@@ -39,14 +39,11 @@ function Home() {
   const handleFilter = () => {
     setCurrentPage(1);
   };
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!data) return null;
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
   const nearingDeadline = data.filter((item) => {
     const today = new Date(); // 현재 날짜
     const endOfNotice = new Date(formatDate(item.PBLANC_END_DE)); // 게시물의 공고 마감일
@@ -57,7 +54,6 @@ function Home() {
 
     return endOfNotice <= fiveDaysAfter;
   });
-
   // 선택한 조건에 따라 데이터 필터링
   const filteredItems = data.filter((item) => {
     let matchesDate = true;
@@ -70,9 +66,7 @@ function Home() {
         formatDate(item.RECEPT_DE) <= selectedEndDate;
     }
     if (selectedLocation) {
-      matchesLocation = item.SIGUN_NM.toLowerCase().includes(
-        selectedLocation.toLowerCase()
-      );
+      matchesLocation = item.SIGUN_NM.toLowerCase().includes(selectedLocation.toLowerCase());
     }
     if (selectedBreed) {
       matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === selectedBreed;
@@ -87,40 +81,23 @@ function Home() {
     const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
     const prevPage = currentPage > 1 ? currentPage - 1 : null;
     const nextPage = currentPage < totalPages ? currentPage + 1 : null;
-
     return (
       <Pagination>
         {prevPage && (
-          <PageNumber
-            key="prev"
-            onClick={() => setCurrentPage(prevPage)}
-            isActive={false}
-          >
+          <PageNumber key="prev" onClick={() => setCurrentPage(prevPage)} isActive={false}>
             이전
           </PageNumber>
         )}
         {pageNumbers?.map((number) => {
           if (number === currentPage) {
             return (
-              <PageNumber
-                key={number}
-                onClick={() => setCurrentPage(number)}
-                isActive={true}
-              >
+              <PageNumber key={number} onClick={() => setCurrentPage(number)} isActive={true}>
                 {number}
               </PageNumber>
             );
-          } else if (
-            number === 1 ||
-            number === totalPages ||
-            (number >= currentPage - 2 && number <= currentPage + 2)
-          ) {
+          } else if (number === 1 || number === totalPages || (number >= currentPage - 2 && number <= currentPage + 2)) {
             return (
-              <PageNumber
-                key={number}
-                onClick={() => setCurrentPage(number)}
-                isActive={false}
-              >
+              <PageNumber key={number} onClick={() => setCurrentPage(number)} isActive={false}>
                 {number}
               </PageNumber>
             );
@@ -134,11 +111,7 @@ function Home() {
           return null;
         })}
         {nextPage && (
-          <PageNumber
-            key="next"
-            onClick={() => setCurrentPage(nextPage)}
-            isActive={false}
-          >
+          <PageNumber key="next" onClick={() => setCurrentPage(nextPage)} isActive={false}>
             다음
           </PageNumber>
         )}

@@ -10,6 +10,7 @@ import PostCreate from "./pages/PostCreate";
 import PostEdit from "./pages/PostEdit";
 import Community from "./pages/Community";
 import Aboutus from "./pages/Aboutus";
+import PostDetail from "./pages/PostDetail";
 // animals={[]} loading={false} error={null} />}
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/detail/:id" element={<Detail />} />
         <Route path="/create" element={<PostCreate />} />
         <Route path="/edit/:id" element={<PostEdit />} />
+        <Route path="/post-detail/:id" element={<PostDetail posts={[]} />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/mypage/:id" element={<Mypage />} />

@@ -32,13 +32,15 @@
     "redux-chunk": "^1.0.11",
     "styled-components": "^6.0.7",
     "typescript": "^4.4.2",
+    "use-history": "^1.4.1",
     "web-vitals": "^2.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "run-server": "json-server --watch db.json --port 3001"
   },
   "eslintConfig": {
     "extends": [

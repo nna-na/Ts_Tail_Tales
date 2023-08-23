@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./configstore";
 
-export const URL = "https://openapi.gg.go.kr/AbdmAnimalProtect?KEY=029f99a01fbb42dba52abb947db9975e&Type=json";
+export const URL =
+  "https://openapi.gg.go.kr/AbdmAnimalProtect?KEY=029f99a01fbb42dba52abb947db9975e&Type=json";
 
 export interface Animal {
   SIGUN_CD: number;
@@ -69,12 +70,12 @@ const animalSlice = createSlice({
   },
 });
 
-export const { fetchAnimalsStart, fetchAnimalsSuccess, fetchAnimalsFailure } = animalSlice.actions;
+export const { fetchAnimalsStart, fetchAnimalsSuccess, fetchAnimalsFailure } =
+  animalSlice.actions;
 
 // Selector 함수 정의
 export const selectAnimals = (state: RootState) => state.animals.animals;
 export const selectLoading = (state: RootState) => state.animals.loading;
 export const selectError = (state: RootState) => state.animals.error;
-console.log(selectAnimals);
 
 export default animalSlice.reducer;

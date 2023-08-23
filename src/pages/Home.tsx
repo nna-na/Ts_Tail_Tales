@@ -3,6 +3,11 @@ import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { fetchAnimalData, formatDate, AnimalShelter } from "../api/fetchData";
 import Category from "../components/Category";
+// import Deadline from "../components/Deadline";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Slider from "react-slick";
+
 function Home() {
   const navigate = useNavigate();
   const [data, setData] = useState<Array<AnimalShelter> | null>(null);
@@ -15,6 +20,14 @@ function Home() {
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedBreed, setSelectedBreed] = useState("");
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 3,
+  };
 
   useEffect(() => {
     const fetchDataFromApi = async () => {
@@ -66,7 +79,9 @@ function Home() {
         formatDate(item.RECEPT_DE) <= selectedEndDate;
     }
     if (selectedLocation) {
-      matchesLocation = item.SIGUN_NM.toLowerCase().includes(selectedLocation.toLowerCase());
+      matchesLocation = item.SIGUN_NM.toLowerCase().includes(
+        selectedLocation.toLowerCase()
+      );
     }
     if (selectedBreed) {
       matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === selectedBreed;
@@ -84,20 +99,36 @@ function Home() {
     return (
       <Pagination>
         {prevPage && (
-          <PageNumber key="prev" onClick={() => setCurrentPage(prevPage)} isActive={false}>
+          <PageNumber
+            key="prev"
+            onClick={() => setCurrentPage(prevPage)}
+            isActive={false}
+          >
             이전
           </PageNumber>
         )}
         {pageNumbers?.map((number) => {
           if (number === currentPage) {
             return (
-              <PageNumber key={number} onClick={() => setCurrentPage(number)} isActive={true}>
+              <PageNumber
+                key={number}
+                onClick={() => setCurrentPage(number)}
+                isActive={true}
+              >
                 {number}
               </PageNumber>
             );
-          } else if (number === 1 || number === totalPages || (number >= currentPage - 2 && number <= currentPage + 2)) {
+          } else if (
+            number === 1 ||
+            number === totalPages ||
+            (number >= currentPage - 2 && number <= currentPage + 2)
+          ) {
             return (
-              <PageNumber key={number} onClick={() => setCurrentPage(number)} isActive={false}>
+              <PageNumber
+                key={number}
+                onClick={() => setCurrentPage(number)}
+                isActive={false}
+              >
                 {number}
               </PageNumber>
             );
@@ -111,7 +142,11 @@ function Home() {
           return null;
         })}
         {nextPage && (
-          <PageNumber key="next" onClick={() => setCurrentPage(nextPage)} isActive={false}>
+          <PageNumber
+            key="next"
+            onClick={() => setCurrentPage(nextPage)}
+            isActive={false}
+          >
             다음
           </PageNumber>
         )}
@@ -121,7 +156,7 @@ function Home() {
   return (
     <div className="Home">
       <div>공고 마감일이 하루 남은 게시물 필터링</div>
-      <Container>
+      <Slider {...settings}>
         {nearingDeadline?.map((item: AnimalShelter) => (
           <Box key={item.ABDM_IDNTFY_NO}>
             <p>고유 번호 : {item.ABDM_IDNTFY_NO}</p>
@@ -135,7 +170,7 @@ function Home() {
             <p>보호 주소:{item.SIGUN_NM} </p>
           </Box>
         ))}
-      </Container>
+      </Slider>
       <Category
         query={{
           PBLANC_BEGIN_DE: selectedBeginDate,

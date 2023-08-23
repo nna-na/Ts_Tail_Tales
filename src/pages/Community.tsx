@@ -20,7 +20,7 @@ export default function Community() {
 
   const fetchPosts = async () => {
     try {
-      const response = await axios?.get("http://localhost:4000/posts");
+      const response = await axios.get("http://localhost:4000/posts");
       setPosts(response.data);
     } catch (error) {
       console.error("데이터 불러오기 오류:", error);
@@ -35,7 +35,7 @@ export default function Community() {
     ["posts", id],
     async () => {
       if (id) {
-        const response = await axios?.get(`http://localhost:4000/posts/${id}`);
+        const response = await axios.get(`http://localhost:4000/posts/${id}`);
         return response.data;
       }
     },
@@ -84,11 +84,23 @@ export default function Community() {
     }
   );
 
+  if (isLoading) {
+    return <div>로딩 중 ...</div>;
+  }
+
+  if (isError) {
+    return <div>{(error as Error).message}</div>;
+  }
+
+  if (!posts) {
+    return <div>게시물을 찾을 수 없습니다.</div>;
+  }
+
   return (
     <Container>
       <div>Community</div>
       <Link to="/create">작성</Link>
-      {posts.map((post) => (
+      {posts?.map((post) => (
         <PostBox key={post.id}>
           <Link to={`/post-detail/${post.id}`}>
             <PostTitle>{post.title}</PostTitle>

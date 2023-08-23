@@ -14,7 +14,9 @@ export default function PostDetail() {
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
+interface PostDetailProps {
+  posts: Post[];
+}
   const { data, isLoading, isError, error } = useQuery(["posts", id], async () => {
     const response = await axios?.get(`http://localhost:4000/posts/${id}`);
     return response.data;

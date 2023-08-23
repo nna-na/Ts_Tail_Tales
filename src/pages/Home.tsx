@@ -15,6 +15,7 @@ function Home() {
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedBreed, setSelectedBreed] = useState("");
+
   useEffect(() => {
     const fetchDataFromApi = async () => {
       try {
@@ -34,6 +35,7 @@ function Home() {
     };
     fetchDataFromApi();
   }, []);
+
   const handleFilter = () => {
     setCurrentPage(1);
   };
@@ -42,13 +44,26 @@ function Home() {
   if (!data) return null;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const nearingDeadline = data.filter((item) => {
+    const today = new Date(); // 현재 날짜
+    const endOfNotice = new Date(formatDate(item.PBLANC_END_DE)); // 게시물의 공고 마감일
+
+    // 마감일이 현재 날짜로부터 3일 이내인 경우만 필터링
+    const fiveDaysAfter = new Date(today);
+    fiveDaysAfter.setDate(fiveDaysAfter.getDate() + 5);
+
+    return endOfNotice <= fiveDaysAfter;
+  });
   // 선택한 조건에 따라 데이터 필터링
   const filteredItems = data.filter((item) => {
     let matchesDate = true;
     let matchesLocation = true;
     let matchesBreed = true;
+
     if (selectedBeginDate && selectedEndDate) {
-      matchesDate = formatDate(item.RECEPT_DE) >= selectedBeginDate && formatDate(item.RECEPT_DE) <= selectedEndDate;
+      matchesDate =
+        formatDate(item.RECEPT_DE) >= selectedBeginDate &&
+        formatDate(item.RECEPT_DE) <= selectedEndDate;
     }
     if (selectedLocation) {
       matchesLocation = item.SIGUN_NM.toLowerCase().includes(selectedLocation.toLowerCase());
@@ -58,7 +73,9 @@ function Home() {
     }
     return matchesDate && matchesLocation && matchesBreed;
   });
+
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+
   const renderPagination = () => {
     const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
     const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -103,6 +120,22 @@ function Home() {
   };
   return (
     <div className="Home">
+      <div>공고 마감일이 하루 남은 게시물 필터링</div>
+      <Container>
+        {nearingDeadline?.map((item: AnimalShelter) => (
+          <Box key={item.ABDM_IDNTFY_NO}>
+            <p>고유 번호 : {item.ABDM_IDNTFY_NO}</p>
+            <PetImg src={item.IMAGE_COURS} alt="Pet Thumbnail" />
+            <p>접수 일지 : {formatDate(item.RECEPT_DE)}</p>
+            <p>품종 : {item.SPECIES_NM}</p>
+            <p>성별 : {item.SEX_NM}</p>
+            <p>발견장소 : {item.DISCVRY_PLC_INFO} </p>
+            <p>특징: {item.SFETR_INFO}</p>
+            <p>상태: {item.STATE_NM}</p>
+            <p>보호 주소:{item.SIGUN_NM} </p>
+          </Box>
+        ))}
+      </Container>
       <Category
         query={{
           PBLANC_BEGIN_DE: selectedBeginDate,
@@ -166,9 +199,9 @@ const Box = styled.div`
   box-sizing: border-box;
 `;
 const PetImg = styled.img`
-  width: 400px;
-  height: 250px;
-  object-fit: contain;
+  width: 100%;
+  height: auto;
+  max-width: 400px;
 `;
 const Pagination = styled.div`
   display: flex;

@@ -14,6 +14,7 @@ export interface AnimalShelter {
   STATE_NM: string;
   ABDM_IDNTFY_NO: string | undefined;
   SIGUN_NM: string;
+  PBLANC_END_DE: string;
 }
 
 const API_KEY = process.env.REACT_APP_API_KEY;

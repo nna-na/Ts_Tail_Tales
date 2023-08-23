@@ -1,7 +1,6 @@
 import React from "react";
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdLocationOn, MdCategory } from "react-icons/md";
-
 interface CategoryProps {
   query: {
     PBLANC_BEGIN_DE: string;
@@ -13,7 +12,6 @@ interface CategoryProps {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => void;
 }
-
 const regions = [
   "전체",
   "가평군",
@@ -51,7 +49,6 @@ const regions = [
 
 export default function Category({ query, onChange }: CategoryProps) {
   const { PBLANC_BEGIN_DE, PBLANC_END_DE, SIGUN_NM, SPECIES_NM } = query;
-
   return (
     <div className="category">
       <form className="form" onSubmit={(e) => e.preventDefault()}>
@@ -95,14 +92,13 @@ export default function Category({ query, onChange }: CategoryProps) {
             value={SIGUN_NM}
             onChange={onChange}
           >
-            {regions.map((region, idx) => (
+            {regions?.map((region, idx) => (
               <option value={region !== "전체" ? region : ""} key={idx}>
                 {region}
               </option>
             ))}
           </select>
         </div>
-
         {/* 품종 */}
         <div className="box-form">
           <label className="label" htmlFor="SPECIES_NM">

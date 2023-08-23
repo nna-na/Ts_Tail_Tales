@@ -38,7 +38,8 @@ function Detail() {
             <div className="row">
               <span>나이 / 체중</span>
               <span>
-                {new Date().getFullYear() - item.AGE_INFO.slice(0, 4) + 1}살 / &nbsp;
+                {new Date().getFullYear() - item.AGE_INFO.slice(0, 4) + 1}살 /
+                &nbsp;
                 {item.BDWGH_INFO.split("(")[0]}kg
               </span>
             </div>
@@ -85,7 +86,12 @@ function Detail() {
           에서 기다리고 있어요!
         </p>
 
-        <Kakao lat={item.REFINE_WGS84_LAT} log={item.REFINE_WGS84_LOGT} shelter={item.SHTER_NM} kind={item.SPECIES_NM.split(" ")[0]} />
+        <Kakao
+          lat={item.REFINE_WGS84_LAT}
+          log={item.REFINE_WGS84_LOGT}
+          shelter={item.SHTER_NM}
+          kind={item.SPECIES_NM.split(" ")[0]}
+        />
       </div>
     </div>
   );

@@ -17,9 +17,10 @@ export interface AnimalShelter {
 }
 
 const API_KEY = process.env.REACT_APP_API_KEY;
+const BASE_URL = "https://openapi.gg.go.kr/AbdmAnimalProtect?";
 
 export async function fetchAnimalData() {
-  const URL = `https://openapi.gg.go.kr/AbdmAnimalProtect?KEY=${API_KEY}&Type=json`;
+  const URL = `${BASE_URL}KEY=${API_KEY}&Type=json`;
 
   try {
     const response = await axios.get(URL, {

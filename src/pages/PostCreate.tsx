@@ -21,7 +21,7 @@ export default function PostCreate() {
     if (title && content) {
       try {
         // JSON 서버에 데이터 추가를 위한 POST 요청 보내기
-        const response = await axios.post("http://localhost:3001/posts", {
+        const response = await axios.post("http://localhost:4000/posts", {
           title,
           content,
         });
@@ -42,8 +42,17 @@ export default function PostCreate() {
   return (
     <Container>
       <Form onSubmit={handleSubmit}>
-        <Input type="text" placeholder="제목" value={title} onChange={handleTitleChange} />
-        <TextArea placeholder="내용" value={content} onChange={handleContentChange} />
+        <Input
+          type="text"
+          placeholder="제목"
+          value={title}
+          onChange={handleTitleChange}
+        />
+        <TextArea
+          placeholder="내용"
+          value={content}
+          onChange={handleContentChange}
+        />
         <Button type="submit">작성</Button>
       </Form>
     </Container>

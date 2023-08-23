@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { styled } from "styled-components";
 import Kakao from "./Kakao";
 import { useNavigate } from "react-router-dom";
+import { formatDate } from "../api/fetchData";
 
 function Detail() {
   const navigate = useNavigate();
@@ -58,7 +59,8 @@ function Detail() {
             <div className="row">
               <span>공고기한</span>
               <span>
-                {item.PBLANC_BEGIN_DE} ~ {item.PBLANC_END_DE}
+                {formatDate(item.PBLANC_BEGIN_DE)} ~
+                {formatDate(item.PBLANC_END_DE)}
               </span>
             </div>
             <div className="row">

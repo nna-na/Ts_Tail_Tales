@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { Link } from "react-router-dom";
-// import { useMutation, useQuery, useQueryClient } from "react-query";
-// import { useParams } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useParams } from "react-router-dom";
 
 interface Post {
   id: number;
@@ -12,14 +12,14 @@ interface Post {
 }
 
 export default function Community() {
-  // const queryClient = useQueryClient();
-  // const { id } = useParams();
+  const queryClient = useQueryClient();
+  const { id } = useParams();
 
   const [posts, setPosts] = useState<Post[]>([]);
 
   const fetchPosts = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/posts");
+      const response = await axios.get("http://localhost:4000/posts");
       setPosts(response.data);
     } catch (error) {
       console.error("데이터 불러오기 오류:", error);
@@ -30,23 +30,29 @@ export default function Community() {
     fetchPosts();
   }, []);
 
-  // const { data, isLoading, isError, error } = useQuery(["posts", id], async () => {
-  //   const response = await axios.get(`http://localhost:4000/posts/${id}`);
-  //   return response.data;
-  // });
-  // console.log(data);
+  const { data, isLoading, isError, error } = useQuery(
+    ["posts", id],
+    async () => {
+      const response = await axios.get(`http://localhost:4000/posts/${id}`);
+      return response.data;
+    }
+  );
+  console.log(data);
 
-  // 삭제 버튼
-  // const deletePost = useMutation(
-  //   async (post) => {
-  //     await axios.delete(`http://localhost:3001/posts/${post}`);
-  //   },
-  //   {
-  //     onSuccess: () => {
-  //       queryClient.invalidateQueries("posts");
-  //     },
-  //   }
-  // );
+  //삭제 버튼
+  const deletePost = useMutation(
+    async (post: any) => {
+      await axios.delete(`http://localhost:4000/posts/${post.id}`);
+    },
+    {
+      onSuccess: () => {
+        // posts 쿼리 무효화 (선택적으로 사용)
+        queryClient.invalidateQueries(["posts", id]);
+        alert("삭제 완료.");
+        window.location.reload();
+      },
+    }
+  );
 
   return (
     <Container>
@@ -57,16 +63,15 @@ export default function Community() {
           <Link to={`/post-detail/${post.id}`}>
             <PostTitle>{post.title}</PostTitle>
             <PostContent>{post.content}</PostContent>
-            <button>수정</button>
-            {/* <button
-              onClick={() => {
-                alert("삭제??");
-                deletePost.mutate();
-              }}
-            >
-              삭제
-            </button> */}
           </Link>
+          <button>수정</button>
+          <button
+            onClick={() => {
+              deletePost.mutate(post);
+            }}
+          >
+            삭제
+          </button>
         </PostBox>
       ))}
     </Container>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Category from "../components/Category";
 import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { fetchAnimalData, formatDate, AnimalShelter } from "../api/fetchData";
@@ -9,8 +10,24 @@ function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [query, setQuery] = useState({
+    PBLANC_BEGIN_DE: "",
+    PBLANC_END_DE: "",
+    SIGUN_NM: "전체",
+    SPECIES_NM: "",
+  });
+
+  // itemsPerPage 변수 정의
   const itemsPerPage = 9;
-  const totalPages = Math.ceil((data?.length || 0) / itemsPerPage);
+
+  // handleChange 함수 정의
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+    setQuery({
+      ...query,
+      [name]: value,
+    });
+  };
 
   useEffect(() => {
     const fetchDataFromApi = async () => {
@@ -37,6 +54,9 @@ function Home() {
   if (error) return <div>Error: {error.message}</div>;
   if (!data) return null;
 
+  // totalPages 변수 정의
+  const totalPages = Math.ceil((data?.length || 0) / itemsPerPage);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
@@ -51,7 +71,11 @@ function Home() {
     return (
       <Pagination>
         {prevPage && (
-          <PageNumber key="prev" onClick={() => setCurrentPage(prevPage)} isActive={false}>
+          <PageNumber
+            key="prev"
+            onClick={() => setCurrentPage(prevPage)}
+            isActive={false}
+          >
             이전
           </PageNumber>
         )}
@@ -59,13 +83,25 @@ function Home() {
         {pageNumbers.map((number) => {
           if (number === currentPage) {
             return (
-              <PageNumber key={number} onClick={() => setCurrentPage(number)} isActive={true}>
+              <PageNumber
+                key={number}
+                onClick={() => setCurrentPage(number)}
+                isActive={true}
+              >
                 {number}
               </PageNumber>
             );
-          } else if (number === 1 || number === totalPages || (number >= currentPage - 2 && number <= currentPage + 2)) {
+          } else if (
+            number === 1 ||
+            number === totalPages ||
+            (number >= currentPage - 2 && number <= currentPage + 2)
+          ) {
             return (
-              <PageNumber key={number} onClick={() => setCurrentPage(number)} isActive={false}>
+              <PageNumber
+                key={number}
+                onClick={() => setCurrentPage(number)}
+                isActive={false}
+              >
                 {number}
               </PageNumber>
             );
@@ -80,7 +116,11 @@ function Home() {
         })}
 
         {nextPage && (
-          <PageNumber key="next" onClick={() => setCurrentPage(nextPage)} isActive={false}>
+          <PageNumber
+            key="next"
+            onClick={() => setCurrentPage(nextPage)}
+            isActive={false}
+          >
             다음
           </PageNumber>
         )}
@@ -90,6 +130,7 @@ function Home() {
 
   return (
     <div className="Home">
+      <Category query={query} onChange={handleChange} />
       <Container>
         {currentItems.map((item: AnimalShelter) => (
           <Box
@@ -102,6 +143,7 @@ function Home() {
           >
             <p>고유 번호 : {item.ABDM_IDNTFY_NO}</p>
             <PetImg src={item.IMAGE_COURS} alt="Pet Thumbnail" />
+            <p>지역 : {item.SIGUN_NM}</p>
             <p>접수 일지 : {formatDate(item.RECEPT_DE)}</p>
             <p>품종 : {item.SPECIES_NM}</p>
             <p>성별 : {item.SEX_NM}</p>

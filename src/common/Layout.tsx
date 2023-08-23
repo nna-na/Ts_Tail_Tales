@@ -14,15 +14,17 @@ function Layout() {
       setUser(JSON.parse(storedUser));
     }
 
-    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        setUser(session.user);
-        sessionStorage.setItem("user", JSON.stringify(session.user)); // 세션 스토리지에 사용자 정보 저장
-      } else if (event === "SIGNED_OUT") {
-        setUser(null);
-        sessionStorage.removeItem("user"); // 로그아웃 시 세션 스토리지에서 사용자 정보 삭제
+    const authSubscription = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN" && session) {
+          setUser(session.user);
+          sessionStorage.setItem("user", JSON.stringify(session.user)); // 세션 스토리지에 사용자 정보 저장
+        } else if (event === "SIGNED_OUT") {
+          setUser(null);
+          sessionStorage.removeItem("user"); // 로그아웃 시 세션 스토리지에서 사용자 정보 삭제
+        }
       }
-    });
+    );
 
     // const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
     //   if (event === "SIGNED_IN" && session) {
@@ -100,16 +102,29 @@ function Layout() {
             gap: "12px",
           }}
         >
-          {userNickname || user?.user_metadata.full_name ? <span>{userNickname ? `${userNickname}님, 환영합니다.` : `${user?.user_metadata.full_name}님, 환영합니다.`}</span> : null}
+          {userNickname || user?.user_metadata.full_name ? (
+            <span>
+              {userNickname
+                ? `${userNickname}님, 환영합니다.`
+                : `${user?.user_metadata.full_name}님, 환영합니다.`}
+            </span>
+          ) : null}
           <Link to="/home" style={{ color: "black", textDecoration: "none" }}>
             기다리는 친구들 |
           </Link>
-          <Link to="/community" style={{ color: "black", textDecoration: "none" }}>
+          <Link
+            to="/community"
+            style={{ color: "black", textDecoration: "none" }}
+          >
             커뮤니티 |
           </Link>
-          <Link to="/aboutus" style={{ color: "black", textDecoration: "none" }}>
+          <Link
+            to="/aboutus"
+            style={{ color: "black", textDecoration: "none" }}
+          >
             about us |
           </Link>
+
           {renderLoginButton()}
         </div>
       </header>

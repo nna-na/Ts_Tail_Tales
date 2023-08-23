@@ -3,7 +3,7 @@ import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { fetchAnimalData, formatDate, AnimalShelter } from "../api/fetchData";
 import Category from "../components/Category";
-import Slider from "../components/Slider";
+import Slide from "../components/Slide";
 
 function Home() {
   const navigate = useNavigate();
@@ -12,7 +12,6 @@ function Home() {
   const [error, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
-
   // 날짜 범위, 지역, 품종 상태 추가
   const [selectedBeginDate, setSelectedBeginDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
@@ -50,6 +49,17 @@ function Home() {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
+  const nearingDeadline = data.filter((item) => {
+    const today = new Date(); // 현재 날짜
+    const endOfNotice = new Date(formatDate(item.PBLANC_END_DE)); // 게시물의 공고 마감일
+
+    // 마감일이 현재 날짜로부터 3일 이내인 경우만 필터링
+    const fiveDaysAfter = new Date(today);
+    fiveDaysAfter.setDate(fiveDaysAfter.getDate() + 5);
+
+    return endOfNotice <= fiveDaysAfter;
+  });
+
   // 선택한 조건에 따라 데이터 필터링
   const filteredItems = data.filter((item) => {
     let matchesDate = true;
@@ -61,17 +71,14 @@ function Home() {
         formatDate(item.RECEPT_DE) >= selectedBeginDate &&
         formatDate(item.RECEPT_DE) <= selectedEndDate;
     }
-
     if (selectedLocation) {
       matchesLocation = item.SIGUN_NM.toLowerCase().includes(
         selectedLocation.toLowerCase()
       );
     }
-
     if (selectedBreed) {
       matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === selectedBreed;
     }
-
     return matchesDate && matchesLocation && matchesBreed;
   });
 
@@ -143,8 +150,23 @@ function Home() {
 
   return (
     <div className="Home">
-      {/* Slider 컴포넌트 렌더링 */}
-      <Slider data={data} />
+      <div>공고 마감일이 하루 남은 게시물 필터링</div>
+      <SlideContainer>
+        {nearingDeadline.map((item: AnimalShelter) => (
+          <SlideBox key={item.ABDM_IDNTFY_NO}>
+            <p>고유 번호 : {item.ABDM_IDNTFY_NO}</p>
+            <PetImg src={item.IMAGE_COURS} alt="Pet Thumbnail" />
+            <p>접수 일지 : {formatDate(item.RECEPT_DE)}</p>
+            <p>품종 : {item.SPECIES_NM}</p>
+            <p>성별 : {item.SEX_NM}</p>
+            <p>발견장소 : {item.DISCVRY_PLC_INFO} </p>
+            <p>특징: {item.SFETR_INFO}</p>
+            <p>상태: {item.STATE_NM}</p>
+            <p>보호 주소:{item.SIGUN_NM} </p>
+          </SlideBox>
+        ))}
+      </SlideContainer>
+
       <Category
         query={{
           PBLANC_BEGIN_DE: selectedBeginDate,
@@ -192,39 +214,56 @@ function Home() {
     </div>
   );
 }
-
 export default Home;
-
 const Container = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin: 20px;
+  display: flex; // 요소들을 가로로 나열합니다.
+  flex-wrap: wrap; // 넘치는 내용물은 아래 줄로 내려갑니다.
+  justify-content: space-between; // 요소들 사이의 여백을 최대한 유지하면서 좌우로 분산 배치합니다.
+  margin: 20px; // 외부 여백을 설정합니다.
+`;
+
+const SlideContainer = styled.div`
+  display: flex; // 요소들을 가로로 나열합니다.
+  flex-wrap: wrap; // 넘치는 내용물은 아래 줄로 내려갑니다.
+  justify-content: space-between; // 요소들 사이의 여백을 최대한 유지하면서 좌우로 분산 배치합니다.
+  margin: 20px; // 외부 여백을 설정합니다.
+`;
+
+const SlideBox = styled.div`
+  border: 1px solid black; // 테두리 스타일을 설정합니다.
+  width: calc(33.33% - 10px); // 너비를 계산하여 설정합니다.
+  padding: 10px; // 내부 여백을 설정합니다.
+  margin-bottom: 20px; // 아래쪽 여백을 설정합니다.
+  flex: 0 0 calc(33.33% - 10px); // Flexbox를 사용하여 너비를 설정합니다.
+  box-sizing: border-box; // 테두리를 포함한 상자 크기를 설정합니다.
 `;
 
 const Box = styled.div`
-  border: 1px solid black;
-  width: calc(33.33% - 10px);
-  padding: 10px;
-  margin-bottom: 20px;
-  flex: 0 0 calc(33.33% - 10px);
-  box-sizing: border-box;
+  border: 1px solid black; // 테두리 스타일을 설정합니다.
+  width: calc(33.33% - 10px); // 너비를 계산하여 설정합니다.
+  padding: 10px; // 내부 여백을 설정합니다.
+  margin-bottom: 20px; // 아래쪽 여백을 설정합니다.
+  flex: 0 0 calc(33.33% - 10px); // Flexbox를 사용하여 너비를 설정합니다.
+  box-sizing: border-box; // 테두리를 포함한 상자 크기를 설정합니다.
 `;
 
 const PetImg = styled.img`
-  width: 100%;
-  height: auto;
-  max-width: 400px;
+  width: 100%; // 이미지의 너비를 100%로 설정하여 부모 요소에 맞게 조절합니다.
+  height: auto; // 높이를 자동으로 조절하여 이미지의 가로세로 비율을 유지합니다.
+  max-width: 400px; // 이미지의 최대 너비를 설정하여 너무 커지지 않도록 합니다.
 `;
 
 const Pagination = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
+  display: flex; // 요소들을 가로로 나열합니다.
+  justify-content: center; // 요소들을 가운데 정렬합니다.
+  margin-top: 20px; // 위쪽 여백을 설정합니다.
 `;
 
 const PageNumber = styled.div<{ isActive: boolean }>`
-  cursor: pointer;
-  margin: 0 5px;
-  font-weight: ${(props) => (props.isActive ? "bold" : "normal")};
+  cursor: pointer; // 마우스 커서를 손가락 모양으로 변경합니다.
+  margin: 0 5px; // 좌우 여백을 설정합니다.
+  font-weight: ${(props) =>
+    props.isActive
+      ? "bold"
+      : "normal"}; // 활성화 여부에 따라 글꼴 두께를 변경합니다.
 `;

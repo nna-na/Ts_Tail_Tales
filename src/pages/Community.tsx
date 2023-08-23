@@ -33,11 +33,15 @@ export default function Community() {
   const { data, isLoading, isError, error } = useQuery(
     ["posts", id],
     async () => {
-      const response = await axios.get(`http://localhost:4000/posts/${id}`);
-      return response.data;
+      if (id) {
+        const response = await axios.get(`http://localhost:4000/posts/${id}`);
+        return response.data;
+      }
+    },
+    {
+      enabled: !!id, // id가 유효한 경우에만 활성화
     }
   );
-  console.log(data);
 
   //삭제 버튼
   const deletePost = useMutation(
@@ -54,11 +58,23 @@ export default function Community() {
     }
   );
 
+  if (isLoading) {
+    return <div>로딩 중 ...</div>;
+  }
+
+  if (isError) {
+    return <div>{(error as Error).message}</div>;
+  }
+
+  if (!posts) {
+    return <div>게시물을 찾을 수 없습니다.</div>;
+  }
+
   return (
     <Container>
       <div>Community</div>
       <Link to="/create">작성</Link>
-      {posts.map((post) => (
+      {posts?.map((post) => (
         <PostBox key={post.id}>
           <Link to={`/post-detail/${post.id}`}>
             <PostTitle>{post.title}</PostTitle>

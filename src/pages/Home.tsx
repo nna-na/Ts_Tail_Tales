@@ -3,7 +3,10 @@ import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { fetchAnimalData, formatDate, AnimalShelter } from "../api/fetchData";
 import Category from "../components/Category";
-import Slide from "../components/Slide";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import CustomSlider from "../components/Slider";
+import Pagination from "../components/Pagination";
 
 function Home() {
   const navigate = useNavigate();
@@ -12,11 +15,18 @@ function Home() {
   const [error, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
-  // 날짜 범위, 지역, 품종 상태 추가
   const [selectedBeginDate, setSelectedBeginDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedBreed, setSelectedBreed] = useState("");
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 3,
+  };
 
   useEffect(() => {
     const fetchDataFromApi = async () => {
@@ -41,26 +51,20 @@ function Home() {
   const handleFilter = () => {
     setCurrentPage(1);
   };
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!data) return null;
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
   const nearingDeadline = data.filter((item) => {
-    const today = new Date(); // 현재 날짜
-    const endOfNotice = new Date(formatDate(item.PBLANC_END_DE)); // 게시물의 공고 마감일
-
-    // 마감일이 현재 날짜로부터 3일 이내인 경우만 필터링
+    const today = new Date();
+    const endOfNotice = new Date(formatDate(item.PBLANC_END_DE));
     const fiveDaysAfter = new Date(today);
     fiveDaysAfter.setDate(fiveDaysAfter.getDate() + 5);
 
     return endOfNotice <= fiveDaysAfter;
   });
 
-  // 선택한 조건에 따라 데이터 필터링
   const filteredItems = data.filter((item) => {
     let matchesDate = true;
     let matchesLocation = true;
@@ -84,89 +88,10 @@ function Home() {
 
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
-  const renderPagination = () => {
-    const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-    const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
-    const prevPage = currentPage > 1 ? currentPage - 1 : null;
-    const nextPage = currentPage < totalPages ? currentPage + 1 : null;
-
-    return (
-      <Pagination>
-        {prevPage && (
-          <PageNumber
-            key="prev"
-            onClick={() => setCurrentPage(prevPage)}
-            isActive={false}
-          >
-            이전
-          </PageNumber>
-        )}
-        {pageNumbers?.map((number) => {
-          if (number === currentPage) {
-            return (
-              <PageNumber
-                key={number}
-                onClick={() => setCurrentPage(number)}
-                isActive={true}
-              >
-                {number}
-              </PageNumber>
-            );
-          } else if (
-            number === 1 ||
-            number === totalPages ||
-            (number >= currentPage - 2 && number <= currentPage + 2)
-          ) {
-            return (
-              <PageNumber
-                key={number}
-                onClick={() => setCurrentPage(number)}
-                isActive={false}
-              >
-                {number}
-              </PageNumber>
-            );
-          } else if (number === totalPages - 1) {
-            return (
-              <PageNumber key="ellipsis" onClick={() => {}} isActive={false}>
-                ...
-              </PageNumber>
-            );
-          }
-          return null;
-        })}
-        {nextPage && (
-          <PageNumber
-            key="next"
-            onClick={() => setCurrentPage(nextPage)}
-            isActive={false}
-          >
-            다음
-          </PageNumber>
-        )}
-      </Pagination>
-    );
-  };
-
   return (
     <div className="Home">
       <div>공고 마감일이 하루 남은 게시물 필터링</div>
-      <SlideContainer>
-        {nearingDeadline.map((item: AnimalShelter) => (
-          <SlideBox key={item.ABDM_IDNTFY_NO}>
-            <p>고유 번호 : {item.ABDM_IDNTFY_NO}</p>
-            <PetImg src={item.IMAGE_COURS} alt="Pet Thumbnail" />
-            <p>접수 일지 : {formatDate(item.RECEPT_DE)}</p>
-            <p>품종 : {item.SPECIES_NM}</p>
-            <p>성별 : {item.SEX_NM}</p>
-            <p>발견장소 : {item.DISCVRY_PLC_INFO} </p>
-            <p>특징: {item.SFETR_INFO}</p>
-            <p>상태: {item.STATE_NM}</p>
-            <p>보호 주소:{item.SIGUN_NM} </p>
-          </SlideBox>
-        ))}
-      </SlideContainer>
-
+      <CustomSlider items={nearingDeadline} />
       <Category
         query={{
           PBLANC_BEGIN_DE: selectedBeginDate,
@@ -210,60 +135,33 @@ function Home() {
           </Box>
         ))}
       </Container>
-      {renderPagination()}
+      {/* 페이지네이션 컴포넌트 추가 */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
+        setCurrentPage={setCurrentPage}
+      />
     </div>
   );
 }
 export default Home;
+
 const Container = styled.div`
-  display: flex; // 요소들을 가로로 나열합니다.
-  flex-wrap: wrap; // 넘치는 내용물은 아래 줄로 내려갑니다.
-  justify-content: space-between; // 요소들 사이의 여백을 최대한 유지하면서 좌우로 분산 배치합니다.
-  margin: 20px; // 외부 여백을 설정합니다.
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 20px;
 `;
-
-const SlideContainer = styled.div`
-  display: flex; // 요소들을 가로로 나열합니다.
-  flex-wrap: wrap; // 넘치는 내용물은 아래 줄로 내려갑니다.
-  justify-content: space-between; // 요소들 사이의 여백을 최대한 유지하면서 좌우로 분산 배치합니다.
-  margin: 20px; // 외부 여백을 설정합니다.
-`;
-
-const SlideBox = styled.div`
-  border: 1px solid black; // 테두리 스타일을 설정합니다.
-  width: calc(33.33% - 10px); // 너비를 계산하여 설정합니다.
-  padding: 10px; // 내부 여백을 설정합니다.
-  margin-bottom: 20px; // 아래쪽 여백을 설정합니다.
-  flex: 0 0 calc(33.33% - 10px); // Flexbox를 사용하여 너비를 설정합니다.
-  box-sizing: border-box; // 테두리를 포함한 상자 크기를 설정합니다.
-`;
-
 const Box = styled.div`
-  border: 1px solid black; // 테두리 스타일을 설정합니다.
-  width: calc(33.33% - 10px); // 너비를 계산하여 설정합니다.
-  padding: 10px; // 내부 여백을 설정합니다.
-  margin-bottom: 20px; // 아래쪽 여백을 설정합니다.
-  flex: 0 0 calc(33.33% - 10px); // Flexbox를 사용하여 너비를 설정합니다.
-  box-sizing: border-box; // 테두리를 포함한 상자 크기를 설정합니다.
+  border: 1px solid black;
+  width: calc(33.33% - 10px);
+  padding: 10px;
+  margin-bottom: 20px;
+  flex: 0 0 calc(33.33% - 10px);
+  box-sizing: border-box;
 `;
-
 const PetImg = styled.img`
-  width: 100%; // 이미지의 너비를 100%로 설정하여 부모 요소에 맞게 조절합니다.
-  height: auto; // 높이를 자동으로 조절하여 이미지의 가로세로 비율을 유지합니다.
-  max-width: 400px; // 이미지의 최대 너비를 설정하여 너무 커지지 않도록 합니다.
-`;
-
-const Pagination = styled.div`
-  display: flex; // 요소들을 가로로 나열합니다.
-  justify-content: center; // 요소들을 가운데 정렬합니다.
-  margin-top: 20px; // 위쪽 여백을 설정합니다.
-`;
-
-const PageNumber = styled.div<{ isActive: boolean }>`
-  cursor: pointer; // 마우스 커서를 손가락 모양으로 변경합니다.
-  margin: 0 5px; // 좌우 여백을 설정합니다.
-  font-weight: ${(props) =>
-    props.isActive
-      ? "bold"
-      : "normal"}; // 활성화 여부에 따라 글꼴 두께를 변경합니다.
+  width: 100%;
+  height: auto;
+  max-width: 400px;
 `;

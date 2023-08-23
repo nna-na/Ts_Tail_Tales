@@ -18,24 +18,35 @@ export default function PostCreate() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (title && content) {
-      try {
-        // JSON 서버에 데이터 추가를 위한 POST 요청 보내기
-        const response = await axios.post("http://localhost:4000/posts", {
-          title,
-          content,
-        });
+    if (!title && !content) {
+      window.alert("제목을 입력해주세요, 내용을 입력해주세요.");
+      return;
+    }
+    if (!title) {
+      window.alert("제목을 입력해주세요.");
+      return;
+    }
+    if (!content) {
+      window.alert("내용을 입력해주세요.");
+      return;
+    }
 
-        console.log("게시글 작성 결과:", response.data);
-        window.alert("작성이 완료되었습니다.");
-        navigate("/community");
+    try {
+      // JSON 서버에 데이터 추가를 위한 POST 요청 보내기
+      const response = await axios.post("http://localhost:4000/posts", {
+        title,
+        content,
+      });
 
-        // 이후 필요한 동작을 수행하십시오.
-        setTitle("");
-        setContent("");
-      } catch (error) {
-        console.error("게시글 작성 오류:", error);
-      }
+      console.log("게시글 작성 결과:", response.data);
+      window.alert("작성이 완료되었습니다.");
+      navigate("/community");
+
+      // 이후 필요한 동작을 수행하십시오.
+      setTitle("");
+      setContent("");
+    } catch (error) {
+      console.error("게시글 작성 오류:", error);
     }
   };
 

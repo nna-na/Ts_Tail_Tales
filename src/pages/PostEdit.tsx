@@ -53,6 +53,20 @@ export default function PostEdit() {
 
   const handleUpdate = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!title && !content) {
+      window.alert("제목을 입력해주세요, 내용을 입력해주세요.");
+      return;
+    }
+    if (!title) {
+      window.alert("제목을 입력해주세요.");
+      return;
+    }
+    if (!content) {
+      window.alert("내용을 입력해주세요.");
+      return;
+    }
+
     const updatedPost: Post = {
       id: data.id,
       title,

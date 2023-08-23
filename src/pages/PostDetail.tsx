@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import styled from "styled-components";
@@ -10,13 +10,9 @@ interface Post {
   content: string;
 }
 
-interface PostDetailProps {
-  posts: Post[];
-}
-
-export default function PostDetail({ posts }: PostDetailProps) {
+export default function PostDetail() {
   const queryClient = useQueryClient();
-  const { id } = useParams<{ id?: string }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   const { data, isLoading, isError, error } = useQuery(["posts", id], async () => {
@@ -30,12 +26,17 @@ export default function PostDetail({ posts }: PostDetailProps) {
     },
     {
       onMutate: async () => {
-        // 데이터 삭제 전에 로딩 상태를 갱신하고, 쿼리를 무효화하지 않도록 한다.
-        await queryClient.cancelQueries(["posts", id]);
+        const confirmed = window.confirm("정말 삭제하시겠습니까?");
+        if (!confirmed) {
+          throw new Error("삭제가 취소되었습니다.");
+        }
       },
       onSuccess: () => {
+        // 삭제 성공 후 커뮤니티 페이지로 이동
         navigate("/community");
-        alert("게시글이 삭제되었습니다.");
+      },
+      onError: (error) => {
+        console.error("게시글 삭제 오류:", error);
       },
     }
   );
@@ -49,7 +50,6 @@ export default function PostDetail({ posts }: PostDetailProps) {
   }
 
   if (!data) {
-    // 데이터가 없을 경우 커뮤니티 페이지로 이동
     navigate("/community");
     return null;
   }
@@ -60,9 +60,7 @@ export default function PostDetail({ posts }: PostDetailProps) {
       <h3>{data.title}</h3>
       <p>{data.content}</p>
       <ButtonContainer>
-        <Link to={`/post-edit/${data.id}`}>
-          <EditButton>수정</EditButton>
-        </Link>
+        <EditButton to={`/post-edit/${data.id}`}>수정</EditButton>
         <DeleteButton onClick={() => deletePost.mutate()}>삭제</DeleteButton>
       </ButtonContainer>
     </Container>
@@ -79,13 +77,14 @@ const ButtonContainer = styled.div`
   margin-top: 20px;
 `;
 
-const EditButton = styled.button`
+const EditButton = styled(Link)`
   padding: 10px 20px;
   background-color: #007bff;
   color: white;
   border: none;
   cursor: pointer;
   margin-right: 10px;
+  text-decoration: none;
 `;
 
 const DeleteButton = styled.button`

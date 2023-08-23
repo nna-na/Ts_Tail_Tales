@@ -42,18 +42,16 @@ export default function PostCreate() {
   return (
     <Container>
       <Form onSubmit={handleSubmit}>
-        <Input
-          type="text"
-          placeholder="제목"
-          value={title}
-          onChange={handleTitleChange}
-        />
-        <TextArea
-          placeholder="내용"
-          value={content}
-          onChange={handleContentChange}
-        />
-        <Button type="submit">작성</Button>
+        <h2>게시글 작성</h2>
+        <FormItem>
+          <label>제목:</label>
+          <Input type="text" value={title} onChange={handleTitleChange} />
+        </FormItem>
+        <FormItem>
+          <label>내용:</label>
+          <Textarea value={content} onChange={handleContentChange} />
+        </FormItem>
+        <SubmitButton type="submit">작성</SubmitButton>
       </Form>
     </Container>
   );
@@ -69,19 +67,26 @@ const Form = styled.form`
   align-items: center;
 `;
 
+const FormItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+`;
+
 const Input = styled.input`
-  width: 100%;
+  width: 1000px;
   padding: 10px;
   margin-bottom: 10px;
 `;
 
-const TextArea = styled.textarea`
-  width: 100%;
+const Textarea = styled.textarea`
+  width: 1000px;
+  height: 300px;
   padding: 10px;
   margin-bottom: 10px;
 `;
 
-const Button = styled.button`
+const SubmitButton = styled.button`
   padding: 10px 20px;
   background-color: #007bff;
   color: white;

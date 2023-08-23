@@ -19,7 +19,7 @@ export default function Community() {
 
   const fetchPosts = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/posts");
+      const response = await axios?.get("http://localhost:4000/posts");
       setPosts(response.data);
     } catch (error) {
       console.error("데이터 불러오기 오류:", error);
@@ -33,16 +33,20 @@ export default function Community() {
   const { data, isLoading, isError, error } = useQuery(
     ["posts", id],
     async () => {
-      const response = await axios.get(`http://localhost:4000/posts/${id}`);
-      return response.data;
+      if (id) {
+        const response = await axios?.get(`http://localhost:4000/posts/${id}`);
+        return response.data;
+      }
+    },
+    {
+      enabled: !!id, // id가 유효한 경우에만 활성화
     }
   );
-  console.log(data);
 
   //삭제 버튼
   const deletePost = useMutation(
     async (post: any) => {
-      await axios.delete(`http://localhost:4000/posts/${post.id}`);
+      await axios?.delete(`http://localhost:4000/posts/${post.id}`);
     },
     {
       onSuccess: () => {
@@ -64,7 +68,7 @@ export default function Community() {
             <PostTitle>{post.title}</PostTitle>
             <PostContent>{post.content}</PostContent>
           </Link>
-          <button>수정</button>
+          <Link to={`/post-edit/${post.id}`}>수정</Link>
           <button
             onClick={() => {
               deletePost.mutate(post);

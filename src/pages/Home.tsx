@@ -3,7 +3,6 @@ import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { fetchAnimalData, formatDate, AnimalShelter } from "../api/fetchData";
 import Category from "../components/Category";
-
 function Home() {
   const navigate = useNavigate();
   const [data, setData] = useState<Array<AnimalShelter> | null>(null);
@@ -11,10 +10,11 @@ function Home() {
   const [error, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
-  const totalPages = Math.ceil((data?.length || 0) / itemsPerPage);
-  const [selectedDate, setSelectedDate] = useState(""); // 선택한 날짜
-  const [selectedLocation, setSelectedLocation] = useState(""); // 선택한 지역
-  const [selectedBreed, setSelectedBreed] = useState(""); // 선택한 품종
+  // 날짜 범위, 지역, 품종 상태 추가
+  const [selectedBeginDate, setSelectedBeginDate] = useState("");
+  const [selectedEndDate, setSelectedEndDate] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedBreed, setSelectedBreed] = useState("");
 
   useEffect(() => {
     const fetchDataFromApi = async () => {
@@ -33,11 +33,9 @@ function Home() {
       }
       setLoading(false);
     };
-
     fetchDataFromApi();
   }, []);
 
-  // 여기
   const handleFilter = () => {
     setCurrentPage(1);
   };
@@ -48,7 +46,17 @@ function Home() {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  // const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+
+  const nearingDeadline = data.filter((item) => {
+    const today = new Date(); // 현재 날짜
+    const endOfNotice = new Date(formatDate(item.PBLANC_END_DE)); // 게시물의 공고 마감일
+
+    // 마감일이 현재 날짜로부터 3일 이내인 경우만 필터링
+    const fiveDaysAfter = new Date(today);
+    fiveDaysAfter.setDate(fiveDaysAfter.getDate() + 5);
+
+    return endOfNotice <= fiveDaysAfter;
+  });
 
   // 선택한 조건에 따라 데이터 필터링
   const filteredItems = data.filter((item) => {
@@ -56,34 +64,27 @@ function Home() {
     let matchesLocation = true;
     let matchesBreed = true;
 
-    if (selectedDate) {
-      matchesDate = item.RECEPT_DE === selectedDate;
+    if (selectedBeginDate && selectedEndDate) {
+      matchesDate =
+        formatDate(item.RECEPT_DE) >= selectedBeginDate &&
+        formatDate(item.RECEPT_DE) <= selectedEndDate;
     }
-
     if (selectedLocation) {
       matchesLocation = item.SIGUN_NM.toLowerCase().includes(
         selectedLocation.toLowerCase()
       );
     }
-
     if (selectedBreed) {
-      // 하 미친놈..
       matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === selectedBreed;
     }
-
     return matchesDate && matchesLocation && matchesBreed;
   });
-  console.log("필터", filteredItems);
-  console.log("품종", selectedBreed);
-  console.log("data", data[10].SPECIES_NM.split("]")[0] + "]");
 
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
-  console.log("해당 게시물", currentItems);
 
   const renderPagination = () => {
+    const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
     const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
-
-    // 이전 페이지와 다음 페이지 버튼을 추가합니다.
     const prevPage = currentPage > 1 ? currentPage - 1 : null;
     const nextPage = currentPage < totalPages ? currentPage + 1 : null;
 
@@ -144,26 +145,43 @@ function Home() {
       </Pagination>
     );
   };
-
   return (
     <div className="Home">
+      <div>공고 마감일이 하루 남은 게시물 필터링</div>
+      <Container>
+        {nearingDeadline?.map((item: AnimalShelter) => (
+          <Box key={item.ABDM_IDNTFY_NO}>
+            <p>고유 번호 : {item.ABDM_IDNTFY_NO}</p>
+            <PetImg src={item.IMAGE_COURS} alt="Pet Thumbnail" />
+            <p>접수 일지 : {formatDate(item.RECEPT_DE)}</p>
+            <p>품종 : {item.SPECIES_NM}</p>
+            <p>성별 : {item.SEX_NM}</p>
+            <p>발견장소 : {item.DISCVRY_PLC_INFO} </p>
+            <p>특징: {item.SFETR_INFO}</p>
+            <p>상태: {item.STATE_NM}</p>
+            <p>보호 주소:{item.SIGUN_NM} </p>
+          </Box>
+        ))}
+      </Container>
       <Category
         query={{
-          PBLANC_BEGIN_DE: selectedDate,
-          PBLANC_END_DE: selectedDate,
+          PBLANC_BEGIN_DE: selectedBeginDate,
+          PBLANC_END_DE: selectedEndDate,
           SIGUN_NM: selectedLocation,
           SPECIES_NM: selectedBreed,
         }}
         onChange={(e) => {
-          // 각 필터링 조건에 맞는 상태를 업데이트합니다.
           const { name, value } = e.target;
-          if (name === "PBLANC_BEGIN_DE" || name === "PBLANC_END_DE") {
-            setSelectedDate(value);
+          if (name === "PBLANC_BEGIN_DE") {
+            setSelectedBeginDate(value);
+          } else if (name === "PBLANC_END_DE") {
+            setSelectedEndDate(value);
           } else if (name === "SIGUN_NM") {
             setSelectedLocation(value);
           } else if (name === "SPECIES_NM") {
             setSelectedBreed(value);
           }
+          handleFilter();
         }}
       />
       <Container>
@@ -192,16 +210,13 @@ function Home() {
     </div>
   );
 }
-
 export default Home;
-
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   margin: 20px;
 `;
-
 const Box = styled.div`
   border: 1px solid black;
   width: calc(33.33% - 10px);
@@ -210,19 +225,16 @@ const Box = styled.div`
   flex: 0 0 calc(33.33% - 10px);
   box-sizing: border-box;
 `;
-
 const PetImg = styled.img`
-  width: 400px;
-  height: 250px;
-  object-fit: contain;
+  width: 100%;
+  height: auto;
+  max-width: 400px;
 `;
-
 const Pagination = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 20px;
 `;
-
 const PageNumber = styled.div<{ isActive: boolean }>`
   cursor: pointer;
   margin: 0 5px;

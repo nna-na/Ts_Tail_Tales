@@ -18,42 +18,51 @@ export default function PostCreate() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (title && content) {
-      try {
-        // JSON 서버에 데이터 추가를 위한 POST 요청 보내기
-        const response = await axios.post("http://localhost:4000/posts", {
-          title,
-          content,
-        });
+    if (!title && !content) {
+      window.alert("제목을 입력해주세요, 내용을 입력해주세요.");
+      return;
+    }
+    if (!title) {
+      window.alert("제목을 입력해주세요.");
+      return;
+    }
+    if (!content) {
+      window.alert("내용을 입력해주세요.");
+      return;
+    }
 
-        console.log("게시글 작성 결과:", response.data);
-        window.alert("작성이 완료되었습니다.");
-        navigate("/community");
+    try {
+      // JSON 서버에 데이터 추가를 위한 POST 요청 보내기
+      const response = await axios.post("http://localhost:4000/posts", {
+        title,
+        content,
+      });
 
-        // 이후 필요한 동작을 수행하십시오.
-        setTitle("");
-        setContent("");
-      } catch (error) {
-        console.error("게시글 작성 오류:", error);
-      }
+      console.log("게시글 작성 결과:", response.data);
+      window.alert("작성이 완료되었습니다.");
+      navigate("/community");
+
+      // 이후 필요한 동작을 수행하십시오.
+      setTitle("");
+      setContent("");
+    } catch (error) {
+      console.error("게시글 작성 오류:", error);
     }
   };
 
   return (
     <Container>
       <Form onSubmit={handleSubmit}>
-        <Input
-          type="text"
-          placeholder="제목"
-          value={title}
-          onChange={handleTitleChange}
-        />
-        <TextArea
-          placeholder="내용"
-          value={content}
-          onChange={handleContentChange}
-        />
-        <Button type="submit">작성</Button>
+        <h2>게시글 작성</h2>
+        <FormItem>
+          <label>제목:</label>
+          <Input type="text" value={title} onChange={handleTitleChange} />
+        </FormItem>
+        <FormItem>
+          <label>내용:</label>
+          <Textarea value={content} onChange={handleContentChange} />
+        </FormItem>
+        <SubmitButton type="submit">작성</SubmitButton>
       </Form>
     </Container>
   );
@@ -69,19 +78,26 @@ const Form = styled.form`
   align-items: center;
 `;
 
+const FormItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+`;
+
 const Input = styled.input`
-  width: 100%;
+  width: 1000px;
   padding: 10px;
   margin-bottom: 10px;
 `;
 
-const TextArea = styled.textarea`
-  width: 100%;
+const Textarea = styled.textarea`
+  width: 1000px;
+  height: 300px;
   padding: 10px;
   margin-bottom: 10px;
 `;
 
-const Button = styled.button`
+const SubmitButton = styled.button`
   padding: 10px 20px;
   background-color: #007bff;
   color: white;

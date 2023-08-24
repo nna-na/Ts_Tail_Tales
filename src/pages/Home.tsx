@@ -90,7 +90,7 @@ function Home() {
 
   return (
     <div className="Home">
-      <div>공고 마감일이 하루 남은 게시물 필터링</div>
+      <div>공고 마감일이 얼마남지않은 게시물 필터링</div>
       <CustomSlider items={nearingDeadline} />
       <Category
         query={{

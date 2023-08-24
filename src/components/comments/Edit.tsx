@@ -5,8 +5,8 @@ import axios from "axios";
 import styled from "styled-components";
 
 interface Comment {
-  id: number;
-  title: string;
+  id: string; // id 필드를 문자열로 변경
+  postId?: string;
   content: string;
   userNickname: string;
   date: string;
@@ -14,11 +14,9 @@ interface Comment {
 
 export default function Edit({
   id,
-  userId,
   onUpdateComplete,
 }: {
-  id: number;
-  userId: number;
+  id: string;
   onUpdateComplete: () => void;
 }) {
   const queryClient = useQueryClient();
@@ -50,26 +48,21 @@ export default function Edit({
         queryClient.invalidateQueries(["comments", id]);
         window.alert("댓글 수정이 완료되었습니다.");
         onUpdateComplete();
-        navigate(`/post-detail/${id}`);
+        // navigate(`/post-detail/${id}`);
+        window.location.reload();
       },
     }
   );
 
   const [content, setContent] = useState("");
-  const [title, setTitle] = useState("");
   const [userNickname, setUserNickname] = useState("");
 
   useEffect(() => {
     if (initialData) {
       setContent(initialData.content);
-      setTitle(initialData.title);
       setUserNickname(initialData.userNickname);
     }
   }, [initialData]);
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-  };
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
@@ -78,16 +71,17 @@ export default function Edit({
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!content || !title) {
-      window.alert("제목과 내용을 입력해주세요.");
+    if (!content) {
+      window.alert("내용을 입력해주세요.");
       return;
     }
 
     const updatedComment: Comment = {
-      id: id,
-      title,
+      id: id.toString(),
+      postId: initialData?.postId,
       content,
       userNickname,
+
       date: new Date().toISOString(),
     };
 
@@ -120,10 +114,6 @@ export default function Edit({
     <Container>
       <Form onSubmit={handleUpdate}>
         <h2>댓글 수정</h2>
-        <FormItem>
-          <label>제목:</label>
-          <input type="text" value={title} onChange={handleTitleChange} />
-        </FormItem>
         <FormItem>
           <label>내용:</label>
           <Textarea value={content} onChange={handleContentChange} />

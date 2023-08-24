@@ -16,8 +16,6 @@ export default function PostImg({ onContentChange }: PostImgProps) {
     setContent(newContent); // 상태 업데이트
     onContentChange(newContent); // 상위 컴포넌트로 변경된 내용 전달
   };
-  ///yarn add --dev @types/quill-image-resize
-  // yarn add @types/quill-image-resize-module-react --dev
 
   return (
     <div>
@@ -35,6 +33,7 @@ export default function PostImg({ onContentChange }: PostImgProps) {
             [{ header: "1" }, { header: "2" }, { font: [] }],
             [{ list: "ordered" }, { list: "bullet" }],
             ["bold", "italic", "underline"],
+            [{ align: [] }, { color: [] }, { background: [] }],
             ["image"], // 이미지 삽입 버튼 추가
           ],
           ImageResize: {
@@ -49,6 +48,9 @@ export default function PostImg({ onContentChange }: PostImgProps) {
           "bold",
           "italic",
           "underline",
+          "align",
+          "color",
+          "background",
           "image", // 이미지 포맷 추가
         ]}
       />

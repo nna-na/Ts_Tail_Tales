@@ -13,7 +13,9 @@ export default function Delete({ commentId, onDelete }: DeleteProps) {
 
   const deleteCommentMutation = useMutation(
     async () => {
-      await axios.delete(`http://localhost:4000/comments/${parsedCommentId}`);
+      await axios.delete(
+        `${process.env.REACT_APP_SERVER_URL}/comments/${parsedCommentId}`
+      );
     },
     {
       onSuccess: () => {

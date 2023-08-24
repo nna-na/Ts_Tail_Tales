@@ -17,7 +17,9 @@ export default function Comment({ comments }: CommentProps) {
   const { data, isLoading, isError, error } = useQuery(
     ["comments"],
     async () => {
-      const response = await axios.get(`http://localhost:4000/comments`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}/comments`
+      );
       return response.data;
     },
     {
@@ -58,10 +60,16 @@ export default function Comment({ comments }: CommentProps) {
               <div>제목: {comment.title}</div>
               <div>내용: {comment.content}</div>
               {editingCommentId === comment.id ? (
-                <Edit id={comment.id} userId={comment.userId} onUpdateComplete={handleUpdateComplete} />
+                <Edit
+                  id={comment.id}
+                  userId={comment.userId}
+                  onUpdateComplete={handleUpdateComplete}
+                />
               ) : (
                 <>
-                  <button onClick={() => setEditingCommentId(comment.id)}>수정</button>
+                  <button onClick={() => setEditingCommentId(comment.id)}>
+                    수정
+                  </button>
                   <Delete commentId={comment.id} onDelete={handleDelete} />
                 </>
               )}

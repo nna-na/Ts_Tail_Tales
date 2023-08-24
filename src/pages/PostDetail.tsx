@@ -22,19 +22,26 @@ export default function PostDetail() {
     isError,
     error,
   } = useQuery(["posts", id], async () => {
-    const response = await axios?.get(`http://localhost:4000/posts/${id}`);
+    const response = await axios?.get(
+      `${process.env.REACT_APP_SERVER_URL}/posts/${id}`
+    );
     return response.data;
   });
 
   // Fetch 댓글 목록
-  const { data: comments, isLoading: isLoadingComments } = useQuery(["comments", id], async () => {
-    const response = await axios.get(`http://localhost:4000/comments?postId=${id}`);
-    return response.data;
-  });
+  const { data: comments, isLoading: isLoadingComments } = useQuery(
+    ["comments", id],
+    async () => {
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}/comments?postId=${id}`
+      );
+      return response.data;
+    }
+  );
 
   const deletePost = useMutation(
     async () => {
-      await axios?.delete(`http://localhost:4000/posts/${id}`);
+      await axios?.delete(`${process.env.REACT_APP_SERVER_URL}/posts/${id}`);
     },
     {
       onMutate: async () => {

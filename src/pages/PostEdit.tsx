@@ -15,14 +15,22 @@ export default function PostEdit() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  const { data, isLoading, isError, error } = useQuery(["posts", id], async () => {
-    const response = await axios.get(`http://localhost:4000/posts/${id}`);
-    return response.data;
-  });
+  const { data, isLoading, isError, error } = useQuery(
+    ["posts", id],
+    async () => {
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}/posts/${id}`
+      );
+      return response.data;
+    }
+  );
 
   const updatePost = useMutation(
     async (updatedPost: Post) => {
-      await axios.put(`http://localhost:4000/posts/${id}`, updatedPost);
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_URL}/posts/${id}`,
+        updatedPost
+      );
     },
     {
       onSuccess: () => {

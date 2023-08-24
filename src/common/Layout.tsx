@@ -24,14 +24,6 @@ function Layout() {
       }
     });
 
-    // const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
-    //   if (event === "SIGNED_IN" && session) {
-    //     setUser(session.user);
-    //   } else if (event === "SIGNED_OUT") {
-    //     setUser(null);
-    //   }
-    // });
-
     // 컴포넌트가 언마운트될 때 이벤트 구독 해제
     return () => {
       authSubscription.data.subscription.unsubscribe();
@@ -42,6 +34,7 @@ function Layout() {
     if (user) {
       console.log("로그인한 사용자 정보:", user);
       setUserNickname(user.user_metadata.user_name); // 사용자 닉네임 설정
+      sessionStorage.setItem("userNickname", user.user_metadata.user_name); // 세션 스토리지에 사용자 닉네임 저장
     }
   }, [user]); // user 상태가 변경될 때마다 실행
 

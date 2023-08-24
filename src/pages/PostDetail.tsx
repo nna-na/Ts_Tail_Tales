@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import styled from "styled-components";
+import Create from "../components/comments/Create";
+import Comment from "../components/comments/Comment"; // 수정된 Comment 컴포넌트 임포트
 
 interface Post {
   id: number;
@@ -14,11 +16,19 @@ export default function PostDetail() {
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-interface PostDetailProps {
-  posts: Post[];
-}
-  const { data, isLoading, isError, error } = useQuery(["posts", id], async () => {
+  const {
+    data: post,
+    isLoading,
+    isError,
+    error,
+  } = useQuery(["posts", id], async () => {
     const response = await axios?.get(`http://localhost:4000/posts/${id}`);
+    return response.data;
+  });
+
+  // Fetch 댓글 목록
+  const { data: comments, isLoading: isLoadingComments } = useQuery(["comments", id], async () => {
+    const response = await axios.get(`http://localhost:4000/comments?postId=${id}`);
     return response.data;
   });
 
@@ -43,7 +53,12 @@ interface PostDetailProps {
     }
   );
 
-  if (isLoading) {
+  // 수정 성공 후 댓글 목록 다시 가져오기
+  const refreshPostData = async () => {
+    await queryClient.invalidateQueries(["comments", id]);
+  };
+
+  if (isLoading || isLoadingComments) {
     return <LoadingText>로딩 중 ...</LoadingText>;
   }
 
@@ -51,7 +66,7 @@ interface PostDetailProps {
     return <ErrorText>{(error as Error).message}</ErrorText>;
   }
 
-  if (!data) {
+  if (!post) {
     navigate("/community");
     return null;
   }
@@ -59,12 +74,16 @@ interface PostDetailProps {
   return (
     <Container>
       <h2>디테일 페이지</h2>
-      <h3>{data.title}</h3>
-      <p>{data.content}</p>
+      <h3>{post.title}</h3>
+      <p>{post.content}</p>
       <ButtonContainer>
-        <EditButton to={`/post-edit/${data.id}`}>수정</EditButton>
+        <EditButton to={`/post-edit/${post.id}`}>수정</EditButton>
         <DeleteButton onClick={() => deletePost.mutate()}>삭제</DeleteButton>
       </ButtonContainer>
+      <p>댓글</p>
+      <Create onCommentAdded={refreshPostData} />
+      {/* 댓글 목록을 Comment 컴포넌트에 전달합니다 */}
+      <Comment comments={comments} /> {/* 댓글 목록을 전달 */}
     </Container>
   );
 }

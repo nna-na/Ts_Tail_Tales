@@ -74,14 +74,10 @@ function Home() {
     let matchesBreed = true;
 
     if (selectedBeginDate && selectedEndDate) {
-      matchesDate =
-        formatDate(item.RECEPT_DE) >= selectedBeginDate &&
-        formatDate(item.RECEPT_DE) <= selectedEndDate;
+      matchesDate = formatDate(item.RECEPT_DE) >= selectedBeginDate && formatDate(item.RECEPT_DE) <= selectedEndDate;
     }
     if (selectedLocation) {
-      matchesLocation = item.SIGUN_NM.toLowerCase().includes(
-        selectedLocation.toLowerCase()
-      );
+      matchesLocation = item.SIGUN_NM.toLowerCase().includes(selectedLocation.toLowerCase());
     }
     if (selectedBreed) {
       matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === selectedBreed;
@@ -99,36 +95,20 @@ function Home() {
     return (
       <Pagination>
         {prevPage && (
-          <PageNumber
-            key="prev"
-            onClick={() => setCurrentPage(prevPage)}
-            isActive={false}
-          >
+          <PageNumber key="prev" onClick={() => setCurrentPage(prevPage)} isActive={false}>
             이전
           </PageNumber>
         )}
         {pageNumbers?.map((number) => {
           if (number === currentPage) {
             return (
-              <PageNumber
-                key={number}
-                onClick={() => setCurrentPage(number)}
-                isActive={true}
-              >
+              <PageNumber key={number} onClick={() => setCurrentPage(number)} isActive={true}>
                 {number}
               </PageNumber>
             );
-          } else if (
-            number === 1 ||
-            number === totalPages ||
-            (number >= currentPage - 2 && number <= currentPage + 2)
-          ) {
+          } else if (number === 1 || number === totalPages || (number >= currentPage - 2 && number <= currentPage + 2)) {
             return (
-              <PageNumber
-                key={number}
-                onClick={() => setCurrentPage(number)}
-                isActive={false}
-              >
+              <PageNumber key={number} onClick={() => setCurrentPage(number)} isActive={false}>
                 {number}
               </PageNumber>
             );
@@ -142,11 +122,7 @@ function Home() {
           return null;
         })}
         {nextPage && (
-          <PageNumber
-            key="next"
-            onClick={() => setCurrentPage(nextPage)}
-            isActive={false}
-          >
+          <PageNumber key="next" onClick={() => setCurrentPage(nextPage)} isActive={false}>
             다음
           </PageNumber>
         )}
@@ -171,6 +147,7 @@ function Home() {
           </Box>
         ))}
       </Slider>
+
       <Category
         query={{
           PBLANC_BEGIN_DE: selectedBeginDate,

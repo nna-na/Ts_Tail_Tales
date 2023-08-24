@@ -15,10 +15,10 @@ export default function Comment({ comments }: CommentProps) {
   const [deleted, setDeleted] = useState(false);
 
   const { data, isLoading, isError, error } = useQuery(
-    ["comments"],
+    ["comments", id],
     async () => {
       const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}/comments`
+        `${process.env.REACT_APP_SERVER_URL}/comments?postId=${id}` // 해당 게시물의 댓글만 가져오도록 수정
       );
       return response.data;
     },
@@ -47,30 +47,35 @@ export default function Comment({ comments }: CommentProps) {
     return <div>게시물을 찾을 수 없습니다.</div>;
   }
 
+  const userNickname = sessionStorage.getItem("userNickname"); // 현재 사용자의 닉네임 가져오기
+
   return (
     <div>
       {deleted ? (
-        <div>댓글이 삭제되었습니다.</div>
+        <div></div>
       ) : (
         <>
-          {data.map((comment: any, user: any) => (
+          {data.map((comment: any) => (
             <div key={comment.id}>
               <div>작성자: {comment.userNickname}님</div>
               <div>{comment.date}</div>
-              <div>제목: {comment.title}</div>
-              <div>내용: {comment.content}</div>
-              {editingCommentId === comment.id ? (
-                <Edit
-                  id={comment.id}
-                  userId={comment.userId}
-                  onUpdateComplete={handleUpdateComplete}
-                />
-              ) : (
+              <div>댓글: {comment.content}</div>
+              {userNickname === comment.userNickname && (
+                // 사용자 닉네임과 댓글 작성자 닉네임을 비교하여 수정 및 삭제 버튼 표시
                 <>
-                  <button onClick={() => setEditingCommentId(comment.id)}>
-                    수정
-                  </button>
-                  <Delete commentId={comment.id} onDelete={handleDelete} />
+                  {editingCommentId === comment.id ? (
+                    <Edit
+                      id={comment.id}
+                      onUpdateComplete={handleUpdateComplete}
+                    />
+                  ) : (
+                    <>
+                      <button onClick={() => setEditingCommentId(comment.id)}>
+                        수정
+                      </button>
+                      <Delete id={comment.id} onDelete={handleDelete} />
+                    </>
+                  )}
                 </>
               )}
             </div>

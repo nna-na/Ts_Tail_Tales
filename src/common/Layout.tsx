@@ -34,11 +34,15 @@ function Layout() {
 
   useEffect(() => {
     if (user) {
-      console.log("로그인한 사용자 정보:", user);
-      setUserNickname(user.user_metadata.user_name); // 사용자 닉네임 설정
-      sessionStorage.setItem("userNickname", user.user_metadata.user_name); // 세션 스토리지에 사용자 닉네임 저장
+      setUserNickname(
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
+      sessionStorage.setItem(
+        "userNickname",
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
     }
-  }, [user]); // user 상태가 변경될 때마다 실행
+  }, [user]);
 
   const renderLoginButton = () => {
     if (user) {

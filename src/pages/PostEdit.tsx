@@ -3,11 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import styled from "styled-components";
+import PostImg from "../components/posts/PostImg";
 
 interface Post {
   id: number;
   title: string;
   content: string;
+  date: string;
+  userNickname: string;
 }
 
 export default function PostEdit() {
@@ -42,12 +45,20 @@ export default function PostEdit() {
   );
 
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState(data.content);
+  const [userNickname, setUserNickname] = useState(""); // 사용자 닉네임 상태 추가
 
   useEffect(() => {
     if (data) {
       setTitle(data.title);
-      setContent(data.content);
+      setContent(data?.content);
+    }
+
+    // 사용자 닉네임을 가져와서 상태 업데이트
+    const userNicknameFromSessionStorage =
+      sessionStorage.getItem("userNickname");
+    if (userNicknameFromSessionStorage) {
+      setUserNickname(userNicknameFromSessionStorage);
     }
   }, [data]);
 
@@ -55,8 +66,8 @@ export default function PostEdit() {
     setTitle(e.target.value);
   };
 
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
+  const handleContentChange = (newContent: string) => {
+    setContent(newContent);
   };
 
   const handleUpdate = (e: React.FormEvent) => {
@@ -79,6 +90,8 @@ export default function PostEdit() {
       id: data.id,
       title,
       content,
+      date: new Date().toISOString(),
+      userNickname, // 상태로부터 사용자 닉네임 가져옴
     };
     updatePost.mutate(updatedPost);
   };
@@ -105,14 +118,13 @@ export default function PostEdit() {
         </FormItem>
         <FormItem>
           <label>내용:</label>
-          <Textarea value={content} onChange={handleContentChange} />
+          <PostImg onContentChange={handleContentChange} />
         </FormItem>
         <SubmitButton type="submit">수정 완료</SubmitButton>
       </Form>
     </Container>
   );
 }
-
 const Container = styled.div`
   padding: 20px;
 `;

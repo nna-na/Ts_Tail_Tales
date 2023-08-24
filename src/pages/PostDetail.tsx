@@ -5,11 +5,13 @@ import axios from "axios";
 import styled from "styled-components";
 import Create from "../components/comments/Create";
 import Comment from "../components/comments/Comment"; // 수정된 Comment 컴포넌트 임포트
+import ReactHtmlParser from "react-html-parser";
 
 interface Post {
   id: number;
   title: string;
   content: string;
+  userNickname: string; // 게시물 작성자 닉네임 추가
 }
 
 export default function PostDetail() {
@@ -78,17 +80,29 @@ export default function PostDetail() {
     return null;
   }
 
+  // 사용자 닉네임과 게시물 작성자 닉네임 비교
+  const isUserAuthorized =
+    post.userNickname === sessionStorage.getItem("userNickname");
+
   return (
     <Container>
       <h2>디테일 페이지</h2>
+      <p>{post.userNickname}님의 글입니다.</p>
       <h3>{post.title}</h3>
-      <p>{post.content}</p>
+      {/* <p>{post.content}</p> */}
+      {ReactHtmlParser(post.content)} {/* post.content를 그대로 출력 */}
       <ButtonContainer>
-        <EditButton to={`/post-edit/${post.id}`}>수정</EditButton>
-        <DeleteButton onClick={() => deletePost.mutate()}>삭제</DeleteButton>
+        {isUserAuthorized && (
+          <>
+            <EditButton to={`/post-edit/${post.id}`}>수정</EditButton>
+            <DeleteButton onClick={() => deletePost.mutate()}>
+              삭제
+            </DeleteButton>
+          </>
+        )}
       </ButtonContainer>
       <p>댓글</p>
-      <Create onCommentAdded={refreshPostData} />
+      <Create onCommentAdded={refreshPostData} postId={post.id} />
       {/* 댓글 목록을 Comment 컴포넌트에 전달합니다 */}
       <Comment comments={comments} /> {/* 댓글 목록을 전달 */}
     </Container>

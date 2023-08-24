@@ -27,16 +27,18 @@ export default function Create({ onCommentAdded }: CreateProps) {
 
   // 로그인/로그아웃 이벤트 핸들링
   useEffect(() => {
-    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        setUser(session.user);
-        sessionStorage.setItem("user", JSON.stringify(session.user));
-      } else if (event === "SIGNED_OUT") {
-        setUser(null);
-        setUserNickname(null);
-        sessionStorage.removeItem("user");
+    const authSubscription = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN" && session) {
+          setUser(session.user);
+          sessionStorage.setItem("user", JSON.stringify(session.user));
+        } else if (event === "SIGNED_OUT") {
+          setUser(null);
+          setUserNickname(null);
+          sessionStorage.removeItem("user");
+        }
       }
-    });
+    );
 
     return () => {
       authSubscription.data.subscription.unsubscribe();
@@ -51,9 +53,16 @@ export default function Create({ onCommentAdded }: CreateProps) {
     }
   }, [user]); // user 상태가 변경될 때마다 실행
 
-  const createCommentMutation = useMutation<void, Error, { title: string; content: string }>(
+  const createCommentMutation = useMutation<
+    void,
+    Error,
+    { title: string; content: string }
+  >(
     async (newComment) => {
-      await axios.post("http://localhost:4000/comments", newComment);
+      await axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/comments`,
+        newComment
+      );
     },
     {
       onSuccess: () => {
@@ -106,8 +115,16 @@ export default function Create({ onCommentAdded }: CreateProps) {
   return (
     <CreateContainer>
       <CreateForm onSubmit={handleSubmit}>
-        <CreateInput placeholder="제목" value={title} onChange={(e) => setTitle(e.target.value)} />
-        <CreateTextarea placeholder="내용" value={content} onChange={(e) => setContent(e.target.value)} />
+        <CreateInput
+          placeholder="제목"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <CreateTextarea
+          placeholder="내용"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+        />
         <CreateButton type="submit">작성</CreateButton>
       </CreateForm>
     </CreateContainer>

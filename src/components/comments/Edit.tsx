@@ -12,7 +12,15 @@ interface Comment {
   date: string;
 }
 
-export default function Edit({ id, userId, onUpdateComplete }: { id: number; userId: number; onUpdateComplete: () => void }) {
+export default function Edit({
+  id,
+  userId,
+  onUpdateComplete,
+}: {
+  id: number;
+  userId: number;
+  onUpdateComplete: () => void;
+}) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -22,13 +30,18 @@ export default function Edit({ id, userId, onUpdateComplete }: { id: number; use
     isError,
     error,
   } = useQuery<Comment>(["comments", id], async () => {
-    const response = await axios.get(`http://localhost:4000/comments/${id}`);
+    const response = await axios.get(
+      `${process.env.REACT_APP_SERVER_URL}/comments/${id}`
+    );
     return response.data;
   });
 
   const updateComment = useMutation<Comment, unknown, Comment>(
     async (updatedComment) => {
-      const response = await axios.put(`http://localhost:4000/comments/${id}`, updatedComment);
+      const response = await axios.put(
+        `${process.env.REACT_APP_SERVER_URL}/comments/${id}`,
+        updatedComment
+      );
       return response.data;
     },
     {

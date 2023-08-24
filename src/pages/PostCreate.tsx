@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { nanoid } from "nanoid";
 
 export default function PostCreate() {
   const [title, setTitle] = useState("");
@@ -34,8 +35,10 @@ export default function PostCreate() {
     try {
       // JSON 서버에 데이터 추가를 위한 POST 요청 보내기
       const response = await axios.post("http://localhost:4000/posts", {
+        id: nanoid(),
         title,
         content,
+        date: new Date().toISOString(),
       });
 
       console.log("게시글 작성 결과:", response.data);

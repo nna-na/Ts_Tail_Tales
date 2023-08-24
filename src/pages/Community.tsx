@@ -5,10 +5,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 
+interface Comment {
+  id: number;
+  content: string;
+  userNickname: string;
+}
+
 interface Post {
   id: number;
+  author: string;
   title: string;
   content: string;
+  comments: Comment[]; // 댓글 배열 추가
 }
 
 export default function Community() {
@@ -20,7 +28,7 @@ export default function Community() {
 
   const fetchPosts = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/posts");
+      const response = await axios.get("http://localhost:4000/posts?_embed=comments"); // comments 데이터도 함께 가져오도록 변경
       setPosts(response.data);
     } catch (error) {
       console.error("데이터 불러오기 오류:", error);
@@ -105,9 +113,19 @@ export default function Community() {
           <Link to={`/post-detail/${post.id}`}>
             <PostTitle>{post.title}</PostTitle>
             <PostContent>{post.content}</PostContent>
+            <div>{post.author}</div>
           </Link>
           <Link to={`/post-edit/${post.id}`}>수정</Link>
           <button onClick={() => deletePost.mutate(post)}>삭제</button>
+          <div>
+            {/* 댓글 표시 부분 */}
+            {post.comments.map((comment) => (
+              <CommentBox key={comment.id}>
+                <CommentContent>{comment.content}</CommentContent>
+                <div>{comment.userNickname}</div>
+              </CommentBox>
+            ))}
+          </div>
         </PostBox>
       ))}
     </Container>
@@ -132,4 +150,15 @@ const PostTitle = styled.h2`
 const PostContent = styled.p`
   font-size: 1rem;
   color: #333;
+`;
+
+const CommentBox = styled.div`
+  border: 1px solid lightgray;
+  padding: 5px;
+  margin-top: 5px;
+`;
+
+const CommentContent = styled.p`
+  font-size: 0.9rem;
+  color: #555;
 `;

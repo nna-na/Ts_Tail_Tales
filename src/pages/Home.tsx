@@ -7,7 +7,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import CustomSlider from "../components/Slider";
 import Pagination from "../components/Pagination";
-
 function Home() {
   const navigate = useNavigate();
   const [data, setData] = useState<Array<AnimalShelter> | null>(null);
@@ -19,7 +18,6 @@ function Home() {
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedBreed, setSelectedBreed] = useState("");
-
   const settings = {
     dots: true,
     infinite: true,
@@ -27,7 +25,6 @@ function Home() {
     slidesToShow: 3,
     slidesToScroll: 3,
   };
-
   useEffect(() => {
     const fetchDataFromApi = async () => {
       try {
@@ -47,7 +44,6 @@ function Home() {
     };
     fetchDataFromApi();
   }, []);
-
   const handleFilter = () => {
     setCurrentPage(1);
   };
@@ -61,15 +57,12 @@ function Home() {
     const endOfNotice = new Date(formatDate(item.PBLANC_END_DE));
     const fiveDaysAfter = new Date(today);
     fiveDaysAfter.setDate(fiveDaysAfter.getDate() + 5);
-
     return endOfNotice <= fiveDaysAfter;
   });
-
   const filteredItems = data.filter((item) => {
     let matchesDate = true;
     let matchesLocation = true;
     let matchesBreed = true;
-
     if (selectedBeginDate && selectedEndDate) {
       matchesDate =
         formatDate(item.RECEPT_DE) >= selectedBeginDate &&
@@ -85,9 +78,7 @@ function Home() {
     }
     return matchesDate && matchesLocation && matchesBreed;
   });
-
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
-
   return (
     <div className="Home">
       <div>공고 마감일이 얼마남지않은 게시물 필터링</div>
@@ -145,7 +136,6 @@ function Home() {
   );
 }
 export default Home;
-
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;

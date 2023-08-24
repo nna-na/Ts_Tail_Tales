@@ -84,6 +84,7 @@ function Layout() {
           padding: "24px",
           backgroundColor: "#F8B3B3",
           color: "white",
+          zIndex: 1,
         }}
       >
         <Link to="/" style={{ color: "black", textDecoration: "none" }}>

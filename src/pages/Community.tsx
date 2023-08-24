@@ -28,7 +28,9 @@ export default function Community() {
 
   const fetchPosts = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/posts?_embed=comments"); // comments 데이터도 함께 가져오도록 변경
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}/posts?_embed=comments`
+      ); // comments 데이터도 함께 가져오도록 변경
       setPosts(response.data);
     } catch (error) {
       console.error("데이터 불러오기 오류:", error);
@@ -43,7 +45,9 @@ export default function Community() {
     ["posts", id],
     async () => {
       if (id) {
-        const response = await axios.get(`http://localhost:4000/posts/${id}`);
+        const response = await axios.get(
+          `${process.env.REACT_APP_SERVER_URL}/posts/${id}`
+        );
         return response.data;
       }
     },
@@ -55,7 +59,9 @@ export default function Community() {
   //삭제 버튼
   const deletePost = useMutation(
     async (post: any) => {
-      await axios?.delete(`http://localhost:4000/posts/${post.id}`);
+      await axios?.delete(
+        `${process.env.REACT_APP_SERVER_URL}/posts/${post.id}`
+      );
     },
     {
       onMutate: async (post) => {
@@ -67,12 +73,15 @@ export default function Community() {
         const originalPost = queryClient.getQueryData(["posts", id]);
 
         // 포스트 목록 캐시에서 삭제하려는 포스트를 제거
-        queryClient.setQueryData(["posts", id], (prevPosts: Post[] | undefined) => {
-          if (prevPosts) {
-            return prevPosts.filter((p) => p.id !== post.id);
+        queryClient.setQueryData(
+          ["posts", id],
+          (prevPosts: Post[] | undefined) => {
+            if (prevPosts) {
+              return prevPosts.filter((p) => p.id !== post.id);
+            }
+            return [];
           }
-          return [];
-        });
+        );
 
         // 반환하여 적절한 시기에 캐시를 롤백
         return { originalPost };

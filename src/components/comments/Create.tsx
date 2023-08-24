@@ -3,21 +3,20 @@ import { useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import styled from "styled-components";
 import { nanoid } from "nanoid";
-import { User } from "@supabase/supabase-js"; // User 타입 가져오기
+import { User } from "@supabase/supabase-js";
 import { supabase } from "../../supabase";
 
 interface CreateProps {
   onCommentAdded: () => void;
+  postId: string; // postId를 추가
 }
 
-export default function Create({ onCommentAdded }: CreateProps) {
-  const [title, setTitle] = useState("");
+export default function Create({ onCommentAdded, postId }: CreateProps) {
   const [content, setContent] = useState("");
-  const [user, setUser] = useState<User | null>(null); // 사용자 정보 상태
-  const [userNickname, setUserNickname] = useState<string | null>(null); // 사용자 닉네임 상태
+  const [user, setUser] = useState<User | null>(null);
+  const [userNickname, setUserNickname] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  // 사용자 정보 가져오기
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
@@ -25,7 +24,6 @@ export default function Create({ onCommentAdded }: CreateProps) {
     }
   }, []);
 
-  // 로그인/로그아웃 이벤트 핸들링
   useEffect(() => {
     const authSubscription = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -45,18 +43,28 @@ export default function Create({ onCommentAdded }: CreateProps) {
     };
   }, []);
 
-  // 사용자 정보 설정
   useEffect(() => {
     if (user) {
-      setUserNickname(user.user_metadata.user_name); // 사용자 닉네임 설정
-      sessionStorage.setItem("userNickname", user.user_metadata.user_name); // 세션 스토리지에 사용자 닉네임 저장
+      setUserNickname(
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
+      sessionStorage.setItem(
+        "userNickname",
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
     }
-  }, [user]); // user 상태가 변경될 때마다 실행
+  }, [user]);
 
   const createCommentMutation = useMutation<
     void,
     Error,
-    { title: string; content: string }
+    {
+      id: string;
+      content: string;
+      userNickname: string;
+      date: string;
+      postId: string;
+    } // postId 추가
   >(
     async (newComment) => {
       await axios.post(
@@ -79,16 +87,6 @@ export default function Create({ onCommentAdded }: CreateProps) {
       return;
     }
 
-    if (!title && !content) {
-      window.alert("제목과 내용을 입력해주세요.");
-      return;
-    }
-
-    if (!title) {
-      window.alert("제목을 입력해주세요.");
-      return;
-    }
-
     if (!content) {
       window.alert("내용을 입력해주세요.");
       return;
@@ -96,7 +94,7 @@ export default function Create({ onCommentAdded }: CreateProps) {
 
     const newComment = {
       id: nanoid(),
-      title,
+      postId,
       content,
       userNickname: userNickname || user?.user_metadata.full_name,
       date: new Date().toISOString(),
@@ -105,8 +103,8 @@ export default function Create({ onCommentAdded }: CreateProps) {
     try {
       await createCommentMutation.mutateAsync(newComment);
       alert("댓글이 작성되었습니다.");
-      setTitle("");
       setContent("");
+      onCommentAdded();
     } catch (error) {
       console.error("댓글 작성 오류:", error);
     }
@@ -115,11 +113,6 @@ export default function Create({ onCommentAdded }: CreateProps) {
   return (
     <CreateContainer>
       <CreateForm onSubmit={handleSubmit}>
-        <CreateInput
-          placeholder="제목"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
         <CreateTextarea
           placeholder="내용"
           value={content}
@@ -139,12 +132,6 @@ const CreateForm = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const CreateInput = styled.input`
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
 `;
 
 const CreateTextarea = styled.textarea`

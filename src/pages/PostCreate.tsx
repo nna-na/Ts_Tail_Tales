@@ -1,20 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { nanoid } from "nanoid";
+import { User } from "@supabase/supabase-js"; // User 타입 가져오기
+import { supabase } from "../supabase";
+import PostImg from "../components/posts/PostImg";
 
 export default function PostCreate() {
   const [title, setTitle] = useState("");
+  const [user, setUser] = useState<User | null>(null);
+  const [userNickname, setUserNickname] = useState<string | null>(null);
   const [content, setContent] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // 세션 스토리지에서 사용자 정보 가져오기
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setUser(user);
+
+      // 여기에서 사용자 닉네임을 가져오는 API 호출 또는 Supabase에서 사용자 정보를 추가로 가져올 수 있습니다.
+      // 예를 들어, 사용자 닉네임을 가져오는 API 호출 예제:
+      // axios.get(`${process.env.REACT_APP_SERVER_URL}/getUserNickname?id=${user.id}`)
+      //   .then((response) => {
+      //     const nickname = response.data.nickname;
+      //     setUserNickname(nickname);
+      //   })
+      //   .catch((error) => {
+      //     console.error("사용자 닉네임 가져오기 오류:", error);
+      //   });
+    }
+  }, []);
+  useEffect(() => {
+    if (user) {
+      setUserNickname(
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
+      sessionStorage.setItem(
+        "userNickname",
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
+    }
+  }, [user]);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
 
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
+  // PostImg 컴포넌트로부터 에디터 내용 변경 시 실행되는 함수
+  const handleContentChange = (newContent: string) => {
+    setContent(newContent);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,12 +78,15 @@ export default function PostCreate() {
           title,
           content,
           date: new Date().toISOString(),
+          userNickname: userNickname, // 사용자 닉네임 추가
         }
       );
 
+      const postId = response.data.id; // 새로 생성된 게시물의 ID 저장
       console.log("게시글 작성 결과:", response.data);
       window.alert("작성이 완료되었습니다.");
       navigate("/community");
+      console.log("postid", postId);
 
       // 이후 필요한 동작을 수행하십시오.
       setTitle("");
@@ -66,7 +106,8 @@ export default function PostCreate() {
         </FormItem>
         <FormItem>
           <label>내용:</label>
-          <Textarea value={content} onChange={handleContentChange} />
+          {/* <Textarea value={content} onChange={handleContentChange} /> */}
+          <PostImg onContentChange={handleContentChange} />
         </FormItem>
         <SubmitButton type="submit">작성</SubmitButton>
       </Form>
@@ -96,12 +137,12 @@ const Input = styled.input`
   margin-bottom: 10px;
 `;
 
-const Textarea = styled.textarea`
-  width: 1000px;
-  height: 300px;
-  padding: 10px;
-  margin-bottom: 10px;
-`;
+// const Textarea = styled.textarea`
+//   width: 1000px;
+//   height: 300px;
+//   padding: 10px;
+//   margin-bottom: 10px;
+// `;
 
 const SubmitButton = styled.button`
   padding: 10px 20px;

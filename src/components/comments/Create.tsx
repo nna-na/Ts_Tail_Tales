@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
-import axios from "axios";
 import styled from "styled-components";
-import { nanoid } from "nanoid";
+import { v4 as uuid } from "uuid"; // uuid 패키지에서 v4 함수 임포트
 import { User } from "@supabase/supabase-js";
 import { supabase } from "../../supabase";
 
 interface CreateProps {
   onCommentAdded: () => void;
-  postId: string; // postId를 추가
+  postId: string;
 }
 
 export default function Create({ onCommentAdded, postId }: CreateProps) {
@@ -64,13 +63,25 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       userNickname: string;
       date: string;
       postId: string;
-    } // postId 추가
+    }
   >(
     async (newComment) => {
-      await axios.post(
-        `${process.env.REACT_APP_SERVER_URL}/comments`,
-        newComment
-      );
+      try {
+        const { data, error } = await supabase
+          .from("comments")
+          .upsert([newComment]);
+
+        if (error) {
+          console.error("댓글 작성 중 오류 발생:", error);
+          throw new Error("댓글 작성 오류");
+        }
+
+        // 반환값으로 Promise<void> 사용
+        return;
+      } catch (error) {
+        console.error("댓글 작성 중 오류 발생:", error);
+        throw error;
+      }
     },
     {
       onSuccess: () => {
@@ -93,11 +104,11 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
     }
 
     const newComment = {
-      id: nanoid(),
+      id: uuid(),
       postId,
       content,
       userNickname: userNickname || user?.user_metadata.full_name,
-      date: new Date().toISOString(),
+      date: new Date().toISOString().slice(0, 19).replace("T", " "), // 현재 시간을 문자열로 변환
     };
 
     try {

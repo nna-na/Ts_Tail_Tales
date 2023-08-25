@@ -1,38 +1,81 @@
 import React, { useState } from "react";
-import { useQuery } from "react-query";
-import axios from "axios";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import Edit from "./Edit";
 import Delete from "./Delete";
+import { supabase } from "../../supabase"; // Supabase 클라이언트 임포트
 
 interface CommentProps {
-  comments: Comment[];
+  comments?: any[];
 }
 
-export default function Comment({ comments }: CommentProps) {
+export default function Comment({ comments: commentsProp }: CommentProps) {
   const { id } = useParams<{ id: string }>();
-  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [deleted, setDeleted] = useState(false);
-
-  const { data, isLoading, isError, error } = useQuery(
+  const queryClient = useQueryClient();
+  console.log(id);
+  const {
+    data: commentData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery(
     ["comments", id],
     async () => {
-      const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}/comments?postId=${id}` // 해당 게시물의 댓글만 가져오도록 수정
-      );
-      return response.data;
+      const { data, error } = await supabase
+        .from("comments")
+        .select("*")
+        .eq("postId", id)
+        .order("date", { ascending: true });
+
+      if (error) {
+        throw error;
+      }
+      console.log(id);
+      console.log(data);
+
+      return data;
     },
     {
       enabled: !!id,
     }
   );
 
-  const handleDelete = () => {
-    setDeleted(true);
-  };
+  console.log("comment", commentData);
+  console.error(error);
 
-  const handleUpdateComplete = () => {
-    setEditingCommentId(null);
+  const updateCommentMutation = useMutation(
+    async (updatedComment) => {
+      const { data, error } = await supabase
+        .from("comments")
+        .upsert([updatedComment]);
+
+      if (error) {
+        console.error("댓글 수정 중 오류 발생:", error);
+        throw error;
+      }
+
+      return data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["comments", id]);
+        setEditingCommentId(null);
+      },
+    }
+  );
+
+  const handleDelete = async (commentId: string) => {
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      try {
+        await supabase.from("comments").delete().eq("id", commentId);
+        queryClient.invalidateQueries(["comments", id]);
+        window.location.reload();
+      } catch (error) {
+        console.error("댓글 삭제 오류:", error);
+      }
+    }
   };
 
   if (isLoading) {
@@ -43,37 +86,50 @@ export default function Comment({ comments }: CommentProps) {
     return <div>{(error as Error).message}</div>;
   }
 
-  if (!data && !deleted) {
+  if (!commentData) {
+    console.log("commentData is empty or undefined:", commentData);
     return <div>게시물을 찾을 수 없습니다.</div>;
   }
 
-  const userNickname = sessionStorage.getItem("userNickname"); // 현재 사용자의 닉네임 가져오기
+  const userNickname = sessionStorage.getItem("userNickname");
 
   return (
     <div>
       {deleted ? (
-        <div></div>
+        <div>로딩 중</div>
       ) : (
         <>
-          {data.map((comment: any) => (
+          {commentData?.map((comment) => (
             <div key={comment.id}>
               <div>작성자: {comment.userNickname}님</div>
-              <div>{comment.date}</div>
+              <div>
+                {new Date(comment.date).toLocaleString("ko-KR", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </div>
               <div>댓글: {comment.content}</div>
               {userNickname === comment.userNickname && (
-                // 사용자 닉네임과 댓글 작성자 닉네임을 비교하여 수정 및 삭제 버튼 표시
                 <>
                   {editingCommentId === comment.id ? (
                     <Edit
                       id={comment.id}
-                      onUpdateComplete={handleUpdateComplete}
+                      onUpdateComplete={() => {
+                        queryClient?.invalidateQueries(["comments", id]);
+                        setEditingCommentId(null);
+                      }}
                     />
                   ) : (
                     <>
                       <button onClick={() => setEditingCommentId(comment.id)}>
                         수정
                       </button>
-                      <Delete id={comment.id} onDelete={handleDelete} />
+                      <button onClick={() => handleDelete(comment.id)}>
+                        삭제
+                      </button>
                     </>
                   )}
                 </>

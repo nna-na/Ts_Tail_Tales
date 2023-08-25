@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import axios from "axios";
+import { supabase } from "../../supabase";
 import styled from "styled-components";
 
 interface Comment {
-  id: string; // id 필드를 문자열로 변경
+  id: string;
   postId?: string;
   content: string;
   userNickname: string;
@@ -28,19 +28,48 @@ export default function Edit({
     isError,
     error,
   } = useQuery<Comment>(["comments", id], async () => {
-    const response = await axios.get(
-      `${process.env.REACT_APP_SERVER_URL}/comments/${id}`
-    );
-    return response.data;
+    const { data, error } = await supabase
+      .from("comments")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
   });
 
-  const updateComment = useMutation<Comment, unknown, Comment>(
+  const updateComment = useMutation<Comment, Error, Comment>(
     async (updatedComment) => {
-      const response = await axios.put(
-        `${process.env.REACT_APP_SERVER_URL}/comments/${id}`,
-        updatedComment
-      );
-      return response.data;
+      try {
+        // 기존 댓글 삭제
+        const { error: deleteError } = await supabase
+          .from("comments")
+          .delete()
+          .eq("id", updatedComment.id);
+
+        if (deleteError) {
+          console.error("댓글 삭제 중 오류 발생:", deleteError);
+          throw deleteError;
+        }
+
+        // 댓글 업데이트
+        const { data, error } = await supabase
+          .from("comments")
+          .upsert([updatedComment]);
+
+        if (error) {
+          console.error("댓글 수정 중 오류 발생:", error);
+          throw error;
+        }
+
+        return updatedComment;
+      } catch (error) {
+        console.error("댓글 수정 중 오류 발생:", error);
+        throw error;
+      }
     },
     {
       onSuccess: (updatedComment) => {
@@ -48,8 +77,6 @@ export default function Edit({
         queryClient.invalidateQueries(["comments", id]);
         window.alert("댓글 수정이 완료되었습니다.");
         onUpdateComplete();
-        // navigate(`/post-detail/${id}`);
-        window.location.reload();
       },
     }
   );
@@ -77,11 +104,10 @@ export default function Edit({
     }
 
     const updatedComment: Comment = {
-      id: id.toString(),
+      id,
       postId: initialData?.postId,
       content,
       userNickname,
-
       date: new Date().toISOString(),
     };
 
@@ -92,10 +118,9 @@ export default function Edit({
       return;
     }
 
-    // 수정 완료 후 데이터 다시 불러오기
     queryClient.invalidateQueries(["comments", id]);
     onUpdateComplete();
-    navigate(`/post-detail/${id}`);
+    window.location.reload();
   };
 
   if (isLoading) {

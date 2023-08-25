@@ -79,6 +79,7 @@ function Layout() {
       <header
         style={{
           position: "fixed",
+          height: "30px",
           left: 0,
           right: 0,
           display: "flex",

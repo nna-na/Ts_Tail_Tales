@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import styled from "styled-components";
 import PostImg from "../components/posts/PostImg";
+import { supabase } from "../supabase"; // Supabase 클라이언트 임포트
 
 interface Post {
   id: number;
@@ -18,36 +19,55 @@ export default function PostEdit() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
+  // 게시물 데이터를 불러오는 쿼리
   const { data, isLoading, isError, error } = useQuery(
     ["posts", id],
     async () => {
-      const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}/posts/${id}`
-      );
-      return response.data;
+      const { data } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      return data;
     }
   );
 
-  const updatePost = useMutation(
-    async (updatedPost: Post) => {
-      await axios.put(
-        `${process.env.REACT_APP_SERVER_URL}/posts/${id}`,
-        updatedPost
-      );
+  // 게시물 삭제를 처리하는 뮤테이션
+  const deletePost = useMutation(
+    async () => {
+      await supabase.from("posts").delete().eq("id", id);
     },
     {
       onSuccess: () => {
+        // 삭제 성공 후 게시글 추가 로직을 수행합니다.
+        handleAddNewPost();
         queryClient.invalidateQueries(["posts", id]);
-        window.alert("수정이 완료되었습니다.");
-        navigate(`/post-detail/${id}`);
       },
     }
   );
 
+  // 게시글 추가를 처리하는 함수
+  const handleAddNewPost = async () => {
+    // 업데이트할 게시물 객체 생성
+    const updatedPost: Post = {
+      id: data.id,
+      title,
+      content,
+      date: new Date().toISOString(),
+      userNickname, // 상태로부터 사용자 닉네임 가져옴
+    };
+
+    // 게시물 추가 뮤테이션 실행
+    await supabase.from("posts").upsert([updatedPost]);
+  };
+
+  // 컴포넌트 상태
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [userNickname, setUserNickname] = useState(""); // 사용자 닉네임 상태 추가
 
+  // 데이터 로딩 후 게시물 정보를 상태로 설정
   useEffect(() => {
     if (data) {
       setTitle(data.title);
@@ -62,14 +82,17 @@ export default function PostEdit() {
     }
   }, [data]);
 
+  // 제목 변경 핸들러
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
 
+  // 내용 변경 핸들러
   const handleContentChange = (newContent: string) => {
     setContent(newContent);
   };
 
+  // 수정 버튼 클릭 핸들러
   const handleUpdate = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -86,14 +109,12 @@ export default function PostEdit() {
       return;
     }
 
-    const updatedPost: Post = {
-      id: data.id,
-      title,
-      content,
-      date: new Date().toISOString(),
-      userNickname, // 상태로부터 사용자 닉네임 가져옴
-    };
-    updatePost.mutate(updatedPost);
+    const inCinfirmed = window.confirm("정말로 수정하시겠습니까?");
+
+    if (inCinfirmed) deletePost.mutate();
+
+    // 수정이 완료되면 PostDetail 페이지로 돌아감
+    navigate(`/post-detail/${id}`);
   };
 
   if (isLoading) {
@@ -129,6 +150,7 @@ export default function PostEdit() {
     </Container>
   );
 }
+
 const Container = styled.div`
   padding: 20px;
 `;

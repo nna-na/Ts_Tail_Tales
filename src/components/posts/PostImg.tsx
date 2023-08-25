@@ -7,10 +7,14 @@ Quill.register("modules/ImageResize", ImageResize);
 
 interface PostImgProps {
   onContentChange: (newContent: string) => void;
+  initialContent: string;
 }
 
-export default function PostImg({ onContentChange }: PostImgProps) {
-  const [content, setContent] = useState(""); // 초기 내용 상태
+export default function PostImg({
+  onContentChange,
+  initialContent,
+}: PostImgProps) {
+  const [content, setContent] = useState(initialContent); // 초기 내용 상태
 
   const handleContentChange = (newContent: string) => {
     setContent(newContent); // 상태 업데이트

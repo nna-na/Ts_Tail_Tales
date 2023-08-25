@@ -45,7 +45,7 @@ export default function PostEdit() {
   );
 
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState(data.content);
+  const [content, setContent] = useState("");
   const [userNickname, setUserNickname] = useState(""); // 사용자 닉네임 상태 추가
 
   useEffect(() => {
@@ -116,9 +116,13 @@ export default function PostEdit() {
           <label>제목:</label>
           <Input type="text" value={title} onChange={handleTitleChange} />
         </FormItem>
+
         <FormItem>
           <label>내용:</label>
-          <PostImg onContentChange={handleContentChange} />
+          <PostImg
+            onContentChange={handleContentChange}
+            initialContent={data.content}
+          />
         </FormItem>
         <SubmitButton type="submit">수정 완료</SubmitButton>
       </Form>

@@ -69,11 +69,6 @@ export default function Community() {
     return <div>게시물을 찾을 수 없습니다.</div>;
   }
 
-  const imageSizeStyle = {
-    maxWidth: "100%",
-    height: "auto",
-  };
-
   return (
     <Container>
       <div>커뮤니티</div>
@@ -91,7 +86,10 @@ export default function Community() {
                         <img
                           key={index}
                           {...node.attribs}
-                          style={imageSizeStyle}
+                          style={{
+                            width: "250px",
+                            height: "200px",
+                          }}
                         />
                       );
                     } else {
@@ -126,11 +124,13 @@ const PostTitle = styled.h2`
 `;
 
 const PostContent = styled.p`
-  width: 200px;
-  height: 200px;
+  max-width: 100%; /* Adjust the maximum width as needed */
   font-size: 1rem;
   color: #333;
   margin-bottom: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const CommentBox = styled.div`
@@ -142,4 +142,9 @@ const CommentBox = styled.div`
 const CommentContent = styled.p`
   font-size: 0.9rem;
   color: #555;
+`;
+
+const img = styled.img`
+  width: 1000px;
+  height: 400px;
 `;

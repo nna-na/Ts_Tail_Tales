@@ -7,7 +7,7 @@ import { User } from "@supabase/supabase-js"; // User 타입 가져오기
 import { supabase } from "../supabase";
 import PostImg from "../components/posts/PostImg";
 
-export default function PostCreate() {
+export default function PostCreate(data: any) {
   const [title, setTitle] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [userNickname, setUserNickname] = useState<string | null>(null);
@@ -53,6 +53,12 @@ export default function PostCreate() {
   const handleContentChange = (newContent: string) => {
     setContent(newContent);
   };
+
+  useEffect(() => {
+    if (data && data.initialContent) {
+      setContent(data.initialContent);
+    }
+  }, [data]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,7 +113,10 @@ export default function PostCreate() {
         <FormItem>
           <label>내용:</label>
           {/* <Textarea value={content} onChange={handleContentChange} /> */}
-          <PostImg onContentChange={handleContentChange} />
+          <PostImg
+            onContentChange={handleContentChange}
+            initialContent={data.content}
+          />
         </FormItem>
         <SubmitButton type="submit">작성</SubmitButton>
       </Form>

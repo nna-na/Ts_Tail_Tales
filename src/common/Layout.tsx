@@ -8,8 +8,7 @@ function Layout() {
   const [userNickname, setUserNickname] = useState<string | null>(null);
 
   useEffect(() => {
-    // 되긴 되는데 괜찮은데 병수튜터님께 여쭤보기
-    const storedUser = sessionStorage.getItem("user"); // 세션 스토리지에서 사용자 정보 가져오기
+    const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -18,15 +17,14 @@ function Layout() {
       (event, session) => {
         if (event === "SIGNED_IN" && session) {
           setUser(session.user);
-          sessionStorage.setItem("user", JSON.stringify(session.user)); // 세션 스토리지에 사용자 정보 저장
+          sessionStorage.setItem("user", JSON.stringify(session.user));
         } else if (event === "SIGNED_OUT") {
           setUser(null);
-          sessionStorage.removeItem("user"); // 로그아웃 시 세션 스토리지에서 사용자 정보 삭제
+          sessionStorage.removeItem("user");
         }
       }
     );
 
-    // 컴포넌트가 언마운트될 때 이벤트 구독 해제
     return () => {
       authSubscription.data.subscription.unsubscribe();
     };
@@ -44,10 +42,10 @@ function Layout() {
     }
   }, [user]);
 
+  // renderLoginButton 함수 정의
   const renderLoginButton = () => {
     if (user) {
       return (
-        // <button></button>
         <Link
           to="/"
           onClick={async () => {
@@ -85,6 +83,7 @@ function Layout() {
           right: 0,
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center", // 수직 가운데 정렬을 위해 추가
           padding: "24px",
           backgroundColor: "#F8B3B3",
           color: "white",
@@ -98,14 +97,35 @@ function Layout() {
           style={{
             display: "flex",
             gap: "12px",
+            alignItems: "center", // 수직 가운데 정렬을 위해 추가
           }}
         >
           {userNickname || user?.user_metadata.full_name ? (
-            <span>
-              {userNickname
-                ? `${userNickname}님, 환영합니다.`
-                : `${user?.user_metadata.full_name}님, 환영합니다.`}
-            </span>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  marginRight: "10px",
+                }}
+              >
+                <img
+                  src={
+                    user?.user_metadata.avatar_url ||
+                    process.env.PUBLIC_URL + "/image/profile.jpg" // 기본 이미지 경로
+                  }
+                  alt="User Avatar"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </div>
+              <span>
+                {userNickname
+                  ? `${userNickname}님, 환영합니다.`
+                  : `${user?.user_metadata.full_name}님, 환영합니다.`}
+              </span>
+            </div>
           ) : null}
           <Link to="/home" style={{ color: "black", textDecoration: "none" }}>
             기다리는 친구들 |
@@ -122,8 +142,7 @@ function Layout() {
           >
             about us |
           </Link>
-
-          {renderLoginButton()}
+          {renderLoginButton()} {/* 이 위치에서 renderLoginButton 함수 호출 */}
         </div>
       </header>
       <div

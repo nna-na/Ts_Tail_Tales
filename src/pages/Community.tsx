@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import ReactHtmlParser from "react-html-parser";
 import { supabase } from "../supabase";
@@ -47,6 +46,18 @@ export default function Community() {
     fetchPosts();
   }, []);
 
+  // HTML 내용에서 이미지를 추출하는 함수
+  const extractImages = (content: string): string[] => {
+    const imgTags = content.match(/<img[^>]+src="([^">]+)"/g);
+    if (imgTags) {
+      return imgTags.map((tag) => {
+        const match = tag.match(/src="([^">]+)"/);
+        return match ? match[1] : "";
+      });
+    }
+    return [];
+  };
+
   return (
     <Container>
       <div>커뮤니티</div>
@@ -55,57 +66,16 @@ export default function Community() {
         <PostBox key={post.id}>
           <Link to={`/post-detail/${post.id}`}>
             <PostTitle>{post.title}</PostTitle>
-            <PostContent>
-              {
-                ReactHtmlParser(post.content, {
-                  transform: (node, index) => {
-                    if (node.type === "tag" && node.name === "img") {
-                      const imgUrl = node.attribs.src; // 이미지 URL 추출
-                      return (
-                        // <div key={index} style={{ maxWidth: "100%" }}>
-                        //   <img
-                        //     src={imgUrl}
-                        //     style={{
-                        //       width: "100%",
-                        //       height: "100%",
-                        //       objectFit: "cover", // 이미지 크롭
-                        //     }}
-                        //     alt={`Image ${index}`}
-                        //   />
-                        // </div>
-
-                        // 수진 : 정사각형, 직사각형 사진 크기 조정 때문에 안 예쁘게 나와서 모두
-                        // 사진 크기는 유지하면 정사각형으로 나오게 함.
-                        <div
-                          key={index}
-                          style={{
-                            maxWidth: "100%",
-                            height: 0,
-                            paddingBottom: "100%",
-                            position: "relative",
-                          }}
-                        >
-                          <img
-                            src={imgUrl}
-                            style={{
-                              position: "absolute",
-                              width: "100%",
-                              height: "100%",
-                              top: 0,
-                              left: 0,
-                              objectFit: "cover", // 이미지 크롭
-                            }}
-                            alt={`Image ${index}`}
-                          />
-                        </div>
-                      );
-                    }
-                    return undefined;
-                  },
-                })[0]
-              }{" "}
-              {/* 첫 번째 이미지만 반환 */}
-            </PostContent>
+            <ImgDiv>
+              {/* 이미지가 있을 때만 이미지 표시 */}
+              {extractImages(post.content).length > 0 && (
+                <ImageContainer>
+                  {extractImages(post.content).map((imgUrl, index) => (
+                    <img src={imgUrl} alt={`Image ${index}`} key={index} />
+                  ))}
+                </ImageContainer>
+              )}
+            </ImgDiv>
             <div>{post.author}</div>
           </Link>
         </PostBox>
@@ -124,19 +94,37 @@ const PostBox = styled.div`
   margin-top: 10px;
 `;
 
+const ImgDiv = styled.div`
+  width: 250px; /* 원하는 너비 */
+  height: 250px; /* 원하는 높이 */
+`;
+
 const PostTitle = styled.h2`
   font-size: 1.5rem;
   margin-bottom: 10px;
 `;
 
-const PostContent = styled.p`
+const ImageContainer = styled.div`
   max-width: 100%;
-  font-size: 1rem;
-  color: #333;
-  margin-bottom: 50px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 250px; /* 원하는 너비 */
-  height: 250px; /* 원하는 높이 */
+  height: 0;
+  padding-bottom: 100%;
+  position: relative;
+
+  & img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+  }
 `;
+
+// const Img = styled.img`
+// position: absolute;
+// width: 100%;
+// height: 100%;
+// top: 0;
+// left: 0;
+// object-fit: cover;
+// `;

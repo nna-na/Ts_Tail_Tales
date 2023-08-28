@@ -15,6 +15,7 @@ export interface AnimalShelter {
   ABDM_IDNTFY_NO: string | undefined;
   SIGUN_NM: string;
   PBLANC_END_DE: string;
+  isFavorite?: boolean;
 }
 
 const API_KEY = process.env.REACT_APP_API_KEY;

@@ -101,7 +101,7 @@ function Layout() {
             alignItems: "center", // 수직 가운데 정렬을 위해 추가
           }}
         >
-          {userNickname || user?.user_metadata.full_name ? (
+          {user && (userNickname || user?.user_metadata.full_name) ? (
             <div style={{ display: "flex", alignItems: "center" }}>
               <div
                 style={{
@@ -122,9 +122,12 @@ function Layout() {
                 />
               </div>
               <span>
-                {userNickname
-                  ? `${userNickname}님, 환영합니다.`
-                  : `${user?.user_metadata.full_name}님, 환영합니다.`}
+                {userNickname ? (
+                  <Link to={`/mypage/${user.id}`}>{userNickname}님</Link>
+                ) : (
+                  `${user?.user_metadata.full_name}님`
+                )}
+                , 환영합니다.
               </span>
             </div>
           ) : null}

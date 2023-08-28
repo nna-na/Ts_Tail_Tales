@@ -7,9 +7,13 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import CustomSlider from "../components/Slider";
 import Pagination from "../components/Pagination";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { FavoritesProvider } from "../components/FavoritesContext";
+import { supabase } from "../supabase";
+
 function Home() {
   const navigate = useNavigate();
-  const [data, setData] = useState<Array<AnimalShelter> | null>(null);
+  const [data, setData] = useState<Array<AnimalShelter>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,11 +29,29 @@ function Home() {
     slidesToShow: 3,
     slidesToScroll: 3,
   };
+
+  //로그인 확인용
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  //로그인이 되는 코드
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      console.log({ user });
+      if (user) {
+        setIsLoggedIn(true);
+      }
+    };
+
+    getUser();
+  }, []);
+
   useEffect(() => {
     const fetchDataFromApi = async () => {
       try {
         setError(null);
-        setData(null);
         setLoading(true);
         const fetchedData = await fetchAnimalData();
         setData(fetchedData);
@@ -50,6 +72,7 @@ function Home() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!data) return null;
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const nearingDeadline = data.filter((item) => {
@@ -79,60 +102,122 @@ function Home() {
     return matchesDate && matchesLocation && matchesBreed;
   });
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+
+  const toggleFavorite = async (item: AnimalShelter) => {
+    if (!isLoggedIn) {
+      alert("로그인 후 즐겨찾기를 이용해주세요.");
+      return;
+    }
+
+    try {
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+
+      if (userError) {
+        console.error("Error getting user:", userError);
+        return;
+      }
+
+      const user = userData?.user;
+      const userId = user?.id;
+
+      if (!userId) {
+        console.error("User ID not found.");
+        return;
+      }
+      //이미 즐겨찾기에 등록되어 있는지 확인해보기
+      const isAlreadyFavorited = data.find(
+        (dataItem: AnimalShelter) =>
+          dataItem.ABDM_IDNTFY_NO === item.ABDM_IDNTFY_NO && dataItem.isFavorite
+      );
+
+      const upsertData = isAlreadyFavorited
+        ? { userId: userId, animalId: item.ABDM_IDNTFY_NO, isFavorite: false }
+        : { userId: userId, animalId: item.ABDM_IDNTFY_NO, isFavorite: true };
+
+      const { error } = await supabase.from("favorites").upsert(upsertData);
+
+      if (error) {
+        console.error("Error toggling favorite:", error);
+        return;
+      }
+
+      const updatedData = data.map((dataItem: AnimalShelter) =>
+        dataItem.ABDM_IDNTFY_NO === item.ABDM_IDNTFY_NO
+          ? { ...dataItem, isFavorite: !dataItem.isFavorite }
+          : dataItem
+      );
+
+      setData(updatedData);
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+    }
+  };
   return (
-    <div className="Home">
-      <div>공고 마감일이 얼마남지않은 게시물 필터링</div>
-      <CustomSlider items={nearingDeadline} />
-      <Category
-        query={{
-          PBLANC_BEGIN_DE: selectedBeginDate,
-          PBLANC_END_DE: selectedEndDate,
-          SIGUN_NM: selectedLocation,
-          SPECIES_NM: selectedBreed,
-        }}
-        onChange={(e) => {
-          const { name, value } = e.target;
-          if (name === "PBLANC_BEGIN_DE") {
-            setSelectedBeginDate(value);
-          } else if (name === "PBLANC_END_DE") {
-            setSelectedEndDate(value);
-          } else if (name === "SIGUN_NM") {
-            setSelectedLocation(value);
-          } else if (name === "SPECIES_NM") {
-            setSelectedBreed(value);
-          }
-          handleFilter();
-        }}
-      />
-      <Container>
-        {currentItems?.map((item: AnimalShelter) => (
-          <Box
-            key={item.ABDM_IDNTFY_NO}
-            onClick={() =>
-              navigate(`/detail/${item.ABDM_IDNTFY_NO}`, {
-                state: { item },
-              })
+    <FavoritesProvider>
+      <div className="Home">
+        <div>공고 마감일이 얼마남지않은 게시물 필터링</div>
+        <CustomSlider items={nearingDeadline} />
+        <Category
+          query={{
+            PBLANC_BEGIN_DE: selectedBeginDate,
+            PBLANC_END_DE: selectedEndDate,
+            SIGUN_NM: selectedLocation,
+            SPECIES_NM: selectedBreed,
+          }}
+          onChange={(e) => {
+            const { name, value } = e.target;
+            if (name === "PBLANC_BEGIN_DE") {
+              setSelectedBeginDate(value);
+            } else if (name === "PBLANC_END_DE") {
+              setSelectedEndDate(value);
+            } else if (name === "SIGUN_NM") {
+              setSelectedLocation(value);
+            } else if (name === "SPECIES_NM") {
+              setSelectedBreed(value);
             }
-          >
-            <p>고유 번호 : {item.ABDM_IDNTFY_NO}</p>
-            <PetImg src={item.IMAGE_COURS} alt="Pet Thumbnail" />
-            <p>접수 일지 : {formatDate(item.RECEPT_DE)}</p>
-            <p>품종 : {item.SPECIES_NM}</p>
-            <p>성별 : {item.SEX_NM}</p>
-            <p>발견장소 : {item.DISCVRY_PLC_INFO} </p>
-            <p>특징: {item.SFETR_INFO}</p>
-            <p>상태: {item.STATE_NM}</p>
-            <p>보호 주소:{item.SIGUN_NM} </p>
-          </Box>
-        ))}
-      </Container>
-      {/* 페이지네이션 컴포넌트 추가 */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
-        setCurrentPage={setCurrentPage}
-      />
-    </div>
+            handleFilter();
+          }}
+        />
+        <Container>
+          {currentItems?.map((item: AnimalShelter) => (
+            <Box
+              key={item.ABDM_IDNTFY_NO}
+              onClick={() =>
+                navigate(`/detail/${item.ABDM_IDNTFY_NO}`, {
+                  state: { item },
+                })
+              }
+            >
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFavorite(item);
+                }}
+              >
+                {item.isFavorite ? <FaHeart /> : <FaRegHeart />}
+              </button>
+
+              <p>고유 번호 : {item.ABDM_IDNTFY_NO}</p>
+              <PetImg src={item.IMAGE_COURS} alt="Pet Thumbnail" />
+              <p>접수 일지 : {formatDate(item.RECEPT_DE)}</p>
+              <p>품종 : {item.SPECIES_NM}</p>
+              <p>성별 : {item.SEX_NM}</p>
+              <p>발견장소 : {item.DISCVRY_PLC_INFO} </p>
+              <p>특징: {item.SFETR_INFO}</p>
+              <p>상태: {item.STATE_NM}</p>
+              <p>보호 주소:{item.SIGUN_NM} </p>
+            </Box>
+          ))}
+        </Container>
+        {/* 페이지네이션 컴포넌트 추가 */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
+    </FavoritesProvider>
   );
 }
 export default Home;

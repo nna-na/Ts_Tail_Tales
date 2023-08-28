@@ -56,28 +56,55 @@ export default function Community() {
           <Link to={`/post-detail/${post.id}`}>
             <PostTitle>{post.title}</PostTitle>
             <PostContent>
-              {ReactHtmlParser(post.content, {
-                transform: (node, index) => {
-                  if (node.type === "tag" && node.name === "img") {
-                    if (index === 0) {
+              {
+                ReactHtmlParser(post.content, {
+                  transform: (node, index) => {
+                    if (node.type === "tag" && node.name === "img") {
+                      const imgUrl = node.attribs.src; // 이미지 URL 추출
                       return (
-                        <div key={index} style={{ maxWidth: "100%" }}>
+                        // <div key={index} style={{ maxWidth: "100%" }}>
+                        //   <img
+                        //     src={imgUrl}
+                        //     style={{
+                        //       width: "100%",
+                        //       height: "100%",
+                        //       objectFit: "cover", // 이미지 크롭
+                        //     }}
+                        //     alt={`Image ${index}`}
+                        //   />
+                        // </div>
+
+                        // 수진 : 정사각형, 직사각형 사진 크기 조정 때문에 안 예쁘게 나와서 모두
+                        // 사진 크기는 유지하면 정사각형으로 나오게 함.
+                        <div
+                          key={index}
+                          style={{
+                            maxWidth: "100%",
+                            height: 0,
+                            paddingBottom: "100%",
+                            position: "relative",
+                          }}
+                        >
                           <img
-                            {...node.attribs}
+                            src={imgUrl}
                             style={{
-                              width: "250px",
-                              height: "200px",
+                              position: "absolute",
+                              width: "100%",
+                              height: "100%",
+                              top: 0,
+                              left: 0,
+                              objectFit: "cover", // 이미지 크롭
                             }}
+                            alt={`Image ${index}`}
                           />
                         </div>
                       );
-                    } else {
-                      return null;
                     }
-                  }
-                  return undefined;
-                },
-              })}
+                    return undefined;
+                  },
+                })[0]
+              }{" "}
+              {/* 첫 번째 이미지만 반환 */}
             </PostContent>
             <div>{post.author}</div>
           </Link>
@@ -110,4 +137,6 @@ const PostContent = styled.p`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  width: 250px; /* 원하는 너비 */
+  height: 250px; /* 원하는 높이 */
 `;

@@ -8,7 +8,7 @@ import "slick-carousel/slick/slick-theme.css";
 import CustomSlider from "../components/Slider";
 import Pagination from "../components/Pagination";
 import { FavoritesProvider } from "../components/FavoritesContext";
-
+import { supabase } from "../supabase";
 import PetCard from "../components/Petcard";
 
 function Home() {
@@ -32,6 +32,7 @@ function Home() {
   // };
 
   // 로그인 확인용
+  const [loginId, setLoginId] = useState("");
 
   useEffect(() => {
     const fetchDataFromApi = async () => {
@@ -42,8 +43,6 @@ function Home() {
         console.log("fetchedData", fetchedData);
 
         setData(fetchedData); // 첫 페이지에서 필요한 것만 GET
-
-        // await getCount(); // 120
       } catch (e: Error | unknown) {
         if (e instanceof Error) {
           setError(e);
@@ -71,7 +70,7 @@ function Home() {
     const today = new Date();
     const endOfNotice = new Date(formatDate(item.PBLANC_END_DE));
     const fiveDaysAfter = new Date(today);
-    fiveDaysAfter.setDate(fiveDaysAfter.getDate() + 5);
+    fiveDaysAfter.setDate(fiveDaysAfter.getDate() + 10);
     return endOfNotice <= fiveDaysAfter;
   });
 

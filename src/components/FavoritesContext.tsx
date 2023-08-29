@@ -39,19 +39,19 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = useState<AnimalShelter[]>([]);
 
   function toggleFavorite(item: AnimalShelter) {
-    const isFavorite = favorites.some(
-      (favItem) => favItem.ABDM_IDNTFY_NO === item.ABDM_IDNTFY_NO
-    );
-
-    if (isFavorite) {
-      setFavorites(
-        favorites.filter(
-          (favItem) => favItem.ABDM_IDNTFY_NO !== item.ABDM_IDNTFY_NO
-        )
+    setFavorites((prevFavorites) => {
+      const isFavorite = prevFavorites.some(
+        (favItem) => favItem.ABDM_IDNTFY_NO === item.ABDM_IDNTFY_NO
       );
-    } else {
-      setFavorites([...favorites, item]);
-    }
+
+      if (isFavorite) {
+        return prevFavorites.filter(
+          (favItem) => favItem.ABDM_IDNTFY_NO !== item.ABDM_IDNTFY_NO
+        );
+      } else {
+        return [...prevFavorites, item];
+      }
+    });
   }
 
   const contextValue: FavoritesContextValue = {

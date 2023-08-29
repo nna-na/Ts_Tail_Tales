@@ -1,6 +1,8 @@
 import React from "react";
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdLocationOn, MdCategory } from "react-icons/md";
+import styled from "styled-components";
+
 interface CategoryProps {
   query: {
     PBLANC_BEGIN_DE: string;
@@ -50,7 +52,7 @@ const regions = [
 export default function Category({ query, onChange }: CategoryProps) {
   const { PBLANC_BEGIN_DE, PBLANC_END_DE, SIGUN_NM, SPECIES_NM } = query;
   return (
-    <div className="category">
+    <Container className="category">
       <form className="form" onSubmit={(e) => e.preventDefault()}>
         {/* 공고 시작, 마감일  */}
         <div className="box-form">
@@ -123,6 +125,10 @@ export default function Category({ query, onChange }: CategoryProps) {
           조회
         </button>
       </form>
-    </div>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  margin-top: 100px;
+`;

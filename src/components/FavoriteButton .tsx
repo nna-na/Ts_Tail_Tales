@@ -3,7 +3,8 @@ import { supabase } from "../supabase";
 import { AnimalShelter } from "../api/fetchData";
 import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
-import { useMemo } from "react";
+import { styled } from "styled-components";
+// import { useMemo } from "react";
 
 interface FavoriteButtonProps {
   item: AnimalShelter;
@@ -96,16 +97,30 @@ function FavoriteButton({
   };
 
   return (
-    <button onClick={handleToggleFavorite}>
+    <HeartBtn onClick={handleToggleFavorite}>
       {/* 즐겨찾기 버튼 또는 아이콘 등의 UI */}
       {/* {userFavorites.has(item.ABDM_IDNTFY_NO || "") ? (
         <FaHeart />
       ) : (
         <FaRegHeart />
       )} */}
-      {isFavorite ? <FaHeart /> : <FaRegHeart />}
-    </button>
+      {isFavorite ? (
+        <FaHeart
+          style={{
+            color: "red",
+          }}
+        />
+      ) : (
+        <FaRegHeart />
+      )}
+    </HeartBtn>
   );
 }
 
 export default FavoriteButton;
+
+const HeartBtn = styled.button`
+  border: none;
+  background-color: white;
+  font-size: 30px;
+`;

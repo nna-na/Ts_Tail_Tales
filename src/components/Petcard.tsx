@@ -17,26 +17,6 @@ function PetCard({ item, onRemoveFavorite }: PetCardProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const { data: userData, error: userError } =
-        //   await supabase.auth.getUser();
-
-        // if (userError) {
-        //   console.error("Error getting user:", userError);
-        //   return;
-        // }
-
-        // const user = userData?.user;
-        // const userId = user?.id;
-
-        // if (!userId) {
-        //   console.error("User ID not found.");
-        //   return;
-        // }
-        //const userId= sessionStorage.getItem("id");
-        //if (!userId)
-        // ------------
-
-        // console.log("storage => ", Json.sessionStorage.getItem("user"));
         const user = JSON.parse(sessionStorage.getItem("user") || "");
         const { id: userId } = user;
 
@@ -113,13 +93,13 @@ export default PetCard;
 
 const PetImg = styled.img`
   width: 100%;
-  height: 320px;
+  height: 250px;
   max-width: 500px;
   object-fit: cover;
 `;
 
 const Box = styled.div`
-  height: 715px;
+  height: 660px;
   padding: 10px 10px 10px 10px;
   border: 1px solid black;
   width: calc(33.33% - 10px);
@@ -127,12 +107,13 @@ const Box = styled.div`
   padding: 10px;
   margin-bottom: 20px;
   /* flex: 0 0 calc(33.33% - 10px); */
-  flex: 0 0 400px; /* flex-basis도 고정된 값으로 설정 */
+  flex: 0 0 300px; /* flex-basis도 고정된 값으로 설정 */
   box-sizing: border-box;
   background-color: white;
   border-radius: 20px;
   border: none;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
 
   .favorite-container {
     display: flex;

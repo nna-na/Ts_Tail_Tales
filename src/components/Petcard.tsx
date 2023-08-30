@@ -80,20 +80,23 @@ function PetCard({ item, onRemoveFavorite }: PetCardProps) {
           })
         }
       >
-        <FavoriteButton
-          item={item}
-          isLoggedIn={true}
-          isFavorite={isFavorite}
-          onToggleFavorite={handleToggleFavorite}
-          onRemoveFavorite={() => {
-            if (item.ABDM_IDNTFY_NO && onRemoveFavorite) {
-              onRemoveFavorite();
-            }
-          }}
-        />
+        <div className="favorite-container">
+          <FavoriteButton
+            item={item}
+            isLoggedIn={true}
+            isFavorite={isFavorite}
+            onToggleFavorite={handleToggleFavorite}
+            onRemoveFavorite={() => {
+              if (item.ABDM_IDNTFY_NO && onRemoveFavorite) {
+                onRemoveFavorite();
+              }
+            }}
+          />
 
-        <p>고유 번호 : {item.ABDM_IDNTFY_NO}</p>
-        <PetImg src={item.IMAGE_COURS} alt="Pet Thumbnail" />
+          <p className="number">{item.ABDM_IDNTFY_NO}</p>
+        </div>
+
+        <PetImg className="petimg" src={item.IMAGE_COURS} alt="Pet Thumbnail" />
         <p>접수 일지 : {formatDate(item.RECEPT_DE)}</p>
         <p>품종 : {item.SPECIES_NM}</p>
         <p>성별 : {item.SEX_NM}</p>
@@ -120,8 +123,29 @@ const Box = styled.div`
   padding: 10px 10px 10px 10px;
   border: 1px solid black;
   width: calc(33.33% - 10px);
+  /* width: 400px; 고정된 값으로 설정 */
   padding: 10px;
   margin-bottom: 20px;
-  flex: 0 0 calc(33.33% - 10px);
+  /* flex: 0 0 calc(33.33% - 10px); */
+  flex: 0 0 400px; /* flex-basis도 고정된 값으로 설정 */
   box-sizing: border-box;
+  background-color: white;
+  border-radius: 20px;
+  border: none;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+
+  .favorite-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .number {
+    margin-left: 10px;
+    font-weight: bold;
+    font-size: larger;
+  }
+
+  .petimg {
+    border-radius: 20px;
+  }
 `;

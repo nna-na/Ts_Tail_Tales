@@ -21,7 +21,7 @@ const StyledSlider = styled(Slider)`
   .slick-slide > div {
     width: 250%;
     padding: 10px;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
     box-sizing: border-box;
     max-width: 1000px;
   }

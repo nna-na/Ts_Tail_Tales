@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { styled } from "styled-components";
-import { useNavigate } from "react-router-dom";
 import { fetchAnimalData, formatDate, AnimalShelter } from "../api/fetchData";
 import Category from "../components/Category";
 import "slick-carousel/slick/slick.css";
@@ -8,11 +7,9 @@ import "slick-carousel/slick/slick-theme.css";
 import CustomSlider from "../components/Slider";
 import Pagination from "../components/Pagination";
 import { FavoritesProvider } from "../components/FavoritesContext";
-import { supabase } from "../supabase";
 import PetCard from "../components/Petcard";
 
 function Home() {
-  const navigate = useNavigate();
   const [data, setData] = useState<Array<AnimalShelter>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -22,17 +19,6 @@ function Home() {
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedBreed, setSelectedBreed] = useState("");
-  // const [pageCount, setPageCount] ~~
-  // const settings = {
-  //   dots: true,
-  //   infinite: true,
-  //   speed: 500,
-  //   slidesToShow: 3,
-  //   slidesToScroll: 3,
-  // };
-
-  // 로그인 확인용
-  const [loginId, setLoginId] = useState("");
 
   useEffect(() => {
     const fetchDataFromApi = async () => {
@@ -150,6 +136,7 @@ const Div = styled.div`
     font-size: 2em;
     display: flex;
     justify-content: center;
+    padding: 15px 0 15px 0;
   }
 
   .deadline {

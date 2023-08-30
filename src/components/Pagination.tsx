@@ -75,6 +75,7 @@ export default Pagination;
 const Div = styled.div`
   display: flex;
   justify-content: center;
+  padding-bottom: 50px;
 `;
 
 const StyledPageNumber = styled.div<PageNumberProps>`

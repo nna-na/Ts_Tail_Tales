@@ -99,7 +99,7 @@ const PetImg = styled.img`
 `;
 
 const Box = styled.div`
-  height: 660px;
+  height: 700px;
   padding: 10px 10px 10px 10px;
   border: 1px solid black;
   width: calc(33.33% - 10px);

@@ -130,8 +130,10 @@ export default function Category({ query, onChange }: CategoryProps) {
 }
 
 const Container = styled.div`
-  margin-top: 100px;
+  margin-top: 150px;
   margin-bottom: 50px;
+  background-color: white;
+  padding: 30px 30px 30px 30px;
 
   .form {
     margin-left: 200px;
@@ -142,16 +144,19 @@ const Container = styled.div`
 
   .box-form {
     flex: 1; /* 각 항목의 가로 공간을 동일하게 나눠줌 */
-    /* 기존 스타일 유지 */
   }
 
   .input {
     margin-left: 10px;
     padding: 5px 5px 5px 5px;
+    border-radius: 5px;
+    border: 2px solid gray;
   }
 
   .select {
     margin-left: 10px;
     padding: 5px 5px 5px 5px;
+    border-radius: 5px;
+    border: 2px solid gray;
   }
 `;

@@ -4,7 +4,6 @@ import { AnimalShelter } from "../api/fetchData";
 import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { styled } from "styled-components";
-// import { useMemo } from "react";
 
 interface FavoriteButtonProps {
   item: AnimalShelter;
@@ -93,17 +92,10 @@ function FavoriteButton({
     }
 
     onToggleFavorite(); // 호출해서 상태 변경 요청
-    // window.location.reload();
   };
 
   return (
     <HeartBtn onClick={handleToggleFavorite}>
-      {/* 즐겨찾기 버튼 또는 아이콘 등의 UI */}
-      {/* {userFavorites.has(item.ABDM_IDNTFY_NO || "") ? (
-        <FaHeart />
-      ) : (
-        <FaRegHeart />
-      )} */}
       {isFavorite ? (
         <FaHeart
           style={{

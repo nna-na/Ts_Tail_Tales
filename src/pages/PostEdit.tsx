@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import axios from "axios";
 import styled from "styled-components";
 import PostImg from "../components/posts/PostImg";
 import { supabase } from "../supabase"; // Supabase 클라이언트 임포트
@@ -20,11 +19,18 @@ export default function PostEdit() {
   const { id } = useParams<{ id: string }>();
 
   // 게시물 데이터를 불러오는 쿼리
-  const { data, isLoading, isError, error } = useQuery(["posts", id], async () => {
-    const { data } = await supabase.from("posts").select("*").eq("id", id).single();
+  const { data, isLoading, isError, error } = useQuery(
+    ["posts", id],
+    async () => {
+      const { data } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("id", id)
+        .single();
 
-    return data;
-  });
+      return data;
+    }
+  );
   console.log("data", data);
 
   // 게시물 삭제를 처리하는 뮤테이션
@@ -86,7 +92,8 @@ export default function PostEdit() {
     }
 
     // 사용자 닉네임을 가져와서 상태 업데이트
-    const userNicknameFromSessionStorage = sessionStorage.getItem("userNickname");
+    const userNicknameFromSessionStorage =
+      sessionStorage.getItem("userNickname");
     if (userNicknameFromSessionStorage) {
       setUserNickname(userNicknameFromSessionStorage);
     }
@@ -150,7 +157,10 @@ export default function PostEdit() {
 
         <FormItem>
           <label>내용:</label>
-          <PostImg onContentChange={handleContentChange} initialContent={data.content} />
+          <PostImg
+            onContentChange={handleContentChange}
+            initialContent={data.content}
+          />
         </FormItem>
         <SubmitButton type="submit">수정</SubmitButton>
       </Form>
@@ -181,12 +191,6 @@ const Input = styled.input`
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 8px; /* 테두리 둥글게 처리 */
-`;
-
-const Textarea = styled.textarea`
-  width: 1000px;
-  height: 300px;
-  padding: 10px;
 `;
 
 const SubmitButton = styled.button`

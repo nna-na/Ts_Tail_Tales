@@ -37,7 +37,10 @@ export default function Community() {
   // 게시물 데이터를 가져오는 함수
   const fetchPosts = async () => {
     try {
-      const { data: posts, error } = await supabase.from("posts").select("*").order("date", { ascending: false });
+      const { data: posts, error } = await supabase
+        .from("posts")
+        .select("*")
+        .order("date", { ascending: false });
 
       if (error) {
         console.error("게시물 가져오기 오류:", error);
@@ -69,11 +72,13 @@ export default function Community() {
     <>
       <Title>커뮤니티</Title>
       <Container>
-        {" "}
         <PostsGrid>
           {currentPosts?.map((post) => (
             <PostBox key={post.id}>
-              <Link to={`/post-detail/${post.id}`} style={{ textDecoration: "none" }}>
+              <Link
+                to={`/post-detail/${post.id}`}
+                style={{ textDecoration: "none" }}
+              >
                 <ImgDiv>
                   {/* 이미지가 있을 때만 이미지 표시 */}
                   {extractImages(post.content).length > 0 && (
@@ -95,7 +100,11 @@ export default function Community() {
         </CreateButton>
       </Container>
       <PaginationContainer>
-        <Pagination currentPage={currentPage} totalPages={Math.ceil(posts.length / itemsPerPage)} setCurrentPage={setCurrentPage} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(posts.length / itemsPerPage)}
+          setCurrentPage={setCurrentPage}
+        />
       </PaginationContainer>
     </>
   );

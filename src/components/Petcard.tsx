@@ -10,7 +10,7 @@ export interface PetCardProps {
   onRemoveFavorite?: () => void;
 }
 
-function PetCard({ item, onRemoveFavorite }: PetCardProps) {
+const PetCard = React.memo(({ item, onRemoveFavorite }: PetCardProps) => {
   const navigate = useNavigate();
 
   const [isFavorite, setIsFavorite] = useState(false);
@@ -91,7 +91,7 @@ function PetCard({ item, onRemoveFavorite }: PetCardProps) {
       </div>
     </Box>
   );
-}
+});
 
 export default PetCard;
 

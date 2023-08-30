@@ -37,6 +37,12 @@ function Mypage() {
         const fetchedData = await fetchAnimalData();
         console.log("fetchedData", fetchedData);
 
+        // 데이터가 존재하지 않을 경우에만 API 요청
+        if (favoriteAnimals.length === 0) {
+          const fetchedData = await fetchAnimalData(); // 데이터 가져오기
+          setFavoriteAnimals(fetchedData); // 가져온 데이터를 상태에 설정
+        }
+
         // 사용자의 즐겨찾기 정보 가져오기
         const { data: favoriteData, error: favoriteError } = await supabase
           .from("favorites")

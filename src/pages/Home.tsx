@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { styled } from "styled-components";
-import { useNavigate } from "react-router-dom";
 import { fetchAnimalData, formatDate, AnimalShelter } from "../api/fetchData";
 import Category from "../components/Category";
 import "slick-carousel/slick/slick.css";
@@ -8,31 +7,18 @@ import "slick-carousel/slick/slick-theme.css";
 import CustomSlider from "../components/Slider";
 import Pagination from "../components/Pagination";
 import { FavoritesProvider } from "../components/FavoritesContext";
-import { supabase } from "../supabase";
 import PetCard from "../components/Petcard";
 
 function Home() {
-  const navigate = useNavigate();
   const [data, setData] = useState<Array<AnimalShelter>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+  const itemsPerPage = 12;
   const [selectedBeginDate, setSelectedBeginDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedBreed, setSelectedBreed] = useState("");
-  // const [pageCount, setPageCount] ~~
-  // const settings = {
-  //   dots: true,
-  //   infinite: true,
-  //   speed: 500,
-  //   slidesToShow: 3,
-  //   slidesToScroll: 3,
-  // };
-
-  // 로그인 확인용
-  const [loginId, setLoginId] = useState("");
 
   useEffect(() => {
     const fetchDataFromApi = async () => {
@@ -97,10 +83,12 @@ function Home() {
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
-    // <></>
     <FavoritesProvider>
-      <div className="Home">
-        <div>공고 마감일이 얼마남지않은 게시물 필터링</div>
+      <Div className="Home">
+        <div className="filtered">
+          <span className="deadline">"공고 마감일"</span>이 얼마 남지 않은
+          아이들!
+        </div>
         <CustomSlider items={nearingDeadline} />
         <Category
           query={{
@@ -134,16 +122,32 @@ function Home() {
           totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
           setCurrentPage={setCurrentPage}
         />
-      </div>
+      </Div>
     </FavoritesProvider>
   );
 }
 
 export default Home;
 
+const Div = styled.div`
+  background-color: #ffeaea;
+
+  .filtered {
+    font-size: 2em;
+    display: flex;
+    justify-content: center;
+    padding: 15px 0 15px 0;
+  }
+
+  .deadline {
+    font-weight: bolder;
+    color: red;
+  }
+`;
+
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  margin: 20px;
+  margin: 50px;
 `;

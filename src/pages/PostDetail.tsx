@@ -1,12 +1,12 @@
 import React from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
-
 import styled from "styled-components";
 import Create from "../components/comments/Create";
 import Comment from "../components/comments/Comment";
 import { supabase } from "../supabase";
 import ReactHtmlParser from "react-html-parser";
+import { FiArrowLeft } from "react-icons/fi"; // 이모티콘을 위한 아이콘 라이브러리 import
 
 interface Post {
   id: number;
@@ -27,11 +27,7 @@ export default function PostDetail() {
     isError,
     error,
   } = useQuery(["posts", id], async () => {
-    const { data, error } = await supabase
-      .from("posts")
-      .select("*")
-      .eq("id", id)
-      .single();
+    const { data, error } = await supabase.from("posts").select("*").eq("id", id).single();
 
     if (error) {
       throw error;
@@ -42,22 +38,15 @@ export default function PostDetail() {
   console.log("detailpostid", post);
 
   // 댓글 목록 가져오기
-  const { data: comments, isLoading: isLoadingComments } = useQuery(
-    ["comments", id],
-    async () => {
-      const { data, error } = await supabase
-        .from("comments")
-        .select("*")
-        .eq("postId", id)
-        .order("date", { ascending: true });
+  const { data: comments, isLoading: isLoadingComments } = useQuery(["comments", id], async () => {
+    const { data, error } = await supabase.from("comments").select("*").eq("postId", id).order("date", { ascending: true });
 
-      if (error) {
-        throw error;
-      }
-
-      return data;
+    if (error) {
+      throw error;
     }
-  );
+
+    return data;
+  });
 
   // 게시물 수정 후 댓글 목록 다시 가져오기
   const refreshPostData = async () => {
@@ -98,10 +87,13 @@ export default function PostDetail() {
 
   return (
     <Container>
-      <h2>디테일 페이지</h2>
-      <p>{post.userNickname}님의 글입니다.</p>
-      <h3>{post.title}</h3>
-      {ReactHtmlParser(post.content)}
+      <BackButton onClick={() => navigate("/community")}>
+        <BackIcon />
+        뒤로가기
+      </BackButton>
+      <p>
+        <strong>{post.userNickname}</strong>님의 글입니다.
+      </p>
       <ButtonContainer>
         {isUserAuthorized && (
           <>
@@ -110,15 +102,55 @@ export default function PostDetail() {
           </>
         )}
       </ButtonContainer>
-      <p>댓글</p>
+      <Title>{post.title}</Title>
+      <Content>{ReactHtmlParser(post.content)}</Content>
+
       <Create onCommentAdded={refreshPostData} postId={post.id} />
       <Comment comments={comments} />
     </Container>
   );
 }
 
+const BackButton = styled.button`
+  padding: 10px 20px;
+  background-color: #f8b3b3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  &:hover {
+    background-color: #f8b3b3;
+    transform: scale(1.05);
+  }
+`;
+
+const BackIcon = styled(FiArrowLeft)`
+  margin-right: 5px;
+`;
+
 const Container = styled.div`
   padding: 20px;
+  width: 1000px;
+  margin: 0 auto; /* 수평 가운데 정렬 */
+`;
+
+const Title = styled.h3`
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  height: 60px; /* 높이 조정 */
+  text-align: center;
+  font-size: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0; /* 위 아래 여백 추가 */
+`;
+
+const Content = styled.div`
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  text-align: center;
 `;
 
 const ButtonContainer = styled.div`
@@ -128,21 +160,23 @@ const ButtonContainer = styled.div`
 `;
 
 const EditButton = styled(Link)`
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
+  color: gray;
+  margin-right: 5px;
   border: none;
+  background: none;
   cursor: pointer;
-  margin-right: 10px;
   text-decoration: none;
+  font-size: 15px;
 `;
 
 const DeleteButton = styled.button`
-  padding: 10px 20px;
-  background-color: red;
-  color: white;
+  color: #dd3a3a;
+  margin-right: 5px;
   border: none;
+  background: none;
   cursor: pointer;
+  text-decoration: none;
+  font-size: 15px;
 `;
 
 const LoadingText = styled.div`

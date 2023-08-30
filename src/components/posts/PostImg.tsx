@@ -4,6 +4,7 @@ import "react-quill/dist/quill.snow.css";
 import Quill from "quill";
 import ImageResize from "@looop/quill-image-resize-module-react";
 import { supabase } from "../../supabase"; // Supabase 클라이언트 설정 파일
+import { styled } from "styled-components";
 
 Quill.register("modules/ImageResize", ImageResize);
 
@@ -17,18 +18,14 @@ async function uploadImageToSupabase(imageFile: File): Promise<string> {
     // 이미지 파일의 이름을 고유하게 만듭니다. 예를 들어 현재 시간을 사용할 수 있습니다.
     const uniqueName = `${Date.now()}_${imageFile.name}`;
 
-    const { data, error } = await supabase.storage
-      .from("image")
-      .upload("images/" + uniqueName, imageFile, { cacheControl: "3600" });
+    const { data, error } = await supabase.storage.from("image").upload("images/" + uniqueName, imageFile, { cacheControl: "3600" });
 
     if (error) {
       throw error;
     }
 
     // 이미지 URL을 가져오는 방법
-    const imageUrlObject = supabase.storage
-      .from("image")
-      .getPublicUrl("images/" + uniqueName);
+    const imageUrlObject = supabase.storage.from("image").getPublicUrl("images/" + uniqueName);
 
     if (imageUrlObject && imageUrlObject.data) {
       const imageUrl = imageUrlObject.data.publicUrl;
@@ -42,10 +39,7 @@ async function uploadImageToSupabase(imageFile: File): Promise<string> {
   }
 }
 
-export default function PostImg({
-  onContentChange,
-  initialContent,
-}: PostImgProps) {
+export default function PostImg({ onContentChange, initialContent }: PostImgProps) {
   const [content, setContent] = useState(initialContent);
   const quillRef = useRef<ReactQuill | null>(null);
 
@@ -92,13 +86,12 @@ export default function PostImg({
   }, []);
 
   return (
-    <div>
-      <h2>텍스트 에디터</h2>
+    <PostImgContainer>
       <ReactQuill
         style={{
-          width: "1000px",
-          height: "400px",
-          marginBottom: "50px",
+          width: "100%",
+          height: "90%",
+          borderRadius: "20px",
         }}
         value={content}
         onChange={handleContentChange}
@@ -108,31 +101,20 @@ export default function PostImg({
           }
         }}
         modules={{
-          toolbar: [
-            [{ header: "1" }, { header: "2" }, { font: [] }],
-            [{ list: "ordered" }, { list: "bullet" }],
-            ["bold", "italic", "underline"],
-            [{ align: [] }, { color: [] }, { background: [] }],
-            ["image"],
-          ],
+          toolbar: [[{ header: "1" }, { header: "2" }, { font: [] }], [{ list: "ordered" }, { list: "bullet" }], ["bold", "italic", "underline"], [{ align: [] }, { color: [] }, { background: [] }], ["image"]],
           ImageResize: {
             parchment: Quill.import("parchment"),
           },
         }}
-        formats={[
-          "header",
-          "font",
-          "size",
-          "list",
-          "bold",
-          "italic",
-          "underline",
-          "align",
-          "color",
-          "background",
-          "image",
-        ]}
+        formats={["header", "font", "size", "list", "bold", "italic", "underline", "align", "color", "background", "image"]}
       />
-    </div>
+    </PostImgContainer>
   );
 }
+const PostImgContainer = styled.div`
+  width: 1000px;
+  height: 400px;
+  margin-bottom: 50px;
+  border: 1px solid #ccc;
+  border-radius: 8px; /* 테두리 둥글게 처리 */
+`;

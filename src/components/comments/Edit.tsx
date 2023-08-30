@@ -13,13 +13,7 @@ interface Comment {
   email: string;
 }
 
-export default function Edit({
-  id,
-  onUpdateComplete,
-}: {
-  id: string;
-  onUpdateComplete: () => void;
-}) {
+export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateComplete: () => void }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -29,11 +23,7 @@ export default function Edit({
     isError,
     error,
   } = useQuery<Comment>(["comments", id], async () => {
-    const { data, error } = await supabase
-      .from("comments")
-      .select("*")
-      .eq("id", id)
-      .single();
+    const { data, error } = await supabase.from("comments").select("*").eq("id", id).single();
 
     if (error) {
       throw error;
@@ -46,10 +36,7 @@ export default function Edit({
     async (updatedComment) => {
       try {
         // 기존 댓글 삭제
-        const { error: deleteError } = await supabase
-          .from("comments")
-          .delete()
-          .eq("id", updatedComment.id);
+        const { error: deleteError } = await supabase.from("comments").delete().eq("id", updatedComment.id);
 
         if (deleteError) {
           console.error("댓글 삭제 중 오류 발생:", deleteError);
@@ -57,9 +44,7 @@ export default function Edit({
         }
 
         // 댓글 업데이트
-        const { data, error } = await supabase
-          .from("comments")
-          .upsert([updatedComment]);
+        const { data, error } = await supabase.from("comments").upsert([updatedComment]);
 
         if (error) {
           console.error("댓글 수정 중 오류 발생:", error);
@@ -140,12 +125,10 @@ export default function Edit({
   return (
     <Container>
       <Form onSubmit={handleUpdate}>
-        <h2>댓글 수정</h2>
         <FormItem>
-          <label>내용:</label>
           <Textarea value={content} onChange={handleContentChange} />
         </FormItem>
-        <SubmitButton type="submit">수정 완료</SubmitButton>
+        <SubmitButton type="submit">수정</SubmitButton>
       </Form>
     </Container>
   );
@@ -168,17 +151,24 @@ const FormItem = styled.div`
 `;
 
 const Textarea = styled.textarea`
-  width: 1000px;
-  height: 300px;
+  width: 950px;
+  height: 50px;
+  font-size: 15px;
   padding: 10px;
+  margin-bottom: 10px;
 `;
 
 const SubmitButton = styled.button`
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #f8b3b3;
   color: white;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
+  &:hover {
+    background-color: #dd3a3a;
+    transform: scale(1.05);
+  }
 `;
 
 const LoadingText = styled.div`

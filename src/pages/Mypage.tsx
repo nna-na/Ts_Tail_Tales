@@ -86,6 +86,13 @@ function Mypage() {
   return (
     <div className="Mypage">
       <h2>My Page</h2>
+      <button
+        onClick={() => {
+          window.history.back();
+        }}
+      >
+        뒤로가기
+      </button>
       <Container>
         {favoriteAnimals?.map((item) => (
           <PetCard

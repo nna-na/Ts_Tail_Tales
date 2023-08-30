@@ -30,7 +30,7 @@ function CustomSlider({ items }: CustomSliderProps) {
 
   return (
     <StyledSlider {...settings}>
-      {items.map((item: AnimalShelter) => (
+      {items?.map((item: AnimalShelter) => (
         <div key={item.ABDM_IDNTFY_NO}>
           <PetCard item={item} />
         </div>

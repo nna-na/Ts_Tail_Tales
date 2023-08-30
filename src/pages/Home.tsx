@@ -99,7 +99,10 @@ function Home() {
   return (
     <FavoritesProvider>
       <Div className="Home">
-        <div>공고 마감일이 얼마남지않은 게시물 필터링</div>
+        <div className="filtered">
+          <span className="deadline">"공고 마감일"</span>이 얼마 남지 않은
+          아이들!
+        </div>
         <CustomSlider items={nearingDeadline} />
         <Category
           query={{
@@ -142,6 +145,17 @@ export default Home;
 
 const Div = styled.div`
   background-color: #ffeaea;
+
+  .filtered {
+    font-size: 2em;
+    display: flex;
+    justify-content: center;
+  }
+
+  .deadline {
+    font-weight: bolder;
+    color: red;
+  }
 `;
 
 const Container = styled.div`

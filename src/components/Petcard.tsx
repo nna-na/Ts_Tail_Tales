@@ -6,10 +6,11 @@ import FavoriteButton from "./FavoriteButton ";
 import { supabase } from "../supabase";
 
 export interface PetCardProps {
-  item: AnimalShelter;
+  item: AnimalShelter; // 이 부분에서 item의 타입을 AnimalShelter로 지정
+  onRemoveFavorite?: () => void;
 }
 
-function PetCard({ item }: PetCardProps) {
+function PetCard({ item, onRemoveFavorite }: PetCardProps) {
   const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -84,6 +85,11 @@ function PetCard({ item }: PetCardProps) {
           isLoggedIn={true}
           isFavorite={isFavorite}
           onToggleFavorite={handleToggleFavorite}
+          onRemoveFavorite={() => {
+            if (item.ABDM_IDNTFY_NO && onRemoveFavorite) {
+              onRemoveFavorite();
+            }
+          }}
         />
 
         <p>고유 번호 : {item.ABDM_IDNTFY_NO}</p>

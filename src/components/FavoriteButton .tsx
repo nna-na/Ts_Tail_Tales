@@ -10,6 +10,7 @@ interface FavoriteButtonProps {
   isLoggedIn: boolean;
   isFavorite: boolean;
   onToggleFavorite: () => void;
+  onRemoveFavorite?: () => void;
 }
 
 function FavoriteButton({
@@ -17,6 +18,7 @@ function FavoriteButton({
   isLoggedIn,
   isFavorite,
   onToggleFavorite,
+  onRemoveFavorite,
 }: FavoriteButtonProps) {
   const handleToggleFavorite = async (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -68,6 +70,9 @@ function FavoriteButton({
         if (deleteError) {
           console.error("Error deleting favorite:", deleteError);
           return;
+        }
+        if (onRemoveFavorite) {
+          onRemoveFavorite(); // 여기서 호출
         }
       } else {
         const { error: addError } = await supabase.from("favorites").upsert({

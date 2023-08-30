@@ -12,6 +12,7 @@ export interface PetCardProps {
 
 function PetCard({ item, onRemoveFavorite }: PetCardProps) {
   const navigate = useNavigate();
+
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
@@ -80,10 +81,13 @@ function PetCard({ item, onRemoveFavorite }: PetCardProps) {
         <p>접수 일지 : {formatDate(item.RECEPT_DE)}</p>
         <p>품종 : {item.SPECIES_NM}</p>
         <p>성별 : {item.SEX_NM}</p>
-        <p>발견장소 : {item.DISCVRY_PLC_INFO} </p>
-        <p>특징: {item.SFETR_INFO}</p>
-        <p>상태: {item.STATE_NM}</p>
+        {/* <p>발견장소 : {item.DISCVRY_PLC_INFO} </p> */}
+        {/* <p>특징: {item.SFETR_INFO}</p> */}
+        {/* <p>상태: {item.STATE_NM}</p> */}
         <p>보호 주소:{item.SIGUN_NM} </p>
+        <DetailsMessage className="details-message">
+          눌러서 상세를 보세요!!
+        </DetailsMessage>
       </div>
     </Box>
   );
@@ -99,7 +103,7 @@ const PetImg = styled.img`
 `;
 
 const Box = styled.div`
-  height: 700px;
+  height: 550px;
   padding: 10px 10px 10px 10px;
   border: 1px solid black;
   width: calc(33.33% - 10px);
@@ -112,6 +116,14 @@ const Box = styled.div`
   border: none;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
   overflow: hidden;
+
+  /* hover 상태에 대한 스타일 설정 */
+  &:hover {
+    .details-message {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
   .favorite-container {
     display: flex;
@@ -126,5 +138,22 @@ const Box = styled.div`
 
   .petimg {
     border-radius: 20px;
+  }
+`;
+
+const DetailsMessage = styled.p`
+  display: block;
+  text-align: center;
+  margin-top: 30px;
+  font-size: 14px;
+  color: #555;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s, transform 0.3s;
+
+  /* hover 상태에 대한 스타일 설정 */
+  .petcard:hover & {
+    opacity: 1;
+    transform: translateY(0);
   }
 `;

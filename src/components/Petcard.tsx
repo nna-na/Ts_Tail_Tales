@@ -16,26 +16,6 @@ function PetCard({ item }: PetCardProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const { data: userData, error: userError } =
-        //   await supabase.auth.getUser();
-
-        // if (userError) {
-        //   console.error("Error getting user:", userError);
-        //   return;
-        // }
-
-        // const user = userData?.user;
-        // const userId = user?.id;
-
-        // if (!userId) {
-        //   console.error("User ID not found.");
-        //   return;
-        // }
-        //const userId= sessionStorage.getItem("id");
-        //if (!userId)
-        // ------------
-
-        // console.log("storage => ", Json.sessionStorage.getItem("user"));
         const user = JSON.parse(sessionStorage.getItem("user") || "");
         const { id: userId } = user;
 

@@ -56,6 +56,7 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       userNickname: string;
       date: string;
       postId: string;
+      avatar_url: string;
     }
   >(
     async (newComment) => {
@@ -101,6 +102,7 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       userNickname: userNickname || user?.user_metadata.full_name,
       date: new Date().toISOString().slice(0, 19).replace("T", " "), // 현재 시간을 문자열로 변환
       email: user!.email,
+      avatar_url: user?.user_metadata.avatar_url,
     };
 
     try {

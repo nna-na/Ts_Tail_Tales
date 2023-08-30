@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { supabase } from "../../supabase";
 import styled from "styled-components";
-
+// .
 interface Comment {
   id: string;
   postId?: string;
@@ -11,6 +11,7 @@ interface Comment {
   userNickname: string;
   date: string;
   email: string;
+  avatar_url: string;
 }
 
 export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateComplete: () => void }) {
@@ -96,6 +97,7 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
       userNickname,
       date: new Date().toISOString(),
       email: initialData!.email,
+      avatar_url: initialData!.avatar_url,
     };
 
     try {

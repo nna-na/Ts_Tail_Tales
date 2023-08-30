@@ -15,6 +15,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [deleted, setDeleted] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [userNickname, setUserNickname] = useState<string | null>(null); // 변경된 부분
   const queryClient = useQueryClient();
   const {
     data: commentData,
@@ -58,6 +59,21 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
     };
   }, []);
 
+  // 사용자 닉네임 가져오기
+  useEffect(() => {
+    async function fetchUserNickname() {
+      if (user) {
+        const { data, error } = await supabase.from("users").select("nickname").eq("id", user.id).single();
+        if (error) {
+          console.error("사용자 정보를 가져올 수 없습니다:", error);
+        } else {
+          setUserNickname(data?.nickname || null);
+        }
+      }
+    }
+    fetchUserNickname();
+  }, [user]);
+
   const handleDelete = async (commentId: string) => {
     if (window.confirm("정말 삭제하시겠습니까?")) {
       try {
@@ -85,6 +101,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
 
   const email = sessionStorage.getItem("userEmail")?.toLowerCase();
 
+  console.log("user", user);
   return (
     <div>
       <p>{commentData.length}개의 댓글</p>
@@ -105,22 +122,20 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                     marginRight: "10px",
                   }}
                 >
-                  <img src={user?.user_metadata.avatar_url || process.env.PUBLIC_URL + "/image/profile.jpg"} alt="User Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img src={comment.avatar_url || "/image/profile.jpg"} alt="User Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
-                {user ? (
-                  <div style={{ flex: 1 }}>
-                    <strong>{user.user_metadata.user_name || user.user_metadata.full_name}</strong> <br />
-                    <span style={{ color: "gray" }}>
-                      {new Date(comment.date).toLocaleString("ko-KR", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                ) : null}
+                <div style={{ flex: 1 }}>
+                  <strong>{comment.userNickname || "익명"}</strong> <br />
+                  <span style={{ color: "gray" }}>
+                    {new Date(comment.date).toLocaleString("ko-KR", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
                 {email === comment.email && (
                   <div style={{ marginLeft: "auto" }}>
                     <button style={{ color: "gray", marginRight: "5px", border: "none", background: "none", cursor: "pointer" }} onClick={() => setEditingCommentId(comment.id)}>

@@ -110,13 +110,13 @@ export default PetCard;
 
 const PetImg = styled.img`
   width: 100%;
-  height: 280px;
-  max-width: 400px;
+  height: 320px;
+  max-width: 500px;
   object-fit: cover;
 `;
 
 const Box = styled.div`
-  height: 700px;
+  height: 715px;
   padding: 10px 10px 10px 10px;
   border: 1px solid black;
   width: calc(33.33% - 10px);

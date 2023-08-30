@@ -21,18 +21,10 @@ function PetCard({ item, onRemoveFavorite }: PetCardProps) {
         const { id: userId } = user;
 
         // 서버에서 즐겨찾기 상태 가져오기
-        const { data: existingFavorites, error: existingFavoritesError } =
-          await supabase
-            .from("favorites")
-            .select()
-            .eq("userId", userId)
-            .eq("animalId", item.ABDM_IDNTFY_NO);
+        const { data: existingFavorites, error: existingFavoritesError } = await supabase.from("favorites").select().eq("userId", userId).eq("animalId", item.ABDM_IDNTFY_NO);
 
         if (existingFavoritesError) {
-          console.error(
-            "Error fetching existing favorites:",
-            existingFavoritesError
-          );
+          console.error("Error fetching existing favorites:", existingFavoritesError);
           return;
         }
 

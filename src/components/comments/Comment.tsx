@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import Edit from "./Edit";
 import Delete from "./Delete";
 import { supabase } from "../../supabase"; // Supabase 클라이언트 임포트
+import { User } from "@supabase/supabase-js";
 
 interface CommentProps {
   comments?: any[];
@@ -13,8 +14,8 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
   const { id } = useParams<{ id: string }>();
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [deleted, setDeleted] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const queryClient = useQueryClient();
-  console.log(id);
   const {
     data: commentData,
     isLoading,
@@ -23,17 +24,11 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
   } = useQuery(
     ["comments", id],
     async () => {
-      const { data, error } = await supabase
-        .from("comments")
-        .select("*")
-        .eq("postId", id)
-        .order("date", { ascending: true });
+      const { data, error } = await supabase.from("comments").select("*").eq("postId", id).order("date", { ascending: true });
 
       if (error) {
         throw error;
       }
-      console.log(id);
-      console.log(data);
 
       return data;
     },
@@ -42,29 +37,26 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
     }
   );
 
-  console.log("comment", commentData);
-  console.error(error);
-
-  const updateCommentMutation = useMutation(
-    async (updatedComment) => {
-      const { data, error } = await supabase
-        .from("comments")
-        .upsert([updatedComment]);
-
-      if (error) {
-        console.error("댓글 수정 중 오류 발생:", error);
-        throw error;
-      }
-
-      return data;
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["comments", id]);
-        setEditingCommentId(null);
-      },
+  useEffect(() => {
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
-  );
+
+    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        setUser(session.user);
+        sessionStorage.setItem("user", JSON.stringify(session.user));
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+        sessionStorage.removeItem("user");
+      }
+    });
+
+    return () => {
+      authSubscription.data.subscription.unsubscribe();
+    };
+  }, []);
 
   const handleDelete = async (commentId: string) => {
     if (window.confirm("정말 삭제하시겠습니까?")) {
@@ -95,44 +87,67 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
 
   return (
     <div>
+      <p>{commentData.length}개의 댓글</p>
+      <br />
       {deleted ? (
-        <div>로딩 중</div>
+        <div>로딩 중 ...</div>
       ) : (
         <>
           {commentData?.map((comment) => (
             <div key={comment.id}>
-              <div>작성자: {comment.userNickname}님</div>
-              <div>
-                {new Date(comment.date).toLocaleString("ko-KR", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <div
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    marginRight: "10px",
+                  }}
+                >
+                  <img src={user?.user_metadata.avatar_url || process.env.PUBLIC_URL + "/image/profile.jpg"} alt="User Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+                {user ? (
+                  <div style={{ flex: 1 }}>
+                    <strong>{user.user_metadata.user_name || user.user_metadata.full_name}</strong> <br />
+                    <span style={{ color: "gray" }}>
+                      {new Date(comment.date).toLocaleString("ko-KR", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                ) : null}
+                {email === comment.email && (
+                  <div style={{ marginLeft: "auto" }}>
+                    <button style={{ color: "gray", marginRight: "5px", border: "none", background: "none", cursor: "pointer" }} onClick={() => setEditingCommentId(comment.id)}>
+                      수정
+                    </button>
+                    <button style={{ color: "#dd3a3a", border: "none", background: "none", cursor: "pointer" }} onClick={() => handleDelete(comment.id)}>
+                      삭제
+                    </button>
+                  </div>
+                )}
               </div>
-              <div>댓글: {comment.content}</div>
-              {email === comment.email && (
+              <br />
+              {editingCommentId !== comment.id ? (
                 <>
-                  {editingCommentId === comment.id ? (
-                    <Edit
-                      id={comment.id}
-                      onUpdateComplete={() => {
-                        queryClient?.invalidateQueries(["comments", id]);
-                        setEditingCommentId(null);
-                      }}
-                    />
-                  ) : (
-                    <>
-                      <button onClick={() => setEditingCommentId(comment.id)}>
-                        수정
-                      </button>
-                      <button onClick={() => handleDelete(comment.id)}>
-                        삭제
-                      </button>
-                    </>
-                  )}
+                  <div style={{ fontSize: "20px" }}>{comment.content}</div>
+                  <br />
+                  <br />
                 </>
+              ) : null}
+              {editingCommentId === comment.id && (
+                <Edit
+                  id={comment.id}
+                  onUpdateComplete={() => {
+                    queryClient?.invalidateQueries(["comments", id]);
+                    setEditingCommentId(null);
+                  }}
+                />
               )}
             </div>
           ))}

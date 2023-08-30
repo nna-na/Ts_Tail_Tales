@@ -19,9 +19,7 @@ export default function PostCreate(data: any) {
     if (storedUser) {
       const user = JSON.parse(storedUser);
       setUser(user);
-      setUserNickname(
-        user.user_metadata.user_name || user.user_metadata.full_name
-      );
+      setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
     }
   }, []);
 
@@ -94,10 +92,7 @@ export default function PostCreate(data: any) {
         </FormItem>
         <FormItem>
           <label>내용:</label>
-          <PostImg
-            onContentChange={handleContentChange}
-            initialContent={data.content}
-          />
+          <PostImg onContentChange={handleContentChange} initialContent={content} /> {/* data.content가 아닌 content를 사용 */}
         </FormItem>
         <SubmitButton type="submit">작성</SubmitButton>
       </Form>
@@ -119,18 +114,26 @@ const FormItem = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
+  width: 1000px;
 `;
 
 const Input = styled.input`
-  width: 1000px;
+  width: 978px;
   padding: 10px;
   margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px; /* 테두리 둥글게 처리 */
 `;
 
 const SubmitButton = styled.button`
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #f8b3b3;
   color: white;
   border: none;
   cursor: pointer;
+  border-radius: 8px; /* 테두리 둥글게 처리 */
+  &:hover {
+    background-color: #dd3a3a;
+    transform: scale(1.05);
+  }
 `;

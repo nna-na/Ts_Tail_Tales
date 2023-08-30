@@ -5,6 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { AnimalShelter } from "../api/fetchData";
 import styled from "styled-components";
 import PetCard from "./Petcard";
+import { FavoritesProvider } from "./FavoritesContext";
 
 interface CustomSliderProps {
   items: Array<AnimalShelter>;
@@ -62,6 +63,7 @@ function CustomSlider({ items }: CustomSliderProps) {
   };
 
   return (
+    <FavoritesProvider>
     <StyledSliderContainer>
       <StyledSlider {...settings}>
         {items?.map((item: AnimalShelter) => (
@@ -70,7 +72,8 @@ function CustomSlider({ items }: CustomSliderProps) {
           </div>
         ))}
       </StyledSlider>
-    </StyledSliderContainer>
+     </StyledSliderContainer>
+    </FavoritesProvider>
   );
 }
 

@@ -20,18 +20,11 @@ export default function PostEdit() {
   const { id } = useParams<{ id: string }>();
 
   // 게시물 데이터를 불러오는 쿼리
-  const { data, isLoading, isError, error } = useQuery(
-    ["posts", id],
-    async () => {
-      const { data } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("id", id)
-        .single();
+  const { data, isLoading, isError, error } = useQuery(["posts", id], async () => {
+    const { data } = await supabase.from("posts").select("*").eq("id", id).single();
 
-      return data;
-    }
-  );
+    return data;
+  });
   console.log("data", data);
 
   // 게시물 삭제를 처리하는 뮤테이션
@@ -93,8 +86,7 @@ export default function PostEdit() {
     }
 
     // 사용자 닉네임을 가져와서 상태 업데이트
-    const userNicknameFromSessionStorage =
-      sessionStorage.getItem("userNickname");
+    const userNicknameFromSessionStorage = sessionStorage.getItem("userNickname");
     if (userNicknameFromSessionStorage) {
       setUserNickname(userNicknameFromSessionStorage);
     }
@@ -158,12 +150,9 @@ export default function PostEdit() {
 
         <FormItem>
           <label>내용:</label>
-          <PostImg
-            onContentChange={handleContentChange}
-            initialContent={data.content}
-          />
+          <PostImg onContentChange={handleContentChange} initialContent={data.content} />
         </FormItem>
-        <SubmitButton type="submit">수정 완료</SubmitButton>
+        <SubmitButton type="submit">수정</SubmitButton>
       </Form>
     </Container>
   );
@@ -183,11 +172,15 @@ const FormItem = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
+  width: 1000px;
 `;
 
 const Input = styled.input`
-  width: 1000px;
+  width: 978px;
   padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px; /* 테두리 둥글게 처리 */
 `;
 
 const Textarea = styled.textarea`
@@ -198,10 +191,15 @@ const Textarea = styled.textarea`
 
 const SubmitButton = styled.button`
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #f8b3b3;
   color: white;
   border: none;
   cursor: pointer;
+  border-radius: 8px; /* 테두리 둥글게 처리 */
+  &:hover {
+    background-color: #dd3a3a;
+    transform: scale(1.05);
+  }
 `;
 
 const LoadingText = styled.div`

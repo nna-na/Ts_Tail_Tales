@@ -12,7 +12,8 @@ interface CustomSliderProps {
 }
 
 const StyledSliderContainer = styled.div`
-  margin-left: 50px;
+  margin: 0 auto; /* 가운데 정렬을 위해 */
+  max-width: 1200px; /* 최대 너비 설정 */
 `;
 
 const StyledSlider = styled(Slider)`
@@ -23,13 +24,41 @@ const StyledSlider = styled(Slider)`
     box-sizing: border-box;
     max-width: 1000px;
   }
+
+  .slick-prev {
+    left: -30px; /* 화살표 위치 조절 */
+    z-index: 1; /* 다른 콘텐츠 위에 표시되도록 */
+  }
+
+  .slick-next {
+    right: -30px; /* 화살표 위치 조절 */
+    z-index: 1; /* 다른 콘텐츠 위에 표시되도록 */
+  }
+
+  .slick-prev:before,
+  .slick-next:before {
+    /* font-family: "Font Awesome 5 Free"; 사용하는 아이콘 폰트 설정 */
+    /* font-weight: 900;
+    font-size: 20px;
+    line-height: 1; */
+    color: #8dbaff; /* 아이콘 색상 변경 */
+    opacity: 1;
+    transition: all 0.3s ease;
+  }
+
+  /* 활성화된 상태의 아이콘 스타일 변경 */
+  .slick-prev.slick-disabled:before,
+  .slick-next.slick-disabled:before {
+    color: gray; /* 비활성화된 상태의 아이콘 색상 */
+  }
 `;
 
 function CustomSlider({ items }: CustomSliderProps) {
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 500,
+    arrows: true,
     slidesToShow: 4,
     slidesToScroll: 2,
     autoplay: true, // autoplay 활성화

@@ -72,7 +72,6 @@ export default function Community() {
     <>
       <Title>커뮤니티</Title>
       <Container>
-        {" "}
         <PostsGrid>
           {currentPosts?.map((post) => (
             <PostBox key={post.id}>

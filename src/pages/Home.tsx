@@ -17,7 +17,7 @@ function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+  const itemsPerPage = 12;
   const [selectedBeginDate, setSelectedBeginDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -97,9 +97,8 @@ function Home() {
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
-    // <></>
     <FavoritesProvider>
-      <div className="Home">
+      <Div className="Home">
         <div>공고 마감일이 얼마남지않은 게시물 필터링</div>
         <CustomSlider items={nearingDeadline} />
         <Category
@@ -134,16 +133,20 @@ function Home() {
           totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
           setCurrentPage={setCurrentPage}
         />
-      </div>
+      </Div>
     </FavoritesProvider>
   );
 }
 
 export default Home;
 
+const Div = styled.div`
+  background-color: #ffeaea;
+`;
+
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  margin: 20px;
+  margin: 50px;
 `;

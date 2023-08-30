@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { supabase } from "../../supabase";
 import styled from "styled-components";
-
+// .
 interface Comment {
   id: string;
   postId?: string;

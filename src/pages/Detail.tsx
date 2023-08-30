@@ -5,17 +5,137 @@ import Kakao from "./Kakao";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../api/fetchData";
 
+const DetailContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  /* 기존 스타일 유지 */
+
+  /* 중앙 정렬 및 양옆 공백 설정 */
+  max-width: 1200px; /* 원하는 최대 너비로 조정 */
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  @media (min-width: 768px) {
+    padding: 0 2rem;
+  }
+
+  .top {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2rem;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      gap: 2rem; /* 이미지와 표 사이 간격 조정 */
+    }
+  }
+
+  .img-container {
+    position: relative;
+    height: fit-content;
+    overflow: hidden;
+
+    @media (min-width: 768px) {
+      width: 50%;
+      margin-bottom: 0;
+    }
+
+    img {
+      width: 100%;
+      border: 1px solid ${(props) => props.theme.textBlack};
+      aspect-ratio: 1/1;
+      object-fit: cover;
+    }
+  }
+
+  .description {
+    @media (min-width: 768px) {
+      width: 50%;
+    }
+
+    .noticeNo {
+      width: 100%;
+
+      font-size: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #000000;
+      padding-block: 1rem;
+      border: 1px solid ${(props) => props.theme.textBlack};
+    }
+
+    .table {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+      font-size: ${(props) => props.theme.pSize};
+
+      .row {
+        display: grid;
+        grid-template-columns: 0.5fr 1fr;
+        text-align: center;
+        grid-template-rows: auto;
+        padding: 0.7rem 0.5rem;
+        border-bottom: 1px solid ${(props) => props.theme.textBlack};
+        border-inline: 1px solid ${(props) => props.theme.textBlack};
+
+        span {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          &:nth-child(1) {
+            border-right: 1px solid ${(props) => props.theme.textBlack};
+            font-weight: 600;
+          }
+          &:nth-child(2) {
+            padding-left: 0.5rem;
+          }
+        }
+      }
+    }
+  }
+
+  .location {
+    font-size: ${(props) => props.theme.pSize};
+    color: ${(props) => props.theme.textBlack};
+    p {
+      padding-bottom: 2rem;
+      span {
+        font-weight: 600;
+      }
+    }
+  }
+`;
+const InquiryButton = styled.button`
+  /* 스타일링 설정 */
+  background-color: ${(props) => props.theme.primaryColor};
+  color: #000000;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: ${(props) => props.theme.primaryColorHover};
+  }
+`;
 function Detail() {
-  const navigate = useNavigate();
   const location = useLocation();
   const { item } = location.state;
 
+  const handleInquiryClick = () => {
+    alert("입양 문의하기 버튼이 클릭되었습니다.");
+  };
   return (
-    <div className="detail container">
-      <button onClick={() => navigate("/home")}>뒤로가기</button>
+    <DetailContainer className="detail container">
       <div className="top">
         <div className="img-container">
-          <PetImg src={item.IMAGE_COURS} alt={item.ABDM_IDNTFY_NO} />
+          <img src={item.IMAGE_COURS} alt={item.ABDM_IDNTFY_NO} />
           <div id={item.ABDM_IDNTFY_NO} data-pet={item.pet} />
         </div>
         <div className="description">
@@ -82,6 +202,7 @@ function Detail() {
           </div>
         </div>
       </div>
+      <InquiryButton onClick={handleInquiryClick}>입양 문의하기</InquiryButton>
       <div className="location">
         <p>
           <span>{item.SHTER_NM}</span>
@@ -95,13 +216,8 @@ function Detail() {
           kind={item.SPECIES_NM.split(" ")[0]}
         />
       </div>
-    </div>
+    </DetailContainer>
   );
 }
 
 export default Detail;
-
-const PetImg = styled.img`
-  width: 600px;
-  object-fit: contain;
-`;

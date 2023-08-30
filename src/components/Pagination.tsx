@@ -5,13 +5,6 @@ interface PageNumberProps {
   isActive: boolean;
 }
 
-const StyledPageNumber = styled.div<PageNumberProps>`
-  cursor: pointer;
-  margin: 0 10px;
-  font-weight: ${(props) => (props.isActive ? "bold" : "normal")};
-  display: inline-block;
-`;
-
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
@@ -55,7 +48,7 @@ function Pagination({
   };
 
   return (
-    <div>
+    <Div>
       {prevPage && (
         <StyledPageNumber
           isActive={false}
@@ -73,8 +66,20 @@ function Pagination({
           다음
         </StyledPageNumber>
       )}
-    </div>
+    </Div>
   );
 }
 
 export default Pagination;
+
+const Div = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const StyledPageNumber = styled.div<PageNumberProps>`
+  cursor: pointer;
+  margin: 0 10px;
+  font-weight: ${(props) => (props.isActive ? "bold" : "normal")};
+  display: inline-block;
+`;

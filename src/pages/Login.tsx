@@ -38,11 +38,9 @@ function Login() {
 
   return (
     <LoginContainer>
-      {/* <h1>로그인</h1> */}
       <MainContainer>
         <form onSubmit={signInWithEmail}>
           <div>
-            {/* <InputLabel>이메일</InputLabel> */}
             <InputBox
               type="email"
               id="email"
@@ -52,7 +50,6 @@ function Login() {
             />
           </div>
           <div>
-            {/* <InputLabel>비밀번호</InputLabel> */}
             <InputBox
               type="password"
               id="password"
@@ -62,10 +59,9 @@ function Login() {
             />
           </div>
           <StButton
-            // type="submit"
             onClick={() => {
-              // navigate("/");
               alert("로그인 완료.");
+              // navigate("/home");
             }}
           >
             로그인
@@ -108,41 +104,11 @@ function Login() {
           <Link to="/signup">회원가입</Link>
         </NoAccountMessage>
       </MainContainer>
-      {/*<button onClick={resetPassword}>비밀번호 재설정</button>*/}
     </LoginContainer>
   );
 }
 
 export default Login;
-
-// const signInWithEmail = async (e: FormEvent) => {
-//   e.preventDefault();
-//   const checkedInput = checkInput(email, password);
-//   if (!checkedInput) return;
-
-//   try {
-//   const { data, error } = await supabase.auth.signInWithPassword({
-//   email,
-//   password
-//   });
-
-//   if (data) {
-//   // 데이터 베이스에서 로그인한 유저의 정보 가져오기
-//   const id = data.user?.id;
-//   const response = await supabase.from('user').select().eq('userid', id).single();
-//   const user = response.data;
-//   // 전역에 셋팅
-//   dispatch(setCurrentUser(user));
-//   }
-//   if (error) {
-//   alert('로그인 실패: 아이디가 없거나 비밀번호가 틀렸습니다.');
-//   return;
-//   }
-
-//   alert('로그인 성공');
-//   dispatch(closeModal());
-//   } catch (error) {}
-//   };
 
 // 스타일 영역
 const LoginContainer = styled.div`

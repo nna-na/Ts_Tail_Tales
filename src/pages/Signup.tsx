@@ -1,6 +1,5 @@
 import React, { useState, FormEvent } from "react";
 import { supabase } from "../supabase";
-import { User } from "@supabase/supabase-js";
 import { styled } from "styled-components";
 import { Link } from "react-router-dom";
 

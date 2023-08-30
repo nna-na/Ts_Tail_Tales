@@ -21,10 +21,18 @@ function PetCard({ item, onRemoveFavorite }: PetCardProps) {
         const { id: userId } = user;
 
         // 서버에서 즐겨찾기 상태 가져오기
-        const { data: existingFavorites, error: existingFavoritesError } = await supabase.from("favorites").select().eq("userId", userId).eq("animalId", item.ABDM_IDNTFY_NO);
+        const { data: existingFavorites, error: existingFavoritesError } =
+          await supabase
+            .from("favorites")
+            .select()
+            .eq("userId", userId)
+            .eq("animalId", item.ABDM_IDNTFY_NO);
 
         if (existingFavoritesError) {
-          console.error("Error fetching existing favorites:", existingFavoritesError);
+          console.error(
+            "Error fetching existing favorites:",
+            existingFavoritesError
+          );
           return;
         }
 
@@ -95,10 +103,8 @@ const Box = styled.div`
   padding: 10px 10px 10px 10px;
   border: 1px solid black;
   width: calc(33.33% - 10px);
-  /* width: 400px; 고정된 값으로 설정 */
   padding: 10px;
   margin-bottom: 20px;
-  /* flex: 0 0 calc(33.33% - 10px); */
   flex: 0 0 300px; /* flex-basis도 고정된 값으로 설정 */
   box-sizing: border-box;
   background-color: white;

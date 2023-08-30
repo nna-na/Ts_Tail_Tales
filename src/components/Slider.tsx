@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -12,9 +12,6 @@ interface CustomSliderProps {
 }
 
 const StyledSliderContainer = styled.div`
-  /* width: 100%; 컨테이너의 너비를 설정하세요 */
-  /* display: flex; */
-  /* justify-content: center; */
   margin-left: 50px;
 `;
 
@@ -64,15 +61,15 @@ function CustomSlider({ items }: CustomSliderProps) {
 
   return (
     <FavoritesProvider>
-    <StyledSliderContainer>
-      <StyledSlider {...settings}>
-        {items?.map((item: AnimalShelter) => (
-          <div key={item.ABDM_IDNTFY_NO}>
-            <PetCard item={item} />
-          </div>
-        ))}
-      </StyledSlider>
-     </StyledSliderContainer>
+      <StyledSliderContainer>
+        <StyledSlider {...settings}>
+          {items?.map((item: AnimalShelter) => (
+            <div key={item.ABDM_IDNTFY_NO}>
+              <PetCard item={item} />
+            </div>
+          ))}
+        </StyledSlider>
+      </StyledSliderContainer>
     </FavoritesProvider>
   );
 }

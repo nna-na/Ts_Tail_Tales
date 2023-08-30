@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import styled from "styled-components";
 import Create from "../components/comments/Create";
 import Comment from "../components/comments/Comment";
@@ -27,7 +27,11 @@ export default function PostDetail() {
     isError,
     error,
   } = useQuery(["posts", id], async () => {
-    const { data, error } = await supabase.from("posts").select("*").eq("id", id).single();
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("id", id)
+      .single();
 
     if (error) {
       throw error;
@@ -38,15 +42,22 @@ export default function PostDetail() {
   console.log("detailpostid", post);
 
   // 댓글 목록 가져오기
-  const { data: comments, isLoading: isLoadingComments } = useQuery(["comments", id], async () => {
-    const { data, error } = await supabase.from("comments").select("*").eq("postId", id).order("date", { ascending: true });
+  const { data: comments, isLoading: isLoadingComments } = useQuery(
+    ["comments", id],
+    async () => {
+      const { data, error } = await supabase
+        .from("comments")
+        .select("*")
+        .eq("postId", id)
+        .order("date", { ascending: true });
 
-    if (error) {
-      throw error;
+      if (error) {
+        throw error;
+      }
+
+      return data;
     }
-
-    return data;
-  });
+  );
 
   // 게시물 수정 후 댓글 목록 다시 가져오기
   const refreshPostData = async () => {

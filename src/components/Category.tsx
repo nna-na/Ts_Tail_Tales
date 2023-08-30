@@ -121,9 +121,6 @@ export default function Category({ query, onChange }: CategoryProps) {
             <option value="[기타축종]">다른친구들</option>
           </select>
         </div>
-        {/* <button className="button" type="submit">
-          조회
-        </button> */}
       </form>
     </Container>
   );

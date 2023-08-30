@@ -15,7 +15,11 @@ function Detail() {
     <DetailContainer className="detail container">
       <div className="top">
         <div className="img-container">
-          <img src={item.IMAGE_COURS} alt={item.ABDM_IDNTFY_NO} />
+          <img
+            className="petimg"
+            src={item.IMAGE_COURS}
+            alt={item.ABDM_IDNTFY_NO}
+          />
           <div id={item.ABDM_IDNTFY_NO} data-pet={item.pet} />
         </div>
         <div className="description">
@@ -118,7 +122,19 @@ const DetailContainer = styled.div`
     padding: 0 2rem;
   }
 
+  .petimg {
+    border-radius: 20px;
+    border: none;
+    height: 680px;
+  }
+
   .top {
+    border: 1px solid black;
+    padding: 15px 15px 15px 15px;
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+
     display: flex;
     flex-direction: column;
     margin-top: 2rem;
@@ -141,7 +157,7 @@ const DetailContainer = styled.div`
 
     img {
       width: 100%;
-      border: 1px solid ${(props) => props.theme.textBlack};
+      /* border: 1px solid ${(props) => props.theme.textBlack}; */
       aspect-ratio: 1/1;
       object-fit: cover;
     }
@@ -161,7 +177,7 @@ const DetailContainer = styled.div`
       align-items: center;
       color: #000000;
       padding-block: 1rem;
-      border: 1px solid ${(props) => props.theme.textBlack};
+      /* border: 1px solid ${(props) => props.theme.textBlack}; */
     }
 
     .table {
@@ -177,7 +193,7 @@ const DetailContainer = styled.div`
         grid-template-rows: auto;
         padding: 0.7rem 0.5rem;
         border-bottom: 1px solid ${(props) => props.theme.textBlack};
-        border-inline: 1px solid ${(props) => props.theme.textBlack};
+        /* border-inline: 1px solid ${(props) => props.theme.textBlack}; */
 
         span {
           display: flex;

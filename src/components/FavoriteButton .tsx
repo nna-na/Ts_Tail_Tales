@@ -107,11 +107,15 @@ function FavoriteButton({
       {isFavorite ? (
         <FaHeart
           style={{
-            color: "red",
+            color: "#f8b3b3",
           }}
         />
       ) : (
-        <FaRegHeart />
+        <FaRegHeart
+          style={{
+            color: "#f8b3b3",
+          }}
+        />
       )}
     </HeartBtn>
   );

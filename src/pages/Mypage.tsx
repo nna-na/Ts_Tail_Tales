@@ -71,12 +71,26 @@ function Mypage() {
     }
   }, [userEmail]);
 
+  const removeFavorite = (animalId: string) => {
+    setFavoriteAnimals((prevFavorites) =>
+      prevFavorites.filter((item) => item.ABDM_IDNTFY_NO !== animalId)
+    );
+  };
+
   return (
     <div className="Mypage">
       <h2>My Page</h2>
       <Container>
-        {favoriteAnimals.map((item) => (
-          <PetCard key={item.ABDM_IDNTFY_NO} item={item} />
+        {favoriteAnimals?.map((item) => (
+          <PetCard
+            key={item.ABDM_IDNTFY_NO}
+            item={item}
+            onRemoveFavorite={() => {
+              if (item.ABDM_IDNTFY_NO) {
+                removeFavorite(item.ABDM_IDNTFY_NO);
+              }
+            }}
+          />
         ))}
       </Container>
     </div>

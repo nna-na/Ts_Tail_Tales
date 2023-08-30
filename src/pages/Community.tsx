@@ -70,7 +70,7 @@ export default function Community() {
               {/* 이미지가 있을 때만 이미지 표시 */}
               {extractImages(post.content).length > 0 && (
                 <ImageContainer>
-                  {extractImages(post.content).map((imgUrl, index) => (
+                  {extractImages(post.content)?.map((imgUrl, index) => (
                     <img src={imgUrl} alt={`Image ${index}`} key={index} />
                   ))}
                 </ImageContainer>

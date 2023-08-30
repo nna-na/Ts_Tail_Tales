@@ -61,7 +61,7 @@ export default function Category({ query, onChange }: CategoryProps) {
             &nbsp;날짜
             <b>*</b>
           </label>
-          <div className="calender">
+          <span className="calender">
             <input
               className="input"
               name="PBLANC_BEGIN_DE"
@@ -69,7 +69,7 @@ export default function Category({ query, onChange }: CategoryProps) {
               value={PBLANC_BEGIN_DE}
               onChange={onChange}
               type="date"
-            ></input>
+            />
             <input
               className="input"
               name="PBLANC_END_DE"
@@ -77,8 +77,8 @@ export default function Category({ query, onChange }: CategoryProps) {
               value={PBLANC_END_DE}
               onChange={onChange}
               type="date"
-            ></input>
-          </div>
+            />
+          </span>
         </div>
         {/* 경기도내 시군구 */}
         <div className="box-form">
@@ -121,9 +121,9 @@ export default function Category({ query, onChange }: CategoryProps) {
             <option value="[기타축종]">다른친구들</option>
           </select>
         </div>
-        <button className="button" type="submit">
+        {/* <button className="button" type="submit">
           조회
-        </button>
+        </button> */}
       </form>
     </Container>
   );
@@ -131,4 +131,27 @@ export default function Category({ query, onChange }: CategoryProps) {
 
 const Container = styled.div`
   margin-top: 100px;
+  margin-bottom: 50px;
+
+  .form {
+    margin-left: 200px;
+    display: flex;
+    flex-wrap: wrap; /* 나열되는 항목을 여러 줄로 강제로 내려가게 설정 */
+    gap: 1rem; /* 각 항목 사이의 간격 조절 */
+  }
+
+  .box-form {
+    flex: 1; /* 각 항목의 가로 공간을 동일하게 나눠줌 */
+    /* 기존 스타일 유지 */
+  }
+
+  .input {
+    margin-left: 10px;
+    padding: 5px 5px 5px 5px;
+  }
+
+  .select {
+    margin-left: 10px;
+    padding: 5px 5px 5px 5px;
+  }
 `;

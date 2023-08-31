@@ -51,11 +51,18 @@ function Layout() {
     if (user) {
       return (
         <Link
+          style={{
+            color: "black",
+            textDecoration: "none",
+          }}
           to="/"
           onClick={async () => {
             await supabase.auth.signOut();
             setUser(null);
             setUserNickname(null); // 로그아웃 시 사용자 닉네임 초기화
+            sessionStorage.removeItem("user"); // 로그아웃 시 사용자 정보 제거
+            sessionStorage.removeItem("userNickname"); // 로그아웃 시 사용자 닉네임 제거
+            sessionStorage.removeItem("userEmail"); // 로그아웃 시 사용자 이메일 제거
             alert("로그아웃 됐다~~~");
           }}
         >
@@ -127,7 +134,12 @@ function Layout() {
               </div>
               <span>
                 {userNickname ? (
-                  <Link to={`/mypage/${user.id}`}>{userNickname}님</Link>
+                  <Link
+                    to={`/mypage/${user.id}`}
+                    style={{ color: "black", textDecoration: "none" }}
+                  >
+                    {userNickname}님
+                  </Link>
                 ) : (
                   `${user?.user_metadata.full_name}님`
                 )}

@@ -9,7 +9,6 @@ import Main from "./pages/Main";
 import PostCreate from "./pages/PostCreate";
 import PostEdit from "./pages/PostEdit";
 import Community from "./pages/Community";
-import Aboutus from "./pages/Aboutus";
 import PostDetail from "./pages/PostDetail";
 import { FavoritesProvider } from "./components/FavoritesContext";
 
@@ -30,7 +29,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/mypage/:id" element={<Mypage />} />
           <Route path="/community" element={<Community />} />
-          <Route path="/aboutus" element={<Aboutus />} />
         </Route>
 
         <Route

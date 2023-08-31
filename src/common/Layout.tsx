@@ -92,7 +92,7 @@ function Layout() {
           padding: "24px",
           backgroundColor: "#F8B3B3",
           color: "white",
-          zIndex: 1,
+          zIndex: 1000,
         }}
       >
         <Link to="/" style={{ color: "black", textDecoration: "none" }}>
@@ -131,7 +131,7 @@ function Layout() {
                 ) : (
                   `${user?.user_metadata.full_name}님`
                 )}
-                , 환영합니다.
+                , 환영합니다!
               </span>
             </div>
           ) : null}
@@ -143,12 +143,6 @@ function Layout() {
             style={{ color: "black", textDecoration: "none" }}
           >
             커뮤니티 |
-          </Link>
-          <Link
-            to="/aboutus"
-            style={{ color: "black", textDecoration: "none" }}
-          >
-            about us |
           </Link>
           {renderLoginButton()} {/* 이 위치에서 renderLoginButton 함수 호출 */}
         </div>

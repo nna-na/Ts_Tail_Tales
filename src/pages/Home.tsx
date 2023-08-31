@@ -14,7 +14,7 @@ function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const itemsPerPage = 15;
   const [selectedBeginDate, setSelectedBeginDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -84,7 +84,7 @@ function Home() {
 
   return (
     <FavoritesProvider>
-      <Div className="Home">
+      <Div>
         <div className="filtered">
           <span className="deadline">"공고 마감일"</span>이 얼마 남지 않은
           아이들!
@@ -146,8 +146,14 @@ const Div = styled.div`
 `;
 
 const Container = styled.div`
+  // display: flex;
+  // flex-wrap: wrap;
+  // justify-content: space-between;
+  // margin: 50px;
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
-  justify-content: space-between;
-  margin: 50px;
+  // margin: 100px;
+  grid-template-columns: repeat(3, 1fr); /* 세 개의 컬럼으로 그리드 설정 */
+  gap: 30px; /* 컬럼 간의 간격 */
 `;

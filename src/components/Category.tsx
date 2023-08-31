@@ -127,7 +127,7 @@ export default function Category({ query, onChange }: CategoryProps) {
 }
 
 const Container = styled.div`
-  margin-top: 150px;
+  margin-top: 50px;
   margin-bottom: 50px;
   background-color: white;
   padding: 30px 30px 30px 30px;

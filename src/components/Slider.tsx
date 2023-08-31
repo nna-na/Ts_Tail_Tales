@@ -18,20 +18,19 @@ const StyledSliderContainer = styled.div`
 
 const StyledSlider = styled(Slider)`
   .slick-slide > div {
-    width: 250%;
+    width: 300%;
     padding: 10px;
-    margin-bottom: 50px;
     box-sizing: border-box;
     max-width: 1000px;
   }
 
   .slick-prev {
-    left: -30px; /* 화살표 위치 조절 */
+    left: -40px; /* 화살표 위치 조절 */
     z-index: 1; /* 다른 콘텐츠 위에 표시되도록 */
   }
 
   .slick-next {
-    right: -30px; /* 화살표 위치 조절 */
+    right: -40px; /* 화살표 위치 조절 */
     z-index: 1; /* 다른 콘텐츠 위에 표시되도록 */
   }
 

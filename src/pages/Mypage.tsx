@@ -111,27 +111,33 @@ function Mypage() {
           <BackIcon />
           뒤로가기
         </BackButton>
-        <Container>
-          {currentFavoriteAnimals?.map((item) => (
-            <PetCard
-              key={item.ABDM_IDNTFY_NO}
-              item={item}
-              onRemoveFavorite={() => {
-                if (item.ABDM_IDNTFY_NO) {
-                  removeFavorite(item.ABDM_IDNTFY_NO);
-                }
-              }}
-            />
-          ))}
-        </Container>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <Container>
+            {currentFavoriteAnimals?.map((item) => (
+              <PetCard
+                key={item.ABDM_IDNTFY_NO}
+                item={item}
+                onRemoveFavorite={() => {
+                  if (item.ABDM_IDNTFY_NO) {
+                    removeFavorite(item.ABDM_IDNTFY_NO);
+                  }
+                }}
+              />
+            ))}
+          </Container>
+        )}
       </MyPage>
-      <PaginationContainer>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(favoriteAnimals.length / itemsPerPage)}
-          setCurrentPage={handlePageChange}
-        />
-      </PaginationContainer>
+      {!loading && (
+        <PaginationContainer>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(favoriteAnimals.length / itemsPerPage)}
+            setCurrentPage={handlePageChange}
+          />
+        </PaginationContainer>
+      )}
     </>
   );
 }

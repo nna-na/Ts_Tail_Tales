@@ -1,16 +1,40 @@
 import React, { useState, FormEvent } from "react";
 import { supabase } from "../supabase";
 import { styled } from "styled-components";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
 function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
-
+  const navigate = useNavigate();
   const signupHandler = async (e: FormEvent) => {
     e.preventDefault();
-
+    if (!email && !password && !nickname) {
+      alert("이메일과 비밀번호, 닉네임을 입력해주세요.");
+      return;
+    }
+    // 추가: 이메일 유효성 검사
+    if (!email) {
+      alert("이메일을 입력해주세요.");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
+    if (!emailRegex.test(email)) {
+      alert("올바른 이메일 형식이 아닙니다.");
+      return;
+    }
+    // 추가: 비밀번호 유효성 검사
+    if (!password) {
+      alert("비밀번호를 입력해주세요.");
+      return;
+    } else if (password.length < 6) {
+      alert("비밀번호 6자리 이상 입력해주세요.");
+      return;
+    }
+    if (!nickname) {
+      alert("닉네임을 입력해주세요.");
+      return;
+    }
     try {
       const { data: signUpData, error: signUpError } =
         await supabase.auth.signUp({
@@ -22,7 +46,6 @@ function SignUp() {
             },
           },
         });
-
       if (!signUpError) {
         // 회원 가입 성공 시 추가 정보 업데이트
         if (signUpData?.user) {
@@ -35,12 +58,8 @@ function SignUp() {
                 nickname,
               },
             ]);
-
-          if (profileError) {
-            alert("회원 정보 추가 중 오류가 발생했습니다.");
-          } else {
-            alert("회원 가입 및 추가 정보 등록이 완료되었습니다.");
-          }
+          alert("회원 가입 완료되었습니다.");
+          navigate("/home");
         } else {
           alert("회원 가입 중 오류가 발생했습니다.");
         }
@@ -51,14 +70,13 @@ function SignUp() {
       alert("알 수 없는 오류가 발생했습니다.");
     }
   };
-
   return (
     <SignupContainer>
       <form onSubmit={signupHandler}>
         <InputContainer>
           <div>
             <InputLabel>이메일</InputLabel>
-
+            ​
             <InputBox
               type="email"
               id="email"
@@ -69,7 +87,7 @@ function SignUp() {
           </div>
           <div>
             <InputLabel>비밀번호</InputLabel>
-
+            ​
             <InputBox
               type="password"
               id="password"
@@ -80,7 +98,7 @@ function SignUp() {
           </div>
           <div>
             <InputLabel>닉네임</InputLabel>
-
+            ​
             <InputBox
               type="text"
               id="nickname"
@@ -99,7 +117,6 @@ function SignUp() {
     </SignupContainer>
   );
 }
-
 const SignupContainer = styled.div`
   margin: auto;
   background-color: #fff;
@@ -108,7 +125,6 @@ const SignupContainer = styled.div`
   height: 700px;
   border-radius: 10px;
 `;
-
 const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -123,7 +139,6 @@ const InputLabel = styled.div`
   font-weight: bold;
   justify-content: center;
 `;
-
 const InputBox = styled.input`
   width: 282px;
   height: 30px;
@@ -132,13 +147,11 @@ const InputBox = styled.input`
   font-size: 15px;
   display: inline-block;
   outline: none;
-
-  &:focus {
+  ​ &:focus {
     border: 2px solid #333;
     border-radius: 3px;
   }
 `;
-
 const StButton = styled.button`
   width: 300px;
   height: 50px;
@@ -154,12 +167,10 @@ const NoAccountMessage = styled.div`
   margin-top: 10px;
   font-size: 14px;
   color: #555;
-
-  a {
+  ​ a {
     color: #333;
     text-decoration: underline;
-
-    &:hover {
+    ​ &:hover {
       color: #555;
     }
   }

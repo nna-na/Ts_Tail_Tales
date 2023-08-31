@@ -3,45 +3,49 @@ import { supabase } from "../supabase";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
-
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(""); // 추가: 이메일 유효성 에러 메시지
   const [passwordError, setPasswordError] = useState(""); // 추가: 비밀번호 유효성 에러 메시지
-
   const navigate = useNavigate();
-
   async function signInWithEmail(e: FormEvent) {
     e.preventDefault();
-
+    if (!email && !password) {
+      alert("이메일과 비밀번호를 입력해주세요.");
+      return;
+    }
     // 추가: 이메일 유효성 검사
     if (!email) {
-      setEmailError("이메일을 입력해주세요.");
+      alert("이메일을 입력해주세요.");
       return;
     }
-    setEmailError("");
-
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
+    if (!emailRegex.test(email)) {
+      alert("올바른 이메일 형식이 아닙니다.");
+      return;
+    }
     // 추가: 비밀번호 유효성 검사
     if (!password) {
-      setPasswordError("비밀번호를 입력해주세요.");
+      alert("비밀번호를 입력해주세요.");
+      return;
+    } else if (password.length < 6) {
+      alert("비밀번호 6자리 이상 입력해주세요.");
       return;
     }
-    setPasswordError("");
-
+    // 이메일 형식 검사
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-
     if (error) {
       console.error(error);
       // 에러 처리: 에러 메시지를 사용자에게 보여주거나 다른 처리를 수행합니다.
-      alert("이메일 또는 비밀번호가 일치하지 않습니다.");
+      alert("일치하는 정보가 없습니다.");
     } else if (data) {
       // 로그인 성공
       const { user, session } = data;
-      alert("로그인 완료");
+      alert("로그인 완료되었습니다.");
       navigate("/");
     }
   }

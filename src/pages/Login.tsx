@@ -1,39 +1,77 @@
 import React, { useState, useEffect, FormEvent } from "react";
-// import { createClient } from "@supabase/supabase-js";
-// import { Auth } from "@supabase/auth-ui-react";
-// import { ThemeSupa } from "@supabase/auth-ui-shared";
-// import { Session } from "@supabase/supabase-js"; // @supabase/supabase-js에서 제공하는 Session 타입을 가져옵니다.
 import { supabase } from "../supabase";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 
 function Login() {
-  const [email, setEmail] = useState(""); // 이메일을 위한 상태 변수
-  const [password, setPassword] = useState(""); // 비밀번호를 위한 상태 변수
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState(""); // 추가: 이메일 유효성 에러 메시지
+  const [passwordError, setPasswordError] = useState(""); // 추가: 비밀번호 유효성 에러 메시지
 
   const navigate = useNavigate();
 
   async function signInWithEmail(e: FormEvent) {
     e.preventDefault();
+
+    // 추가: 이메일 유효성 검사
+    if (!email) {
+      setEmailError("이메일을 입력해주세요.");
+      return;
+    }
+    setEmailError("");
+
+    // 추가: 비밀번호 유효성 검사
+    if (!password) {
+      setPasswordError("비밀번호를 입력해주세요.");
+      return;
+    }
+    setPasswordError("");
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    console.log(data);
-    console.log(error);
+
+    if (error) {
+      console.error(error);
+      // 에러 처리: 에러 메시지를 사용자에게 보여주거나 다른 처리를 수행합니다.
+      alert("이메일 또는 비밀번호가 일치하지 않습니다.");
+    } else if (data) {
+      // 로그인 성공
+      const { user, session } = data;
+      alert("로그인 완료");
+      navigate("/");
+    }
   }
 
   const loginWithKakao = async () => {
-    await supabase.auth.signInWithOAuth({
+    const response = await supabase.auth.signInWithOAuth({
       provider: "kakao",
     });
+
+    if (response.error) {
+      console.error(response.error);
+      // 에러 처리
+    } else {
+      alert("로그인 완료");
+      // 다른 처리 또는 리디렉션을 여기에 추가할 수 있습니다.
+    }
   };
 
   const loginWithGoogle = async () => {
-    await supabase.auth.signInWithOAuth({
+    const response = await supabase.auth.signInWithOAuth({
       provider: "google",
     });
+
+    if (response.error) {
+      console.error(response.error);
+      // 에러 처리
+    } else {
+      alert("로그인 완료");
+      // 다른 처리 또는 리디렉션을 여기에 추가할 수 있습니다.
+    }
   };
 
   return (
@@ -58,14 +96,7 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <StButton
-            onClick={() => {
-              alert("로그인 완료.");
-              // navigate("/home");
-            }}
-          >
-            로그인
-          </StButton>
+          <StButton>로그인</StButton>
         </form>
         <br />
         <div>

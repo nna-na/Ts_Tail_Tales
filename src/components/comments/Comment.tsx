@@ -25,7 +25,11 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
   } = useQuery(
     ["comments", id],
     async () => {
-      const { data, error } = await supabase.from("comments").select("*").eq("postId", id).order("date", { ascending: true });
+      const { data, error } = await supabase
+        .from("comments")
+        .select("*")
+        .eq("postId", id)
+        .order("date", { ascending: true });
 
       if (error) {
         throw error;
@@ -44,35 +48,22 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
       setUser(JSON.parse(storedUser));
     }
 
-    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        setUser(session.user);
-        sessionStorage.setItem("user", JSON.stringify(session.user));
-      } else if (event === "SIGNED_OUT") {
-        setUser(null);
-        sessionStorage.removeItem("user");
+    const authSubscription = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN" && session) {
+          setUser(session.user);
+          sessionStorage.setItem("user", JSON.stringify(session.user));
+        } else if (event === "SIGNED_OUT") {
+          setUser(null);
+          sessionStorage.removeItem("user");
+        }
       }
-    });
+    );
 
     return () => {
       authSubscription.data.subscription.unsubscribe();
     };
   }, []);
-
-  // 사용자 닉네임 가져오기
-  useEffect(() => {
-    async function fetchUserNickname() {
-      if (user) {
-        const { data, error } = await supabase.from("users").select("nickname").eq("id", user.id).single();
-        if (error) {
-          console.error("사용자 정보를 가져올 수 없습니다:", error);
-        } else {
-          setUserNickname(data?.nickname || null);
-        }
-      }
-    }
-    fetchUserNickname();
-  }, [user]);
 
   const handleDelete = async (commentId: string) => {
     if (window.confirm("정말 삭제하시겠습니까?")) {
@@ -122,7 +113,15 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                     marginRight: "10px",
                   }}
                 >
-                  <img src={comment.avatar_url || "/image/profile.jpg"} alt="User Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img
+                    src={comment.avatar_url || "/image/profile.jpg"}
+                    alt="User Avatar"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
                 </div>
                 <div style={{ flex: 1 }}>
                   <strong>{comment.userNickname || "익명"}</strong> <br />
@@ -138,10 +137,27 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                 </div>
                 {email === comment.email && (
                   <div style={{ marginLeft: "auto" }}>
-                    <button style={{ color: "gray", marginRight: "5px", border: "none", background: "none", cursor: "pointer" }} onClick={() => setEditingCommentId(comment.id)}>
+                    <button
+                      style={{
+                        color: "gray",
+                        marginRight: "5px",
+                        border: "none",
+                        background: "none",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => setEditingCommentId(comment.id)}
+                    >
                       수정
                     </button>
-                    <button style={{ color: "#dd3a3a", border: "none", background: "none", cursor: "pointer" }} onClick={() => handleDelete(comment.id)}>
+                    <button
+                      style={{
+                        color: "#dd3a3a",
+                        border: "none",
+                        background: "none",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => handleDelete(comment.id)}
+                    >
                       삭제
                     </button>
                   </div>

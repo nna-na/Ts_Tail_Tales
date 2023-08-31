@@ -119,4 +119,10 @@ const HeartBtn = styled.button`
   border: none;
   background-color: white;
   font-size: 30px;
+  cursor: pointer;
+  transition: transform 0.3s ease; /* 추가: 변환 애니메이션 효과 */
+
+  &:hover {
+    transform: scale(1.2); /* 추가: 마우스 오버 시 크기 조정 */
+  }
 `;

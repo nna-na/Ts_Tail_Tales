@@ -98,8 +98,8 @@ export default function PostDetail() {
 
   return (
     <Container>
-      <BackButton onClick={() => navigate("/community")}>
-        <BackIcon />
+      <BackButton onClick={() => navigate("/community")} className="backbutton">
+        <BackIcon className="backicon" />
         뒤로가기
       </BackButton>
       <p>
@@ -144,6 +144,15 @@ const Container = styled.div`
   padding: 20px;
   width: 1000px;
   margin: 0 auto; /* 수평 가운데 정렬 */
+
+  // /* 중앙 정렬 및 양옆 공백 설정 */
+  // max-width: 1200px; /* 원하는 최대 너비로 조정 */
+  // margin: 0 auto;
+  // padding: 0 1rem;
+
+  // @media (min-width: 700px) {
+  //   padding: 0 2rem;
+  // }
 `;
 
 const Title = styled.h3`
@@ -162,6 +171,7 @@ const Content = styled.div`
   border: 1px solid #e8e8e8;
   border-radius: 8px;
   text-align: center;
+  overflow: hidden; /* 내용이 넘칠 경우 숨김 처리 */
 `;
 
 const ButtonContainer = styled.div`

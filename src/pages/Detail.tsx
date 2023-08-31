@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { styled } from "styled-components";
 import Kakao from "./Kakao";
 import { formatDate } from "../api/fetchData";
+import { FiArrowLeft } from "react-icons/fi";
 
 function Detail() {
   const location = useLocation();
@@ -13,13 +14,14 @@ function Detail() {
   };
   return (
     <>
-      <button
+      <BackButton
         onClick={() => {
           window.history.back();
         }}
       >
+        <BackIcon />
         뒤로가기
-      </button>
+      </BackButton>
       <DetailContainer className="detail container">
         <div className="top">
           <div className="img-container">
@@ -116,7 +118,25 @@ function Detail() {
 }
 
 export default Detail;
+const BackButton = styled.button`
+  margin-top: 20px;
+  margin-left: 200px;
+  padding: 10px 20px;
+  background-color: #f8b3b3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  &:hover {
+    background-color: #f8b3b3;
+    transform: scale(1.05);
+  }
+`;
 
+const BackIcon = styled(FiArrowLeft)`
+  margin-right: 5px;
+`;
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;

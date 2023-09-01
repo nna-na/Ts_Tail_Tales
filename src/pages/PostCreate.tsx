@@ -5,6 +5,7 @@ import { v4 as uuid } from "uuid"; // uuid 패키지에서 v4 함수 임포트
 import { User } from "@supabase/supabase-js";
 import { supabase } from "../supabase";
 import PostImg from "../components/posts/PostImg";
+import { FiArrowLeft } from "react-icons/fi";
 
 export default function PostCreate(data: any) {
   const [title, setTitle] = useState("");
@@ -19,7 +20,9 @@ export default function PostCreate(data: any) {
     if (storedUser) {
       const user = JSON.parse(storedUser);
       setUser(user);
-      setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
+      setUserNickname(
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
     }
   }, []);
 
@@ -84,6 +87,14 @@ export default function PostCreate(data: any) {
 
   return (
     <Container>
+      <BackButton
+        onClick={() => {
+          window.history.back();
+        }}
+      >
+        <BackIcon />
+        뒤로가기
+      </BackButton>
       <Form onSubmit={handleSubmit}>
         <h2>게시글 작성</h2>
         <FormItem>
@@ -92,7 +103,11 @@ export default function PostCreate(data: any) {
         </FormItem>
         <FormItem>
           <label>내용:</label>
-          <PostImg onContentChange={handleContentChange} initialContent={content} /> {/* data.content가 아닌 content를 사용 */}
+          <PostImg
+            onContentChange={handleContentChange}
+            initialContent={content}
+          />{" "}
+          {/* data.content가 아닌 content를 사용 */}
         </FormItem>
         <SubmitButton type="submit">작성</SubmitButton>
       </Form>
@@ -102,6 +117,24 @@ export default function PostCreate(data: any) {
 
 const Container = styled.div`
   padding: 20px;
+`;
+
+const BackButton = styled.button`
+  padding: 10px 20px;
+  background-color: #f8b3b3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  &:hover {
+    background-color: #f8b3b3;
+    transform: scale(1.05);
+  }
+`;
+
+const BackIcon = styled(FiArrowLeft)`
+  margin-right: 5px;
 `;
 
 const Form = styled.form`

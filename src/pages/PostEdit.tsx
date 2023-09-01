@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import styled from "styled-components";
 import PostImg from "../components/posts/PostImg";
 import { supabase } from "../supabase"; // Supabase 클라이언트 임포트
+import { FiArrowLeft } from "react-icons/fi";
 
 interface Post {
   id: number;
@@ -148,6 +149,14 @@ export default function PostEdit() {
 
   return (
     <Container>
+      <BackButton
+        onClick={() => {
+          window.history.back();
+        }}
+      >
+        <BackIcon />
+        뒤로가기
+      </BackButton>
       <Form onSubmit={handleUpdate}>
         <h2>게시글 수정</h2>
         <FormItem>
@@ -170,6 +179,24 @@ export default function PostEdit() {
 
 const Container = styled.div`
   padding: 20px;
+`;
+
+const BackButton = styled.button`
+  padding: 10px 20px;
+  background-color: #f8b3b3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  &:hover {
+    background-color: #f8b3b3;
+    transform: scale(1.05);
+  }
+`;
+
+const BackIcon = styled(FiArrowLeft)`
+  margin-right: 5px;
 `;
 
 const Form = styled.form`

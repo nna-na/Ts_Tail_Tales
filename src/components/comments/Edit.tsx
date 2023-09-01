@@ -14,7 +14,13 @@ interface Comment {
   avatar_url: string;
 }
 
-export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateComplete: () => void }) {
+export default function Edit({
+  id,
+  onUpdateComplete,
+}: {
+  id: string;
+  onUpdateComplete: () => void;
+}) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -24,7 +30,11 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
     isError,
     error,
   } = useQuery<Comment>(["comments", id], async () => {
-    const { data, error } = await supabase.from("comments").select("*").eq("id", id).single();
+    const { data, error } = await supabase
+      .from("comments")
+      .select("*")
+      .eq("id", id)
+      .single();
 
     if (error) {
       throw error;
@@ -37,7 +47,10 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
     async (updatedComment) => {
       try {
         // 기존 댓글 삭제
-        const { error: deleteError } = await supabase.from("comments").delete().eq("id", updatedComment.id);
+        const { error: deleteError } = await supabase
+          .from("comments")
+          .delete()
+          .eq("id", updatedComment.id);
 
         if (deleteError) {
           console.error("댓글 삭제 중 오류 발생:", deleteError);
@@ -45,7 +58,9 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
         }
 
         // 댓글 업데이트
-        const { data, error } = await supabase.from("comments").upsert([updatedComment]);
+        const { data, error } = await supabase
+          .from("comments")
+          .upsert([updatedComment]);
 
         if (error) {
           console.error("댓글 수정 중 오류 발생:", error);
@@ -109,7 +124,7 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
 
     queryClient.invalidateQueries(["comments", id]);
     onUpdateComplete();
-    window.location.reload();
+    // window.location.reload();
   };
 
   if (isLoading) {

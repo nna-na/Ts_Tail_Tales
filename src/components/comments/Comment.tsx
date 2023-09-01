@@ -5,6 +5,7 @@ import Edit from "./Edit";
 import Delete from "./Delete";
 import { supabase } from "../../supabase"; // Supabase 클라이언트 임포트
 import { User } from "@supabase/supabase-js";
+import Pagination from "../Pagination";
 
 interface CommentProps {
   comments?: any[];
@@ -25,11 +26,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
   } = useQuery(
     ["comments", id],
     async () => {
-      const { data, error } = await supabase
-        .from("comments")
-        .select("*")
-        .eq("postId", id)
-        .order("date", { ascending: true });
+      const { data, error } = await supabase.from("comments").select("*").eq("postId", id).order("date", { ascending: true });
 
       if (error) {
         throw error;
@@ -48,17 +45,15 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
       setUser(JSON.parse(storedUser));
     }
 
-    const authSubscription = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "SIGNED_IN" && session) {
-          setUser(session.user);
-          sessionStorage.setItem("user", JSON.stringify(session.user));
-        } else if (event === "SIGNED_OUT") {
-          setUser(null);
-          sessionStorage.removeItem("user");
-        }
+    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        setUser(session.user);
+        sessionStorage.setItem("user", JSON.stringify(session.user));
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+        sessionStorage.removeItem("user");
       }
-    );
+    });
 
     return () => {
       authSubscription.data.subscription.unsubscribe();
@@ -77,6 +72,18 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
     }
   };
 
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
+  const itemsPerPage = 5; // 페이지당 댓글 수
+
+  const handlePageChange = (newPage: number): void => {
+    setCurrentPage(newPage);
+  };
+
+  const indexOfLastComment = currentPage * itemsPerPage;
+  const indexOfFirstComment = indexOfLastComment - itemsPerPage;
+
+  const currentComments = commentData!.slice(indexOfFirstComment, indexOfLastComment);
+
   if (isLoading) {
     return <div>로딩 중 ...</div>;
   }
@@ -93,6 +100,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
   const email = sessionStorage.getItem("userEmail")?.toLowerCase();
 
   console.log("user", user);
+
   return (
     <div>
       <p>{commentData.length}개의 댓글</p>
@@ -101,7 +109,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
         <div>로딩 중 ...</div>
       ) : (
         <>
-          {commentData?.map((comment) => (
+          {currentComments?.map((comment) => (
             <div key={comment.id}>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div
@@ -182,6 +190,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
               )}
             </div>
           ))}
+          <Pagination currentPage={currentPage} totalPages={Math.ceil(commentData.length / itemsPerPage)} setCurrentPage={handlePageChange} />
         </>
       )}
     </div>

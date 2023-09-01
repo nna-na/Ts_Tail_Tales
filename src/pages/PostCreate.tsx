@@ -125,11 +125,18 @@ const BackButton = styled.button`
   color: white;
   border: none;
   border-radius: 8px;
+  margin-left: 380px;
   cursor: pointer;
   text-decoration: none;
   &:hover {
     background-color: #f8b3b3;
     transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    // 화면 너비가 768px 이하일 때
+    margin-left: 0; // 마진을 0으로 조정하여 가운데 정렬
+    margin-top: 10px; // 상단 마진을 추가하여 버튼 간 간격 확보/
   }
 `;
 

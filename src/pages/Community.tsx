@@ -24,10 +24,7 @@ export default function Community() {
   const currentPosts = posts.slice(indexOfFirstItem, indexOfLastItem);
   const fetchPosts = async () => {
     try {
-      const { data: posts, error } = await supabase
-        .from("posts")
-        .select("*")
-        .order("date", { ascending: false });
+      const { data: posts, error } = await supabase.from("posts").select("*").order("date", { ascending: false });
       if (error) {
         console.error("게시물 가져오기 오류:", error);
       } else {
@@ -51,26 +48,19 @@ export default function Community() {
     return [];
   };
   return (
-    <>
+    <Wrap>
       <Title>커뮤니티</Title>
       <Container>
         <PostsGrid>
           {currentPosts?.map((post) => (
             <PostBox key={post.id}>
-              <Link
-                to={`/post-detail/${post.id}`}
-                style={{ textDecoration: "none" }}
-              >
+              <Link to={`/post-detail/${post.id}`} style={{ textDecoration: "none" }}>
                 <PostContent>
                   <ImgDiv>
                     {extractImages(post.content).length > 0 && (
                       <ImageContainer>
                         {extractImages(post.content)?.map((imgUrl, index) => (
-                          <img
-                            src={extractImages(post.content)[0]}
-                            alt={`Image ${index}`}
-                            key={index}
-                          />
+                          <img src={extractImages(post.content)[0]} alt={`Image ${index}`} key={index} />
                         ))}
                       </ImageContainer>
                     )}
@@ -87,45 +77,85 @@ export default function Community() {
         </CreateButton>
       </Container>
       <PaginationContainer>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(posts.length / itemsPerPage)}
-          setCurrentPage={setCurrentPage}
-        />
+        <Pagination currentPage={currentPage} totalPages={Math.ceil(posts.length / itemsPerPage)} setCurrentPage={setCurrentPage} />
       </PaginationContainer>
-    </>
+    </Wrap>
   );
 }
+
+const Wrap = styled.div`
+  max-width: 1500px;
+  margin: 0 auto;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
+`;
+
 const Title = styled.div`
   font-size: 2rem;
   font-weight: bold;
   text-align: center;
   margin-bottom: 20px;
   margin-top: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
 `;
+
 const Container = styled.div`
   padding: 20px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
 `;
+
 const PostsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
+  gap: 80px;
+
+  // // 반응형
+  // grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 변경된 부분 */
+  // width: 80%; /* 변경된 부분 */
+
+  // 모바일 반응형
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr); /* 2개씩 보이도록 변경 */
+    gap: 50px; /* 간격 조정 */
+    width: 80%; /* 너비를 화면에 맞추기 위해 변경 */
+  }
 `;
 const PostBox = styled.div`
   border: none;
   padding: 10px;
   padding-top: 30px;
-  margin-top: 10px;
+  margin-bottom: -20px;
   width: 450px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
   overflow: hidden;
+  width: 100%;
+
+  // 모바일 반응형
+  @media (max-width: 768px) {
+    width: 220px;
+    width: 100%;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 const PostContent = styled.div`
   display: flex;
@@ -148,14 +178,28 @@ const CreateButton = styled(Link)`
   text-decoration: none;
   box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
   transition: background-color 0.3s ease, transform 0.3s ease;
+
+  // 반응형
+  // width: 60px; /* 변경된 부분 */
+  // height: 60px; /* 변경된 부분 */
+  // font-size: 1.2rem; /* 변경된 부분 */
+
   &:hover {
     background-color: #dd3a3a;
     transform: scale(1.05);
   }
+
+  //반응형
+  @media (min-width: 768px) {
+    /* 대화형 미디어 쿼리 */
+    width: 100px;
+    height: 100px;
+    font-size: 1.5rem;
+  }
 `;
 const ImgDiv = styled.div`
   width: 300px;
-  height: 250px;
+  height: auto;
 `;
 const PostTitle = styled.h2`
   font-size: 1.5rem;
@@ -165,7 +209,7 @@ const PostTitle = styled.h2`
 const ImageContainer = styled.div`
   max-width: 100%;
   height: 0;
-  padding-bottom: ${(250 / 300) * 100}%;
+  padding-bottom: ${(230 / 300) * 100}%;
   position: relative;
   display: flex;
   align-items: center;
@@ -180,9 +224,13 @@ const ImageContainer = styled.div`
     object-fit: cover;
     border-radius: 10px;
   }
+  // 반응형
+  @media (max-width: 768px) {
+    padding-bottom: ${(180 / 300) * 100}%;
+  }
 `;
 const PaginationContainer = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 40px;
 `;

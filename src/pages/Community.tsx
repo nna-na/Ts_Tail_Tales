@@ -47,6 +47,9 @@ export default function Community() {
     }
     return [];
   };
+
+  const user = JSON.parse(sessionStorage.getItem("user") || "{}") as { email: string } | null;
+
   return (
     <Wrap>
       <Title>커뮤니티</Title>
@@ -72,9 +75,11 @@ export default function Community() {
             </PostBox>
           ))}
         </PostsGrid>
-        <CreateButton to="/create">
-          <h5 className="fas fa-plus">작성</h5>
-        </CreateButton>
+        {user?.email && (
+          <CreateButton to="/create">
+            <h5 className="fas fa-plus">작성</h5>
+          </CreateButton>
+        )}
       </Container>
       <PaginationContainer>
         <Pagination currentPage={currentPage} totalPages={Math.ceil(posts.length / itemsPerPage)} setCurrentPage={setCurrentPage} />

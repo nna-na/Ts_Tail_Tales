@@ -24,16 +24,18 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
   }, []);
 
   useEffect(() => {
-    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        setUser(session.user);
-        sessionStorage.setItem("user", JSON.stringify(session.user));
-      } else if (event === "SIGNED_OUT") {
-        setUser(null);
-        setUserNickname(null);
-        sessionStorage.removeItem("user");
+    const authSubscription = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN" && session) {
+          setUser(session.user);
+          sessionStorage.setItem("user", JSON.stringify(session.user));
+        } else if (event === "SIGNED_OUT") {
+          setUser(null);
+          setUserNickname(null);
+          sessionStorage.removeItem("user");
+        }
       }
-    });
+    );
 
     return () => {
       authSubscription.data.subscription.unsubscribe();
@@ -42,8 +44,13 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
 
   useEffect(() => {
     if (user) {
-      setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
-      sessionStorage.setItem("userNickname", user.user_metadata.user_name || user.user_metadata.full_name);
+      setUserNickname(
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
+      sessionStorage.setItem(
+        "userNickname",
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
     }
   }, [user]);
 
@@ -61,7 +68,9 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
   >(
     async (newComment) => {
       try {
-        const { data, error } = await supabase.from("comments").upsert([newComment]);
+        const { data, error } = await supabase
+          .from("comments")
+          .upsert([newComment]);
 
         if (error) {
           console.error("댓글 작성 중 오류 발생:", error);
@@ -102,7 +111,7 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       userNickname: userNickname || user?.user_metadata.full_name,
       date: new Date().toISOString().slice(0, 19).replace("T", " "), // 현재 시간을 문자열로 변환
       email: user!.email,
-      avatar_url: user?.user_metadata.avatar_url,
+      avatar_url: user?.user_metadata.avatar_url || "",
     };
 
     try {
@@ -118,7 +127,11 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
   return (
     <CreateContainer>
       <CreateForm onSubmit={handleSubmit}>
-        <CreateTextarea placeholder="댓글을 입력하세요" value={content} onChange={(e) => setContent(e.target.value)} />
+        <CreateTextarea
+          placeholder="댓글을 입력하세요"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+        />
         <CreateButton type="submit">작성</CreateButton>
       </CreateForm>
     </CreateContainer>
@@ -141,6 +154,9 @@ const CreateTextarea = styled.textarea`
   font-size: 15px;
   padding: 10px;
   margin-bottom: 10px;
+  border: none;
+  border: 1px solid #b5b5b5;
+  border-radius: 8px;
 `;
 
 const CreateButton = styled.button`

@@ -1,0 +1,34 @@
+.slide-navigation button:nth-child(1) {
+  display: none;
+}
+
+.slide-navigation button:nth-last-child(1) {
+  display: none;
+}
+
+.slide-navigation button {
+  background-color: #b29696;
+  border: none;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  margin: 0 5px;
+  font-size: 0px;
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+.slide-navigation {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  right: -95%;
+  top: 50%;
+  transform: translate(0, -50%);
+  z-index: 99999;
+}
+
+.slide-navigation button:disabled {
+  background-color: #dd3a3a;
+}

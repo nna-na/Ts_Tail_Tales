@@ -20,7 +20,7 @@ interface Post {
 
 export default function Community() {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+  const itemsPerPage = 6;
 
   const [posts, setPosts] = useState<Post[]>([]);
 
@@ -31,10 +31,7 @@ export default function Community() {
 
   const fetchPosts = async () => {
     try {
-      const { data: posts, error } = await supabase
-        .from("posts")
-        .select("*")
-        .order("date", { ascending: false });
+      const { data: posts, error } = await supabase.from("posts").select("*").order("date", { ascending: false });
 
       if (error) {
         console.error("게시물 가져오기 오류:", error);
@@ -61,6 +58,8 @@ export default function Community() {
     return [];
   };
 
+  const user = JSON.parse(sessionStorage.getItem("user") || "{}") as { email: string } | null;
+
   return (
     <>
       <Title>커뮤니티</Title>
@@ -68,20 +67,13 @@ export default function Community() {
         <PostsGrid>
           {currentPosts?.map((post) => (
             <PostBox key={post.id}>
-              <Link
-                to={`/post-detail/${post.id}`}
-                style={{ textDecoration: "none" }}
-              >
+              <Link to={`/post-detail/${post.id}`} style={{ textDecoration: "none" }}>
                 <PostContent>
                   <ImgDiv>
                     {extractImages(post.content).length > 0 && (
                       <ImageContainer>
                         {extractImages(post.content)?.map((imgUrl, index) => (
-                          <img
-                            src={imgUrl}
-                            alt={`Image ${index}`}
-                            key={index}
-                          />
+                          <img src={imgUrl} alt={`Image ${index}`} key={index} />
                         ))}
                       </ImageContainer>
                     )}
@@ -93,16 +85,14 @@ export default function Community() {
             </PostBox>
           ))}
         </PostsGrid>
-        <CreateButton to="/create">
-          <h5 className="fas fa-plus">작성</h5>
-        </CreateButton>
+        {user?.email && (
+          <CreateButton to="/create">
+            <h5 className="fas fa-plus">작성</h5>
+          </CreateButton>
+        )}
       </Container>
       <PaginationContainer>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(posts.length / itemsPerPage)}
-          setCurrentPage={setCurrentPage}
-        />
+        <Pagination currentPage={currentPage} totalPages={Math.ceil(posts.length / itemsPerPage)} setCurrentPage={setCurrentPage} />
       </PaginationContainer>
     </>
   );
@@ -122,6 +112,8 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 90%;
+  margin: 0 auto;
 `;
 
 const PostsGrid = styled.div`
@@ -133,14 +125,17 @@ const PostsGrid = styled.div`
 const PostBox = styled.div`
   border: none;
   padding: 10px;
-  padding-top: 30px;
+  padding-top: 20px; /* 상단 여백을 줄임 */
   margin-top: 10px;
-  width: 450px;
+  width: 100%; /* 이미지 박스의 가로 너비를 100%로 설정 */
+  max-width: 300px; /* 최대 가로 너비를 지정하고, 화면 크기에 따라 조절됩니다. */
   display: flex;
+  flex-direction: column; /* 포스트 내용을 세로로 정렬하기 위해 추가 */
   align-items: center;
   justify-content: center;
   box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
   overflow: hidden;
+  border-radius: 20px;
 `;
 
 const PostContent = styled.div`
@@ -174,7 +169,7 @@ const CreateButton = styled(Link)`
 
 const ImgDiv = styled.div`
   width: 300px;
-  height: 250px;
+  height: 200px;
 `;
 
 const PostTitle = styled.h2`
@@ -186,7 +181,7 @@ const PostTitle = styled.h2`
 const ImageContainer = styled.div`
   max-width: 100%;
   height: 0;
-  padding-bottom: ${(250 / 300) * 100}%;
+  padding-bottom: ${(200 / 300) * 100}%;
   position: relative;
   display: flex;
   align-items: center;

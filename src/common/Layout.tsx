@@ -46,7 +46,6 @@ function Layout() {
     }
   }, [user]);
 
-  // 로그인 또는 로그아웃 버튼을 렌더링하는 함수
   const renderLoginButton = () => {
     if (user) {
       // 사용자가 로그인한 경우 로그아웃 링크를 표시

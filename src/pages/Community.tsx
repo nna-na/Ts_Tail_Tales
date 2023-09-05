@@ -20,7 +20,7 @@ interface Post {
 
 export default function Community() {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 9;
 
   const [posts, setPosts] = useState<Post[]>([]);
 
@@ -87,7 +87,7 @@ export default function Community() {
         </PostsGrid>
         {user?.email && (
           <CreateButton to="/create">
-            <h5 className="fas fa-plus">작성</h5>
+            <CreateBtn className="fas fa-plus">작성하기</CreateBtn>
           </CreateButton>
         )}
       </Container>
@@ -99,11 +99,11 @@ export default function Community() {
 }
 
 const Title = styled.div`
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   text-align: center;
   margin-bottom: 20px;
-  margin-top: 20px;
+  margin-top: 50px;
 `;
 
 const Container = styled.div`
@@ -149,10 +149,10 @@ const CreateButton = styled(Link)`
   bottom: 20px;
   right: 20px;
   width: 100px;
-  height: 100px;
-  background-color: #f8b3b3;
+  height: 40px;
+  background-color: #746464;
   color: white;
-  border-radius: 50%;
+  border-radius: 40px;
   font-size: 1.5rem;
   display: flex;
   align-items: center;
@@ -173,7 +173,7 @@ const ImgDiv = styled.div`
 `;
 
 const PostTitle = styled.h2`
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   margin-bottom: 10px;
   color: black;
 `;
@@ -202,5 +202,9 @@ const ImageContainer = styled.div`
 const PaginationContainer = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 50px;
+`;
+
+const CreateBtn = styled.h2`
+  font-size: 15px;
 `;

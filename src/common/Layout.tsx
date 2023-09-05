@@ -53,7 +53,7 @@ function Layout() {
       return (
         <Link
           style={{
-            color: "black",
+            color: "white",
             textDecoration: "none",
           }}
           to="/"
@@ -72,7 +72,7 @@ function Layout() {
       );
     } else {
       return (
-        <Link to="/login" style={{ color: "black", textDecoration: "none" }}>
+        <Link to="/login" style={{ color: "white", textDecoration: "none" }}>
           로그인
         </Link>
       );
@@ -98,13 +98,13 @@ function Layout() {
           justifyContent: "space-between",
           alignItems: "center", // 수직 가운데 정렬을 위해 추가
           padding: "24px",
-          backgroundColor: "#F8B3B3",
+          backgroundColor: "#746464",
           color: "white",
           zIndex: 1000,
         }}
       >
-        <Link to="/" style={{ color: "black", textDecoration: "none" }}>
-          로고
+        <Link to="/" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "30px" }}>
+          TailTales
         </Link>
         <div
           style={{
@@ -134,7 +134,7 @@ function Layout() {
               </div>
               <span>
                 {userNickname ? (
-                  <Link to={`/mypage/${user.id}`} style={{ color: "black", textDecoration: "none" }}>
+                  <Link to={`/mypage/${user.id}`} style={{ color: "white", textDecoration: "none", fontWeight: "bold" }}>
                     {userNickname}님
                   </Link>
                 ) : (
@@ -144,10 +144,10 @@ function Layout() {
               </span>
             </div>
           ) : null}
-          <Link to="/home" style={{ color: "black", textDecoration: "none" }}>
+          <Link to="/home" style={{ color: "white", textDecoration: "none" }}>
             기다리는 친구들 |
           </Link>
-          <Link to="/community" style={{ color: "black", textDecoration: "none" }}>
+          <Link to="/community" style={{ color: "white", textDecoration: "none" }}>
             커뮤니티 |
           </Link>
           {renderLoginButton()} {/* 이 위치에서 renderLoginButton 함수 호출 */}

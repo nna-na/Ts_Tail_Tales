@@ -139,8 +139,7 @@ export default Login;
 const Stdiv = styled.div`
   height: 1000px;
   background-image: url("/image/login.png");
-  background-size: cover;
-  /* 이미지를 컨테이너에 맞게 확대/축소 */
+  background-size: cover; /* 이미지를 컨테이너에 맞게 확대/축소 */
   background-repeat: no-repeat; /* 이미지 반복 없음 */
   background-position: center; /* 이미지 중앙 정렬 */
   padding: 50px 50px 50px 50px;

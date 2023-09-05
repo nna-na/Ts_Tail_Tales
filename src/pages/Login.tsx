@@ -171,6 +171,7 @@ const StloginText = styled.div`
 
 const Stdiv = styled.div`
   /* height: 1000px; */
+  /* 머지 */
   background-image: url("/image/login2.png");
   background-size: cover;
   /* 이미지를 컨테이너에 맞게 확대/축소. */

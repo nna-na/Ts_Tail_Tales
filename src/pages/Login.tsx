@@ -3,6 +3,7 @@ import { supabase } from "../supabase";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
+import MainFooter from "../components/mains/MainFooter";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,68 +82,101 @@ function Login() {
   };
 
   return (
-    <Stdiv>
-      <LoginContainer>
-        {/* <MainContainer> */}
-        <Stlogo>TailTales</Stlogo>
-        <form onSubmit={signInWithEmail}>
-          <StInputBoxDiv>
-            <InputBox
-              type="email"
-              id="email"
-              placeholder="이메일"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </StInputBoxDiv>
-          <StInputBoxDiv>
-            <InputBox
-              type="password"
-              id="password"
-              placeholder="비밀번호"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </StInputBoxDiv>
-          <StButton>로그인</StButton>
-        </form>
+    <>
+      <Stdiv>
+        <StloginText style={{ display: "flex", alignItems: "center" }}>
+          <button
+            className="backBtn"
+            onClick={() => {
+              window.history.back();
+            }}
+          >
+            〈
+          </button>
+          <h2 className="logintext">로그인</h2>
+        </StloginText>
+        <LoginContainer>
+          <Stlogo>TailTales</Stlogo>
+          <form onSubmit={signInWithEmail}>
+            <StInputBoxDiv>
+              <InputBox
+                type="email"
+                id="email"
+                placeholder="이메일"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </StInputBoxDiv>
+            <StInputBoxDiv>
+              <InputBox
+                type="password"
+                id="password"
+                placeholder="비밀번호"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </StInputBoxDiv>
+            <StButton>로그인</StButton>
+          </form>
 
-        <p>소셜 로그인</p>
-        <div>
-          <StKakaoLoginBtn onClick={loginWithKakao}>
-            <img
-              className="kakaoimg"
-              src="/image/kakao.png"
-              alt="Kakao Login"
-            />
-          </StKakaoLoginBtn>
-          <StGoolgeLoginBtn onClick={loginWithGoogle}>
-            <img
-              className="googleimg"
-              src="/image/google.png"
-              alt="Google Login"
-            />
-          </StGoolgeLoginBtn>
-        </div>
+          <p>소셜 로그인</p>
+          <div>
+            <StKakaoLoginBtn onClick={loginWithKakao}>
+              <img
+                className="kakaoimg"
+                src="/image/kakao.png"
+                alt="Kakao Login"
+              />
+            </StKakaoLoginBtn>
+            <StGoolgeLoginBtn onClick={loginWithGoogle}>
+              <img
+                className="googleimg"
+                src="/image/google.png"
+                alt="Google Login"
+              />
+            </StGoolgeLoginBtn>
+          </div>
 
-        <NoAccountMessage>
-          계정이 없으신가요?
-          <Link to="/signup">회원가입</Link>
-        </NoAccountMessage>
-        {/* </MainContainer> */}
-      </LoginContainer>
-    </Stdiv>
+          <NoAccountMessage>
+            계정이 없으신가요?
+            <Link to="/signup">회원가입</Link>
+          </NoAccountMessage>
+        </LoginContainer>
+      </Stdiv>
+      <MainFooter />
+    </>
   );
 }
 
 export default Login;
+
+const StloginText = styled.div`
+  margin-top: 0;
+  padding-left: 20px;
+  color: white;
+  margin-bottom: 150px;
+
+  .backBtn {
+    background: none;
+    border: none;
+    color: white;
+  }
+
+  .logintext {
+    margin: 0 auto;
+    max-width: 350px;
+    padding: 20px;
+  }
+`;
+
 const Stdiv = styled.div`
-  height: 1000px;
-  background-image: url("/image/login.png");
-  background-size: cover; /* 이미지를 컨테이너에 맞게 확대/축소 */
+  /* height: 1000px; */
+  background-image: url("/image/login2.png");
+  background-size: cover;
+  /* 이미지를 컨테이너에 맞게 확대/축소 */
   background-repeat: no-repeat; /* 이미지 반복 없음 */
-  background-position: center; /* 이미지 중앙 정렬 */
-  padding: 50px 50px 50px 50px;
+  background-position: center; /*이미지 중앙 정렬*/
+  padding: 0 50px 50px 50px;
 `;
 
 // 스타일 영역
@@ -150,9 +184,8 @@ const LoginContainer = styled.div`
   border-radius: 20px;
   background: #fdfaf6;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-  /* margin: 50px 1000px; */
-  margin-left: 1000px;
-  margin-top: 200px;
+  margin: 150px 50px 200px auto;
+  max-width: 350px;
   padding: 20px;
   width: 350px;
   height: 450px;

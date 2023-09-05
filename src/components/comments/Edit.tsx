@@ -12,13 +12,7 @@ interface Comment {
   email: string;
   avatar_url: string;
 }
-export default function Edit({
-  id,
-  onUpdateComplete,
-}: {
-  id: string;
-  onUpdateComplete: () => void;
-}) {
+export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateComplete: () => void }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const {
@@ -27,11 +21,7 @@ export default function Edit({
     isError,
     error,
   } = useQuery<Comment>(["comments", id], async () => {
-    const { data, error } = await supabase
-      .from("comments")
-      .select("*")
-      .eq("id", id)
-      .single();
+    const { data, error } = await supabase.from("comments").select("*").eq("id", id).single();
     if (error) {
       throw error;
     }
@@ -41,10 +31,7 @@ export default function Edit({
     async (updatedComment) => {
       try {
         // 댓글 업데이트
-        const { data, error } = await supabase
-          .from("comments")
-          .update(updatedComment)
-          .eq("id", updatedComment.id);
+        const { data, error } = await supabase.from("comments").update(updatedComment).eq("id", updatedComment.id);
         if (error) {
           console.error("댓글 수정 중 오류 발생:", error);
           throw error;

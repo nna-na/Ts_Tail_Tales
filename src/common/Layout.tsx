@@ -46,7 +46,7 @@ function Layout() {
     }
   }, [user]);
 
-  // renderLoginButton 함수 정의
+  // renderLoginButton 함수 정의.
   const renderLoginButton = () => {
     if (user) {
       return (

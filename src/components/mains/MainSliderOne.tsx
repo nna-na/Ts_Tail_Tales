@@ -3,13 +3,13 @@ import { IoIosArrowDown } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 
-const FirstMain = () => {
+const MainSliderOne = () => {
   const navigate = useNavigate();
 
   return (
     <Container>
       <ImageContainer>
-        <ImageBackground src="/image/main/main1.png" alt="강아지 사진1" />
+        <ImageBackground src="/image/mains/main1.jpg" alt="강아지, 고양이 사진" />
         <TextWrap>
           <h1>
             유기견, 유기묘들에게 <br /> 새로운 삶을 선물해주세요
@@ -31,7 +31,7 @@ const FirstMain = () => {
   );
 };
 
-export default FirstMain;
+export default MainSliderOne;
 
 const TextWrap = styled.div`
   color: white;
@@ -40,7 +40,8 @@ const TextWrap = styled.div`
   top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 2; /* 텍스트를 더 위에 표시하기 위해 z-index를 높입니다. */
+  z-index: 2;
+  text-shadow: 2px 2px 4px rgba(128, 128, 128, 0.5);
 `;
 
 const Container = styled.div`
@@ -50,8 +51,12 @@ const Container = styled.div`
   justify-content: center;
   height: 100vh;
   background-color: #f0f0f0;
-  overflow: hidden;
   position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 `;
 
 const ImageContainer = styled.div`
@@ -71,30 +76,35 @@ const ImageBackground = styled.img`
   background-position: center;
   width: 100%;
   height: 100%;
-  z-index: 1; /* 이미지를 다른 요소 위에 놓습니다. */
+  z-index: 1;
 `;
 
 const Button = styled.button`
   width: 130px;
   height: 50px;
-  background-color: #746464;
+  background-color: rgba(87, 76, 76, 0.7);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: #fdfaf6;
   border: none;
   padding: 10px 10px 10px 10px;
   border-radius: 30px;
   cursor: pointer;
-  z-index: 2; /* 버튼을 더 위에 표시하기 위해 z-index를 높입니다. */
-  position: absolute; /* 버튼의 위치를 조정하기 위해 position을 추가합니다. */
-  bottom: 250px; /* 아래 여백을 조정합니다. */
-  left: 50%;
-  transform: translateX(-50%);
+  z-index: 2;
+  position: absolute;
+  top: 65%;
+  left: center;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.15);
+  }
 `;
 
 const DownArrow = styled.div`
   color: white;
   position: absolute;
-  bottom: 150px; /* 아래 여백을 조정합니다. */
+  bottom: 20%;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 2; /* 화살표를 더 위에 표시하기 위해 z-index를 높입니다. */
+  z-index: 2;
 `;

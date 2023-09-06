@@ -142,7 +142,7 @@ export default function PostEdit() {
     <Container>
       <BackButton
         onClick={() => {
-          navigate("/post-detail/:id");
+          navigate(`/post-detail/${id}`);
         }}
       >
         <BackIcon />

@@ -25,7 +25,6 @@ export default function PostEdit() {
 
     return data;
   });
-  console.log("data", data);
 
   // 게시물 삭제를 처리하는 뮤테이션
   const deletePost = useMutation(
@@ -143,7 +142,7 @@ export default function PostEdit() {
     <Container>
       <BackButton
         onClick={() => {
-          window.history.back();
+          navigate("/post-detail/:id");
         }}
       >
         <BackIcon />

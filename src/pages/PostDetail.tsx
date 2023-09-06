@@ -35,7 +35,6 @@ export default function PostDetail() {
 
     return data;
   });
-  console.log("detailpostid", post);
 
   // 댓글 목록 가져오기
   const { data: comments, isLoading: isLoadingComments } = useQuery(["comments", id], async () => {
@@ -88,10 +87,7 @@ export default function PostDetail() {
   return (
     <OuterContainer>
       <Container>
-        <BackButton
-          onClick={() => navigate("/community")}
-          className="backbutton"
-        >
+        <BackButton onClick={() => navigate("/community")} className="backbutton">
           <BackIcon className="backicon">&lt;</BackIcon>
         </BackButton>
 

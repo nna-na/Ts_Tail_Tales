@@ -60,7 +60,6 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
       if (file) {
         try {
           const imageUrl = await uploadImageToSupabase(file);
-          console.log("URL 이름 :", imageUrl);
 
           const quillEditor = quillRef.current?.getEditor();
           const range = quillEditor?.getSelection();

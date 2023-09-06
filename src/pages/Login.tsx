@@ -52,12 +52,10 @@ function Login() {
       }
     }
   }
-
   const loginWithKakao = async () => {
     const response = await supabase.auth.signInWithOAuth({
       provider: "kakao",
     });
-
     if (response.error) {
       console.error(response.error);
       // 에러 처리
@@ -66,12 +64,10 @@ function Login() {
       // 다른 처리 또는 리디렉션을 여기에 추가할 수 있습니다.
     }
   };
-
   const loginWithGoogle = async () => {
     const response = await supabase.auth.signInWithOAuth({
       provider: "google",
     });
-
     if (response.error) {
       console.error(response.error);
       // 에러 처리
@@ -80,45 +76,37 @@ function Login() {
     //   alert("로그인하러 갈까요~?");
     // }
   };
-
   return (
     <>
-      <Stdiv>
-        <StloginText style={{ display: "flex", alignItems: "center" }}>
-          <button
-            className="backBtn"
-            onClick={() => {
-              window.history.back();
-            }}
-          >
-            〈
-          </button>
-          <h2 className="logintext">로그인</h2>
-        </StloginText>
-        <LoginContainer>
-          <Stlogo>TailTales</Stlogo>
+      <LoginContain>
+        <LeftSide>
+          <img src="/image/login2-1.png" alt="사진" />
+        </LeftSide>
+        <RightSide>
+          <h2>TailTales</h2>
           <form onSubmit={signInWithEmail}>
-            <StInputBoxDiv>
-              <InputBox
+            <div>
+              <input
                 type="email"
                 id="email"
                 placeholder="이메일"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-            </StInputBoxDiv>
-            <StInputBoxDiv>
-              <InputBox
+            </div>
+            <div>
+              <input
                 type="password"
                 id="password"
                 placeholder="비밀번호"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-            </StInputBoxDiv>
-            <StButton>로그인</StButton>
+            </div>
+            <div>
+              <button>로그인</button>
+            </div>
           </form>
-
           <p>소셜 로그인</p>
           <div>
             <StKakaoLoginBtn onClick={loginWithKakao}>
@@ -136,117 +124,107 @@ function Login() {
               />
             </StGoolgeLoginBtn>
           </div>
-
           <NoAccountMessage>
             계정이 없으신가요?
             <Link to="/signup">회원가입</Link>
           </NoAccountMessage>
-        </LoginContainer>
-      </Stdiv>
-      <MainFooter />
+        </RightSide>
+      </LoginContain>
     </>
   );
 }
-
 export default Login;
 
-const StloginText = styled.div`
-  margin-top: 0;
-  padding-left: 20px;
-  color: white;
-  margin-bottom: 150px;
+const LoginContain = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+`;
 
-  .backBtn {
-    background: none;
-    border: none;
-    color: white;
-  }
+const LeftSide = styled.div`
+  width: 60%;
+  height: 100%;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-  .logintext {
-    margin: 0 auto;
-    max-width: 350px;
-    padding: 20px;
+  img {
+    max-width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 `;
 
-const Stdiv = styled.div`
-  /* height: 1000px; */
-  /* 머지 */
-  background-image: url("/image/login2.png");
-  background-size: cover;
-  /* 이미지를 컨테이너에 맞게 확대/축소. */
-  background-repeat: no-repeat; /* 이미지 반복 없음 */
-  background-position: center; /*이미지 중앙 정렬*/
-  padding: 0 50px 50px 50px;
-`;
-
-// 스타일 영역
-const LoginContainer = styled.div`
-  border-radius: 20px;
-  background: #fdfaf6;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-  margin: 150px 50px 200px auto;
-  max-width: 350px;
-  padding: 20px;
-  width: 350px;
-  height: 450px;
+const RightSide = styled.div`
+  width: 40%;
+  /* padding: 20px; */
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1px solid #c7c4c4;
-`;
+  background: #fdfaf6;
 
-const Stlogo = styled.h2`
-  padding: 20px 0 20px;
-`;
-
-const StInputBoxDiv = styled.div`
-  padding: 0 0 10px;
-`;
-
-const InputBox = styled.input`
-  width: 270px;
-  height: 35px;
-  margin: 5px;
-  padding: 5px 16px;
-  font-size: 15px;
-  /* border: 1px solid #b4b4b4; */
-  border: none;
-  border-radius: 10px;
-  background: #e4dfd9;
-  transition: transform 0.3s ease;
-  cursor: pointer;
-  /* color: #888888; */
-  /* display: inline-block; */
-  /* outline: none; */
-
-  &:focus {
-    border-radius: 10px;
+  h2 {
+    /* font-family: Haan Baekje M; */
+    padding: 20px 0 20px;
+    margin-top: 50px;
   }
 
-  &:hover {
-    transform: scale(1.05);
+  form {
+    display: flex;
+    flex-direction: column;
+    /* margin-top: 50px; */
+
+    div {
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 270px;
+      height: 45px;
+      /* margin: 5px; */
+      padding: 5px 16px;
+      font-size: 15px;
+      /* border: 1px solid #b4b4b4; */
+      border: none;
+      border-radius: 10px;
+      background: #e4dfd9;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+      /* color: #888888; */
+      /* display: inline-block; */
+      /* outline: none; */
+      &:focus {
+        border-radius: 10px;
+      }
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+
+    button {
+      width: 192px;
+      height: 44px;
+      /* padding: 8px; */
+      margin: 5px 55px;
+      cursor: pointer;
+      font-size: 15px;
+      border: none;
+      color: white;
+      border-radius: 999px;
+      background: #746464;
+      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
   }
 `;
 
-const StButton = styled.button`
-  width: 192px;
-  height: 44px;
-  /* padding: 8px; */
-  margin: 5px 55px;
-  cursor: pointer;
-  font-size: 15px;
-  border: none;
-  color: white;
-  border-radius: 999px;
-  background: #746464;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: scale(1.05);
-  }
-`;
+//--------------
 
 const StKakaoLoginBtn = styled.button`
   background: none;
@@ -254,17 +232,14 @@ const StKakaoLoginBtn = styled.button`
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.3s ease;
-
   &:hover {
     transform: scale(1.05);
   }
-
   .kakaoimg {
     width: 45px;
     height: auto;
   }
 `;
-
 const StGoolgeLoginBtn = styled.button`
   background: none;
   /* width: 45px;
@@ -273,26 +248,21 @@ const StGoolgeLoginBtn = styled.button`
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.3s ease;
-
   &:hover {
     transform: scale(1.05);
   }
-
   .googleimg {
     width: 45px;
     height: auto;
   }
 `;
-
 const NoAccountMessage = styled.div`
   margin-top: 10px;
   font-size: 14px;
   color: #555;
-
   a {
     color: #333;
     text-decoration: underline;
-
     &:hover {
       color: #555;
     }

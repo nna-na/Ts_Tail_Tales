@@ -9,43 +9,59 @@ function Layout() {
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+
+      const nickname =
+        parsedUser.user_metadata.user_name ||
+        parsedUser.user_metadata.full_name;
+      setUserNickname(nickname);
+
+      if (parsedUser.email) {
+        sessionStorage.setItem("userEmail", parsedUser.email);
+      }
+      sessionStorage.setItem("userNickname", nickname);
     }
+
     const authSubscription = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (event === "SIGNED_IN" && session) {
-          setUser(session.user);
-          sessionStorage.setItem("user", JSON.stringify(session.user));
+          const parsedUser = session.user;
+          setUser(parsedUser);
+          sessionStorage.setItem("user", JSON.stringify(parsedUser));
+
+          const nickname =
+            parsedUser.user_metadata.user_name ||
+            parsedUser.user_metadata.full_name;
+          setUserNickname(nickname);
+
+          if (parsedUser.email) {
+            sessionStorage.setItem("userEmail", parsedUser.email);
+          }
+          sessionStorage.setItem("userNickname", nickname);
         } else if (event === "SIGNED_OUT") {
           setUser(null);
           sessionStorage.removeItem("user");
+          setUserNickname(null);
+          sessionStorage.removeItem("userNickname");
+          sessionStorage.removeItem("userEmail");
         }
       }
     );
-    if (user) {
-      setUserNickname(
-        user.user_metadata.user_name || user.user_metadata.full_name
-      );
-      if (user.email) {
-        sessionStorage.setItem("userEmail", user.email);
-      }
-      sessionStorage.setItem(
-        "userNickname",
-        user.user_metadata.user_name || user.user_metadata.full_name
-      );
-    }
+
     return () => {
       authSubscription.data.subscription.unsubscribe();
     };
-  }, [user]);
+  }, []);
+
   // 로그아웃 함수 정의
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
     setUserNickname(null);
-    sessionStorage.removeItem("user");
-    sessionStorage.removeItem("userNickname");
-    sessionStorage.removeItem("userEmail");
+    // sessionStorage.removeItem("user");
+    // sessionStorage.removeItem("userNickname");
+    // sessionStorage.removeItem("userEmail");
     alert("로그아웃 됐다~~~");
   };
   // 로그인 버튼 렌더링 함수 정의

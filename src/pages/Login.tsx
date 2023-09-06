@@ -1,22 +1,22 @@
-import React, { useState, useEffect, FormEvent } from "react";
-import { supabase } from "../supabase";
+import React, { useState, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
-import MainFooter from "../components/mains/MainFooter";
+import { supabase } from "../supabase";
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState(""); // 추가: 이메일 유효성 에러 메시지
-  const [passwordError, setPasswordError] = useState(""); // 추가: 비밀번호 유효성 에러 메시지
   const navigate = useNavigate();
+
   async function signInWithEmail(e: FormEvent) {
     e.preventDefault();
+
     if (!email && !password) {
       alert("이메일과 비밀번호를 입력해주세요.");
       return;
     }
-    // 추가: 이메일 유효성 검사
+
     if (!email) {
       alert("이메일을 입력해주세요.");
       return;
@@ -26,7 +26,7 @@ function Login() {
       alert("올바른 이메일 형식이 아닙니다.");
       return;
     }
-    // 추가: 비밀번호 유효성 검사
+
     if (!password) {
       alert("비밀번호를 입력해주세요.");
       return;
@@ -34,48 +34,43 @@ function Login() {
       alert("비밀번호 6자리 이상 입력해주세요.");
       return;
     }
-    // 이메일 형식 검사
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+
     if (error) {
       console.error(error);
-      // 에러 처리: 에러 메시지를 사용자에게 보여주거나 다른 처리를 수행합니다.
       alert("일치하는 정보가 없습니다.");
     } else if (data) {
-      // 로그인 성공
-      const { user, session } = data;
       const confirmed = window.confirm("로그인 하시겠습니까?");
       if (confirmed) {
         navigate("/home");
       }
     }
   }
+
   const loginWithKakao = async () => {
     const response = await supabase.auth.signInWithOAuth({
       provider: "kakao",
     });
     if (response.error) {
       console.error(response.error);
-      // 에러 처리
     } else {
       alert("로그인 완료");
-      // 다른 처리 또는 리디렉션을 여기에 추가할 수 있습니다.
     }
   };
+
   const loginWithGoogle = async () => {
     const response = await supabase.auth.signInWithOAuth({
       provider: "google",
     });
     if (response.error) {
       console.error(response.error);
-      // 에러 처리
     }
-    // else {
-    //   alert("로그인하러 갈까요~?");
-    // }
   };
+
   return (
     <>
       <LoginContain>
@@ -98,10 +93,10 @@ function Login() {
           <p>소셜 로그인</p>
           <div>
             <StKakaoLoginBtn onClick={loginWithKakao}>
-              <img className="kakaoimg" src="/image/sotial/kakao.png" alt="Kakao Login" />
+              <img className="kakaoimg" src="/image/social/kakao.png" alt="Kakao Login" />
             </StKakaoLoginBtn>
             <StGoolgeLoginBtn onClick={loginWithGoogle}>
-              <img className="googleimg" src="/image/sotial/google.png" alt="Google Login" />
+              <img className="googleimg" src="/image/social/google.png" alt="Google Login" />
             </StGoolgeLoginBtn>
           </div>
           <NoAccountMessage>
@@ -120,10 +115,16 @@ const LoginContain = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
+  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 `;
 
 const LeftSide = styled.div`
-  width: 60%;
+  width: 50%;
   height: 100%;
   background-color: #f0f0f0;
   display: flex;
@@ -138,7 +139,7 @@ const LeftSide = styled.div`
 `;
 
 const RightSide = styled.div`
-  width: 40%;
+  width: 50%;
   /* padding: 20px; */
   height: 100%;
   display: flex;
@@ -148,7 +149,7 @@ const RightSide = styled.div`
 
   h2 {
     /* font-family: Haan Baekje M; */
-    padding: 20px 0 20px;
+    padding: 100px 0 20px;
     margin-top: 50px;
   }
 

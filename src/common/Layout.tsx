@@ -3,10 +3,11 @@ import { Link, Outlet } from "react-router-dom";
 import { supabase } from "../supabase";
 import { User } from "@supabase/supabase-js";
 import styled from "styled-components";
+
 function Layout() {
   const [user, setUser] = useState<User | null>(null);
   const [userNickname, setUserNickname] = useState<string | null>(null);
-  const [scrollY, setScrollY] = useState(0);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
 
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
@@ -44,9 +45,13 @@ function Layout() {
         sessionStorage.removeItem("userEmail");
       }
     });
-
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      // 여기서 100은 헤더가 사라지기 시작하는 스크롤 위치입니다. 원하는 값으로 조정할 수 있습니다.
+      if (window.scrollY > 600) {
+        setIsHeaderVisible(false);
+      } else {
+        setIsHeaderVisible(true);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -66,7 +71,7 @@ function Layout() {
           </UserImage>
           <UserName>
             <span>
-              <Link to={`/mypage/${user.id}`}>{userNickname}님</Link>, 환영합니다!
+              <Buttons to={`/mypage/${user.id}`}>{userNickname}님</Buttons>, 환영합니다!
             </span>
           </UserName>
         </UserContainer>
@@ -87,7 +92,7 @@ function Layout() {
       return (
         <Link
           style={{
-            color: "black",
+            color: "white",
             textDecoration: "none",
           }}
           to="/"
@@ -98,7 +103,7 @@ function Layout() {
       );
     } else {
       return (
-        <Link to="/login" style={{ color: "black", textDecoration: "none" }}>
+        <Link to="/login" style={{ color: "white", textDecoration: "none" }}>
           로그인
         </Link>
       );
@@ -107,15 +112,18 @@ function Layout() {
 
   return (
     <Wrap>
-      <Header>
-        <LogoLink to="/">TailTales</LogoLink>
-        <HeaderContent>
-          {handleNickname()}
-          <Link to="/home">기다리는 친구들 |</Link>
-          <Link to="/community">커뮤니티 |</Link>
-          {renderLoginButton()}
-        </HeaderContent>
-      </Header>
+      {isHeaderVisible && (
+        <Header>
+          <LogoLink to="/">TailTales</LogoLink>
+          <HeaderContent>
+            {handleNickname()}
+            <Buttons to="/home">기다리는 친구들 |</Buttons>
+            <Buttons to="/community">커뮤니티 |</Buttons>
+            {renderLoginButton()}
+          </HeaderContent>
+        </Header>
+      )}
+
       <OutletWrap>
         <Outlet />
       </OutletWrap>
@@ -131,33 +139,21 @@ const Wrap = styled.header`
 `;
 
 export default Layout;
-// const Header = styled.header`
-//   position: fixed;
-//   top: 0;
-//   left: 0;
-//   right: 0;
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-//   padding: 24px;
-//   background-color: rgba(112, 101, 100, 0.7); /* 투명 배경색 */
-//   color: white;
-//   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 유리 효과를 주는 그림자 */
-//   backdrop-filter: blur(10px); /* 유리 효과의 블러 효과 */
-//   z-index: 1000;
-// `;
 
 const Header = styled.header`
   position: fixed;
-  height: 30px;
+  height: 32px;
+  top: 0;
   left: 0;
   right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  background-color: rgba(116, 100, 100, 0.8);
+  background-color: rgba(112, 101, 100, 0.05); /* 투명 배경색 */
   color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 유리 효과를 주는 그림자 */
+  backdrop-filter: blur(10px); /* 유리 효과의 블러 효과 */
   z-index: 1000;
 `;
 
@@ -171,6 +167,7 @@ const HeaderContent = styled.div`
   display: flex;
   gap: 12px;
   align-items: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 `;
 const UserContainer = styled.div`
   display: flex;
@@ -195,4 +192,9 @@ const UserName = styled.span`
 
 const OutletWrap = styled.div`
   padding-top: 80px;
+`;
+
+const Buttons = styled(Link)`
+  text-decoration: none;
+  color: white;
 `;

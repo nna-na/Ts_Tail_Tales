@@ -120,7 +120,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                   }}
                 >
                   <img
-                    src={comment.avatar_url || "/image/profile.jpg"}
+                    src={comment.avatar_url || "/image/header/profile.jpg"}
                     alt="User Avatar"
                     style={{
                       width: "100%",
@@ -177,9 +177,10 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
 }
 
 const CommentContainer = styled.div`
+  height: 100px;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 2px 2px 5px #e0dbd6(0, 0, 0, 0.2);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   background-color: white;
   border: 1px solid #fdfaf6;

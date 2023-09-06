@@ -14,6 +14,22 @@ export default function PostCreate(data: any) {
   const [content, setContent] = useState("");
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   // 사용자 정보 가져오기
+  //   const storedUser = sessionStorage.getItem("user");
+  //   if (storedUser) {
+  //     const user = JSON.parse(storedUser);
+  //     setUser(user);
+  //     setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   if (data && data.initialContent) {
+  //     setContent(data.initialContent);
+  //   }
+  // }, [data]);
+
   useEffect(() => {
     // 사용자 정보 가져오기
     const storedUser = sessionStorage.getItem("user");
@@ -22,9 +38,7 @@ export default function PostCreate(data: any) {
       setUser(user);
       setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
     }
-  }, []);
 
-  useEffect(() => {
     if (data && data.initialContent) {
       setContent(data.initialContent);
     }
@@ -40,24 +54,23 @@ export default function PostCreate(data: any) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title && !content) {
-      window.alert("제목을 입력해주세요, 내용을 입력해주세요.");
+    if (!title && !content.trim()) {
+      alert("제목과 내용을 입력해주세요.");
       return;
     }
     if (!title) {
-      window.alert("제목을 입력해주세요.");
+      alert("제목을 입력해주세요.");
       return;
     }
-    if (!content) {
-      window.alert("내용을 입력해주세요.");
+    if (!content.trim()) {
+      alert("내용을 입력해주세요.");
       return;
     }
 
     try {
-      // Supabase에 데이터 추가
       const { data, error } = await supabase.from("posts").upsert([
         {
-          id: uuid(), // uuid 함수 사용
+          id: uuid(),
           title,
           content,
           date: new Date().toISOString(),
@@ -71,7 +84,7 @@ export default function PostCreate(data: any) {
         return;
       }
 
-      window.alert("작성이 완료되었습니다.");
+      alert("작성이 완료되었습니다.");
       navigate("/community");
 
       // 입력 필드 초기화
@@ -96,12 +109,11 @@ export default function PostCreate(data: any) {
         <h2>게시글 작성</h2>
         <FormItem>
           <label>제목:</label>
-          <Input type="text" value={title} onChange={handleTitleChange} />
+          <Input type="text" value={title} onChange={handleTitleChange} placeholder="제목" />
         </FormItem>
         <FormItem>
           <label>내용:</label>
           <PostImg onContentChange={handleContentChange} initialContent={content} />
-          {/* data.content가 아닌 content를 사용 */}
         </FormItem>
         <SubmitButton type="submit">작성</SubmitButton>
       </Form>
@@ -149,12 +161,11 @@ const FormItem = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
-  width: 1000px;
 `;
 
 const Input = styled.input`
   width: 978px;
-  padding: 10px;
+  padding: 20px 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 8px; /* 테두리 둥글게 처리 */

@@ -20,9 +20,7 @@ export default function PostCreate(data: any) {
     if (storedUser) {
       const user = JSON.parse(storedUser);
       setUser(user);
-      setUserNickname(
-        user.user_metadata.user_name || user.user_metadata.full_name
-      );
+      setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
     }
   }, []);
 
@@ -73,7 +71,6 @@ export default function PostCreate(data: any) {
         return;
       }
 
-      console.log("게시글 작성 결과:", data);
       window.alert("작성이 완료되었습니다.");
       navigate("/community");
 
@@ -89,7 +86,7 @@ export default function PostCreate(data: any) {
     <Container>
       <BackButton
         onClick={() => {
-          window.history.back();
+          navigate("/community");
         }}
       >
         <BackIcon />
@@ -103,10 +100,7 @@ export default function PostCreate(data: any) {
         </FormItem>
         <FormItem>
           <label>내용:</label>
-          <PostImg
-            onContentChange={handleContentChange}
-            initialContent={content}
-          />
+          <PostImg onContentChange={handleContentChange} initialContent={content} />
           {/* data.content가 아닌 content를 사용 */}
         </FormItem>
         <SubmitButton type="submit">작성</SubmitButton>

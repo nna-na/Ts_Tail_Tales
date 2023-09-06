@@ -26,7 +26,6 @@ function Home() {
         setError(null);
         setLoading(true);
         const fetchedData = await fetchAnimalData();
-        console.log("fetchedData", fetchedData);
 
         setData(fetchedData); // 첫 페이지에서 필요한 것만 GET
       } catch (e: Error | unknown) {
@@ -55,9 +54,8 @@ function Home() {
   const nearingDeadline = data.filter((item) => {
     const today = new Date();
     const endOfNotice = new Date(formatDate(item.PBLANC_END_DE));
-    const fiveDaysAfter = new Date(today);
-    fiveDaysAfter.setDate(fiveDaysAfter.getDate() + 10);
-    return endOfNotice <= fiveDaysAfter;
+    today.setDate(today.getDate() + 10);
+    return endOfNotice <= today;
   });
 
   const filteredItems = data.filter((item) => {
@@ -65,14 +63,10 @@ function Home() {
     let matchesLocation = true;
     let matchesBreed = true;
     if (selectedBeginDate && selectedEndDate) {
-      matchesDate =
-        formatDate(item.RECEPT_DE) >= selectedBeginDate &&
-        formatDate(item.RECEPT_DE) <= selectedEndDate;
+      matchesDate = formatDate(item.RECEPT_DE) >= selectedBeginDate && formatDate(item.RECEPT_DE) <= selectedEndDate;
     }
     if (selectedLocation) {
-      matchesLocation = item.SIGUN_NM.toLowerCase().includes(
-        selectedLocation.toLowerCase()
-      );
+      matchesLocation = item.SIGUN_NM.toLowerCase().includes(selectedLocation.toLowerCase());
     }
     if (selectedBreed) {
       matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === selectedBreed;
@@ -86,8 +80,7 @@ function Home() {
     <FavoritesProvider>
       <Div>
         <div className="filtered">
-          <span className="deadline">"공고 마감일"</span>이 얼마 남지 않은
-          아이들!
+          <span className="deadline">"공고 마감일"</span>이 얼마 남지 않은 아이들!
         </div>
         <CustomSlider items={nearingDeadline} />
         <Category
@@ -117,11 +110,7 @@ function Home() {
           ))}
         </Container>
         {/* 페이지네이션 컴포넌트 추가 */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
-          setCurrentPage={setCurrentPage}
-        />
+        <Pagination currentPage={currentPage} totalPages={Math.ceil(filteredItems.length / itemsPerPage)} setCurrentPage={setCurrentPage} />
       </Div>
     </FavoritesProvider>
   );

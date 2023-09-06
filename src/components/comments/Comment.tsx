@@ -177,15 +177,13 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
 }
 
 const CommentContainer = styled.div`
-  height: 100px;
   border-radius: 8px;
-  padding: 20px;
+  padding: 10px 0 0 20px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   background-color: white;
   border: 1px solid #fdfaf6;
 `;
-
 const EditButton = styled.button`
   background-color: #bdb7b0;
   color: white;

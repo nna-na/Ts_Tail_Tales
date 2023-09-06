@@ -1,16 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { styled } from "styled-components";
 import { useLocation } from "react-router";
 
 function MainSliderThird() {
   const location = useLocation();
   const [showImages, setShowImages] = useState(false);
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    // 페이지 로딩 후 1초 후 이미지 보여주기
-    setTimeout(() => {
-      setShowImages(true);
-    }, 1000);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // 페이지가 보이면 이미지 보여주기
+          setShowImages(true);
+        } else {
+          setShowImages(false);
+        }
+      });
+    });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
 
     // 슬라이더로 이동할 때 showImages 초기화
     return () => {
@@ -19,7 +30,7 @@ function MainSliderThird() {
   }, [location.pathname]);
 
   return (
-    <Container>
+    <Container ref={containerRef}>
       <TitleText>테일테일즈의 기능을 소개합니다</TitleText>
       <ImageContainer>
         <ImageWrapper className={showImages ? "show" : ""}>
@@ -39,7 +50,7 @@ function MainSliderThird() {
         <ImageWrapper className={showImages ? "show" : ""}>
           <ImgContainer>
             <Img src="/image/mains/main8.jpg" alt="about us" />
-            <ImageCaption>...</ImageCaption>
+            <ImageCaption>about us</ImageCaption>
           </ImgContainer>
         </ImageWrapper>
       </ImageContainer>
@@ -87,8 +98,8 @@ const ImageWrapper = styled.div`
   text-align: center;
   margin: 0 10px;
   opacity: 0; /* 처음에는 숨김 */
-  transform: translateX(-100%); /* 오른쪽에서 슬라이드 시작 */
-  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  transform: translateX(-100%); /* 왼쪽에서 슬라이드 시작 */
+  transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out;
   &.show {
     opacity: 1; /* 나타날 때 투명도 증가 */
     transform: translateX(0); /* 왼쪽으로 슬라이드 */

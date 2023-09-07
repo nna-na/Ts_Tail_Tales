@@ -34,7 +34,7 @@ async function uploadImageToSupabase(imageFile: File): Promise<string> {
       throw new Error("Failed to obtain the image URL");
     }
   } catch (error) {
-    console.error("Error uploading image to Supabase:", error);
+    alert("이미지 업로드 중 오류 발생");
     throw error;
   }
 }
@@ -70,7 +70,7 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
             quillEditor.setSelection(newIndex, 0);
           }
         } catch (error) {
-          console.error("Error uploading image:", error);
+          alert("이미지 업로드 중 오류 발생");
         }
       }
     };
@@ -113,4 +113,5 @@ const PostImgContainer = styled.div`
   width: 1000px;
   height: 450px;
   margin-bottom: 50px;
+  background-color: white;
 `;

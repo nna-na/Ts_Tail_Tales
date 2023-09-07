@@ -1,25 +1,25 @@
 import React from "react";
 import { FullPage, Slide } from "react-full-page";
-import MainSliderOne from "../components/mains/MainSliderOne";
-import MainSliderSecond from "../components/mains/MainSliderSecond";
-import MainSliderThird from "../components/mains/MainSliderThird";
-import MainSliderLast from "../components/mains/MainSliderLast";
+import MainSliderIntroduction from "../components/mains/MainSliderIntroduction";
+import MainSliderAnimals from "../components/mains/MainSliderAnimals";
+import MainSliderFunction from "../components/mains/MainSliderFunction";
+import MainSliderFooter from "../components/mains/MainSliderFooter";
 import "../styles/style.main.css";
 
 function Landing() {
   return (
     <FullPage controls controlsProps={{ className: "slide-navigation" }}>
       <Slide>
-        <MainSliderOne />
+        <MainSliderIntroduction />
       </Slide>
       <Slide>
-        <MainSliderSecond />
+        <MainSliderAnimals />
       </Slide>
       <Slide>
-        <MainSliderThird />
+        <MainSliderFunction />
       </Slide>
       <Slide>
-        <MainSliderLast />
+        <MainSliderFooter />
       </Slide>
     </FullPage>
   );

@@ -4,40 +4,31 @@ import { formatDate, AnimalShelter } from "../api/fetchData";
 import styled from "styled-components";
 import FavoriteButton from "./FavoriteButton ";
 import { supabase } from "../supabase";
-
 export interface PetCardProps {
   item: AnimalShelter; // 이 부분에서 item의 타입을 AnimalShelter로 지정
   onRemoveFavorite?: () => void;
 }
-
 const PetCard = React.memo(({ item, onRemoveFavorite }: PetCardProps) => {
   const navigate = useNavigate();
-
   const [isFavorite, setIsFavorite] = useState(false);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const user = JSON.parse(sessionStorage.getItem("user") || "");
         const { id: userId } = user;
-
         // 서버에서 즐겨찾기 상태 가져오기
         const { data: existingFavorites, error: existingFavoritesError } = await supabase.from("favorites").select().eq("userId", userId).eq("animalId", item.ABDM_IDNTFY_NO);
-
         if (existingFavoritesError) {
           console.error("Error fetching existing favorites:", existingFavoritesError);
           return;
         }
-
         setIsFavorite(existingFavorites && existingFavorites.length > 0);
       } catch (error) {
         console.error("Error fetching favorites:", error);
       }
     };
-
     fetchData();
   }, [item.ABDM_IDNTFY_NO]);
-
   const handleToggleFavorite = () => {
     setIsFavorite((prevIsFavorite) => !prevIsFavorite);
   };
@@ -63,49 +54,67 @@ const PetCard = React.memo(({ item, onRemoveFavorite }: PetCardProps) => {
               }
             }}
           />
-
-          <p className="number">{item.ABDM_IDNTFY_NO}</p>
+          {/* <p className="number">{item.ABDM_IDNTFY_NO}</p>공고번호 */}
         </div>
-
         <PetImg className="petimg" src={item.IMAGE_COURS} alt="Pet Thumbnail" />
-        <p>접수 일지 : {formatDate(item.RECEPT_DE)}</p>
-        <p>품종 : {item.SPECIES_NM}</p>
-        <p>성별 : {item.SEX_NM}</p>
+        <InfoContainer>
+          <Text>품종 : {item.SPECIES_NM}</Text>
+          <br />
+          <Text>접수 일지 : {formatDate(item.RECEPT_DE)}</Text>
+          <br />
+          <Text>보호 주소: {item.SIGUN_NM} </Text>
+          <br />
+          <Text>성별 : {item.SEX_NM}</Text>
+        </InfoContainer>
         {/* <p>발견장소 : {item.DISCVRY_PLC_INFO} </p> */}
         {/* <p>특징: {item.SFETR_INFO}</p> */}
         {/* <p>상태: {item.STATE_NM}</p> */}
-        <p>보호 주소:{item.SIGUN_NM} </p>
         <DetailsMessage className="details-message">눌러서 상세를 보세요!!</DetailsMessage>
       </div>
     </Box>
   );
 });
-
 export default PetCard;
+// const ImgContainer = styled.div`
+//   position: relative;
+//   cursor: pointer;
+// `;
+// const Img = styled.img`
+//   width: 300px;
+//   height: 200px;
+//   border-radius: 20px;
+//   object-fit: cover;
+//   &:hover {
+//     filter: brightness(110%);
+//   }
+// `;
 
 const PetImg = styled.img`
-  width: 100%;
-  height: 250px;
-  max-width: 500px;
+  width: 250px;
+  height: 200px;
   object-fit: cover;
+  object-position: center;
+  margin-left: 11px;
+  &:hover {
+    filter: brightness(110%);
+  }
 `;
 
 const Box = styled.div`
-  height: 550px;
+  height: 450px;
   padding: 10px 10px 10px 10px;
-  border: 1px solid black;
   width: calc(33.33% - 10px);
   padding: 10px;
-  margin-bottom: 20px;
-  flex: 0 0 300px; /* flex-basis도 고정된 값으로 설정 */
+  flex: 0 0 300px;
   box-sizing: border-box;
+  // background-color: rgba(253, 250, 246, 0.8);
   background-color: white;
   border-radius: 20px;
   border: none;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5); /* 유리 효과 추가 */
   overflow: hidden;
+  /* transform: scale(0.8); */
 
-  /* hover 상태에 대한 스타일 설정 */
   &:hover {
     .details-message {
       opacity: 1;
@@ -132,16 +141,26 @@ const Box = styled.div`
 const DetailsMessage = styled.p`
   display: block;
   text-align: center;
-  margin-top: 30px;
+  margin-top: 15px;
   font-size: 14px;
   color: #555;
   opacity: 0;
   transform: translateY(-10px);
   transition: opacity 0.3s, transform 0.3s;
 
-  /* hover 상태에 대한 스타일 설정 */
   .petcard:hover & {
     opacity: 1;
     transform: translateY(0);
   }
+`;
+
+const InfoContainer = styled.div`
+  padding-top: 25px;
+  margin-left: 15px;
+`;
+
+const Text = styled.p`
+  margin: -7px 0;
+  font-size: 17px;
+  padding-left: 15px;
 `;

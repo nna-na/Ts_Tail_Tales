@@ -147,7 +147,7 @@ const RightSide = styled.div`
   }
 
   .emailtext {
-    margin-top: 130px;
+    margin-top: 100px;
   }
 
   form {

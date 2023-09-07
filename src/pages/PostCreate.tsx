@@ -151,6 +151,7 @@ const FormItem = styled.div`
 
 const Input = styled.input`
   width: 978px;
+  height: 30px;
   padding: 20px 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;

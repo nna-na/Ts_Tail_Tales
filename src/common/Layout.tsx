@@ -16,31 +16,37 @@ function Layout() {
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
-      const nickname = parsedUser.user_metadata.user_name || parsedUser.user_metadata.full_name;
+      const nickname =
+        parsedUser.user_metadata.user_name ||
+        parsedUser.user_metadata.full_name;
       setUserNickname(nickname);
     }
 
-    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        const parsedUser = session.user;
-        setUser(parsedUser);
-        sessionStorage.setItem("user", JSON.stringify(parsedUser));
+    const authSubscription = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN" && session) {
+          const parsedUser = session.user;
+          setUser(parsedUser);
+          sessionStorage.setItem("user", JSON.stringify(parsedUser));
 
-        const nickname = parsedUser.user_metadata.user_name || parsedUser.user_metadata.full_name;
-        setUserNickname(nickname);
+          const nickname =
+            parsedUser.user_metadata.user_name ||
+            parsedUser.user_metadata.full_name;
+          setUserNickname(nickname);
 
-        if (parsedUser.email) {
-          sessionStorage.setItem("userEmail", parsedUser.email);
+          if (parsedUser.email) {
+            sessionStorage.setItem("userEmail", parsedUser.email);
+          }
+          sessionStorage.setItem("userNickname", nickname);
+        } else if (event === "SIGNED_OUT") {
+          setUser(null);
+          sessionStorage.removeItem("user");
+          setUserNickname(null);
+          sessionStorage.removeItem("userNickname");
+          sessionStorage.removeItem("userEmail");
         }
-        sessionStorage.setItem("userNickname", nickname);
-      } else if (event === "SIGNED_OUT") {
-        setUser(null);
-        sessionStorage.removeItem("user");
-        setUserNickname(null);
-        sessionStorage.removeItem("userNickname");
-        sessionStorage.removeItem("userEmail");
       }
-    });
+    );
 
     const handleScroll = () => {
       if (window.scrollY > 600) {
@@ -67,11 +73,20 @@ function Layout() {
             {user && userNickname && (
               <UserContainer>
                 <UserImage>
-                  <img src={user?.user_metadata.avatar_url || process.env.PUBLIC_URL + "/image/header/profile.jpg"} alt="User Avatar" />
+                  <img
+                    src={
+                      user?.user_metadata.avatar_url ||
+                      process.env.PUBLIC_URL + "/image/header/profile.jpg"
+                    }
+                    alt="User Avatar"
+                  />
                 </UserImage>
                 <UserName>
                   <span>
-                    <Buttons to={`/mypage/${user.id}`}>{userNickname}님</Buttons>, 환영합니다!
+                    <Buttons to={`/mypage/${user.id}`}>
+                      {userNickname}님
+                    </Buttons>
+                    , 환영합니다!
                   </span>
                 </UserName>
               </UserContainer>
@@ -84,7 +99,7 @@ function Layout() {
                   await supabase.auth.signOut();
                   setUser(null);
                   setUserNickname(null);
-                  alert("로그아웃 됐다~~~");
+                  alert("로그아웃이 완료되었습니다.");
                 }}
               >
                 로그아웃
@@ -126,7 +141,9 @@ const LogoLink = styled(Link)`
   text-decoration: none;
   font-weight: bold;
   font-size: 30px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.2), 1px -1px 0 rgba(0, 0, 0, 0.2), -1px 1px 0 rgba(0, 0, 0, 0.2), 1px 1px 0 rgba(0, 0, 0, 0.2);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.2),
+    1px -1px 0 rgba(0, 0, 0, 0.2), -1px 1px 0 rgba(0, 0, 0, 0.2),
+    1px 1px 0 rgba(0, 0, 0, 0.2);
 `;
 
 const HeaderContent = styled.div`
@@ -134,7 +151,9 @@ const HeaderContent = styled.div`
   gap: 12px;
   align-items: center;
   font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.2), 1px -1px 0 rgba(0, 0, 0, 0.2), -1px 1px 0 rgba(0, 0, 0, 0.2), 1px 1px 0 rgba(0, 0, 0, 0.2);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.2),
+    1px -1px 0 rgba(0, 0, 0, 0.2), -1px 1px 0 rgba(0, 0, 0, 0.2),
+    1px 1px 0 rgba(0, 0, 0, 0.2);
 `;
 
 const UserContainer = styled.div`
@@ -174,7 +193,9 @@ const OutletWrap = styled.div`
 const Buttons = styled(Link)`
   text-decoration: none;
   color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.2), 1px -1px 0 rgba(0, 0, 0, 0.2), -1px 1px 0 rgba(0, 0, 0, 0.2), 1px 1px 0 rgba(0, 0, 0, 0.2);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.2),
+    1px -1px 0 rgba(0, 0, 0, 0.2), -1px 1px 0 rgba(0, 0, 0, 0.2),
+    1px 1px 0 rgba(0, 0, 0, 0.2);
 `;
 
 const LogoutButton = styled.button`
@@ -184,5 +205,7 @@ const LogoutButton = styled.button`
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.2), 1px -1px 0 rgba(0, 0, 0, 0.2), -1px 1px 0 rgba(0, 0, 0, 0.2), 1px 1px 0 rgba(0, 0, 0, 0.2);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.2),
+    1px -1px 0 rgba(0, 0, 0, 0.2), -1px 1px 0 rgba(0, 0, 0, 0.2),
+    1px 1px 0 rgba(0, 0, 0, 0.2);
 `;

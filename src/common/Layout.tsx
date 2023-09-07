@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { supabase } from "../supabase";
 import { User } from "@supabase/supabase-js";
 import styled from "styled-components";
 import ScrollToTop from "../components/ScrollToTop";
 
 function Layout() {
+  const navigate = useNavigate();
+
   const [user, setUser] = useState<User | null>(null);
   const [userNickname, setUserNickname] = useState<string | null>(null);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
@@ -100,6 +102,7 @@ function Layout() {
                   setUser(null);
                   setUserNickname(null);
                   alert("로그아웃이 완료되었습니다.");
+                  navigate("/");
                 }}
               >
                 로그아웃

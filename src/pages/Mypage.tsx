@@ -188,14 +188,6 @@ const MyPage = styled.div`
   margin: 0 auto; /* 수평 가운데 정렬 */
 `;
 
-const Title = styled.div`
-  font-size: 2rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 20px;
-  margin-top: 20px;
-`;
-
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;

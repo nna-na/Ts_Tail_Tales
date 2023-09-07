@@ -24,12 +24,16 @@ function Mypage() {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-  const currentFavoriteAnimals = favoriteAnimals.slice(indexOfFirstItem, indexOfLastItem);
+  const currentFavoriteAnimals = favoriteAnimals.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   useEffect(() => {
     // 유저 정보 가져오기
     const getUserInfo = async () => {
-      const { data: userData, error: userError } = await supabase.auth.getUser();
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
 
       if (userError) {
         alert("사용자 정보 가져오는 중 오류 발생");
@@ -58,7 +62,10 @@ function Mypage() {
         }
 
         // 사용자의 즐겨찾기 정보 가져오기
-        const { data: favoriteData, error: favoriteError } = await supabase.from("favorites").select("animalId").eq("email", userEmail);
+        const { data: favoriteData, error: favoriteError } = await supabase
+          .from("favorites")
+          .select("animalId")
+          .eq("email", userEmail);
 
         if (favoriteError) {
           alert("사용자 즐겨찾기 항목 가져오기 오류");
@@ -68,7 +75,9 @@ function Mypage() {
         const favoriteAnimalIds = favoriteData.map((fav: any) => fav.animalId);
 
         // 사용자의 즐겨찾기한 동물 정보 필터링
-        const favoriteAnimalsWithEmail = fetchedData.filter((item: any) => favoriteAnimalIds.includes(item.ABDM_IDNTFY_NO));
+        const favoriteAnimalsWithEmail = fetchedData.filter((item: any) =>
+          favoriteAnimalIds.includes(item.ABDM_IDNTFY_NO)
+        );
 
         setFavoriteAnimals(favoriteAnimalsWithEmail);
       } catch (e: Error | unknown) {
@@ -87,7 +96,9 @@ function Mypage() {
   }, [userEmail]);
 
   const removeFavorite = (animalId: string) => {
-    setFavoriteAnimals((prevFavorites) => prevFavorites.filter((item) => item.ABDM_IDNTFY_NO !== animalId));
+    setFavoriteAnimals((prevFavorites) =>
+      prevFavorites.filter((item) => item.ABDM_IDNTFY_NO !== animalId)
+    );
   };
 
   return (
@@ -124,7 +135,11 @@ function Mypage() {
       </MyPage>
       {!loading && (
         <PaginationContainer>
-          <Pagination currentPage={currentPage} totalPages={Math.ceil(favoriteAnimals.length / itemsPerPage)} setCurrentPage={handlePageChange} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(favoriteAnimals.length / itemsPerPage)}
+            setCurrentPage={handlePageChange}
+          />
         </PaginationContainer>
       )}
     </>
@@ -159,20 +174,18 @@ const BackIcon = styled.span`
   border-radius: 50%;
   color: black;
   cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.7);
+    color: #868686;
+  }
 `;
 
 const MyPage = styled.div`
   padding: 20px;
   width: 1000px;
   margin: 0 auto; /* 수평 가운데 정렬 */
-`;
-
-const Title = styled.div`
-  font-size: 2rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 20px;
-  margin-top: 20px;
 `;
 
 const Container = styled.div`

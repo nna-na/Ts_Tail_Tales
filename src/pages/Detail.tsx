@@ -30,7 +30,11 @@ function Detail() {
         </StDetailText>
         <div className="top">
           <div className="img-container">
-            <img className="petimg" src={item.IMAGE_COURS} alt={item.ABDM_IDNTFY_NO} />
+            <img
+              className="petimg"
+              src={item.IMAGE_COURS}
+              alt={item.ABDM_IDNTFY_NO}
+            />
             <div id={item.ABDM_IDNTFY_NO} data-pet={item.pet} />
           </div>
           <div className="description">
@@ -54,7 +58,8 @@ function Detail() {
               <div className="row">
                 <span>나이 / 체중</span>
                 <span>
-                  {new Date().getFullYear() - item.AGE_INFO.slice(0, 4) + 1}살 / &nbsp;
+                  {new Date().getFullYear() - item.AGE_INFO.slice(0, 4) + 1}살 /
+                  &nbsp;
                   {item.BDWGH_INFO.split("(")[0]}kg
                 </span>
               </div>
@@ -73,7 +78,8 @@ function Detail() {
               <div className="row">
                 <span>공고기한</span>
                 <span>
-                  {formatDate(item.PBLANC_BEGIN_DE)} ~{formatDate(item.PBLANC_END_DE)}
+                  {formatDate(item.PBLANC_BEGIN_DE)} ~
+                  {formatDate(item.PBLANC_END_DE)}
                 </span>
               </div>
               <div className="row">
@@ -95,14 +101,21 @@ function Detail() {
             </div>
           </div>
         </div>
-        <InquiryButton onClick={handleInquiryClick}>입양 문의하기</InquiryButton>
+        <InquiryButton onClick={handleInquiryClick}>
+          입양 문의하기
+        </InquiryButton>
         <div className="location">
           <p>
             <span>{item.SHTER_NM}</span>
             에서 기다리고 있어요!
           </p>
           <div className="kakaomap">
-            <Kakao lat={item.REFINE_WGS84_LAT} log={item.REFINE_WGS84_LOGT} shelter={item.SHTER_NM} kind={item.SPECIES_NM.split(" ")[0]} />
+            <Kakao
+              lat={item.REFINE_WGS84_LAT}
+              log={item.REFINE_WGS84_LOGT}
+              shelter={item.SHTER_NM}
+              kind={item.SPECIES_NM.split(" ")[0]}
+            />
           </div>
         </div>
       </DetailContainer>
@@ -147,6 +160,12 @@ const BackIcon = styled.span`
   border-radius: 50%;
   color: black;
   cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.7);
+    color: #868686;
+  }
 `;
 
 const DetailContainer = styled.div`

@@ -27,7 +27,11 @@ export default function PostDetail() {
     isError,
     error,
   } = useQuery(["posts", id], async () => {
-    const { data, error } = await supabase.from("posts").select("*").eq("id", id).single();
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("id", id)
+      .single();
 
     if (error) {
       throw error;
@@ -37,15 +41,22 @@ export default function PostDetail() {
   });
 
   // 댓글 목록 가져오기
-  const { data: comments, isLoading: isLoadingComments } = useQuery(["comments", id], async () => {
-    const { data, error } = await supabase.from("comments").select("*").eq("postId", id).order("date", { ascending: true });
+  const { data: comments, isLoading: isLoadingComments } = useQuery(
+    ["comments", id],
+    async () => {
+      const { data, error } = await supabase
+        .from("comments")
+        .select("*")
+        .eq("postId", id)
+        .order("date", { ascending: true });
 
-    if (error) {
-      throw error;
+      if (error) {
+        throw error;
+      }
+
+      return data;
     }
-
-    return data;
-  });
+  );
 
   // 게시물 수정 후 댓글 목록 다시 가져오기
   const refreshPostData = async () => {
@@ -87,18 +98,11 @@ export default function PostDetail() {
   return (
     <OuterContainer>
       <Container>
-        {/* <BackButton onClick={() => navigate("/community")} className="backbutton">
-          <BackIcon className="backicon">&lt;</BackIcon>
-        </BackButton>
-
-        <UserInfo>
-          <strong>{post.userNickname}</strong>님의 글입니다.
-        </UserInfo> */}
         <StDetailText style={{ display: "flex", alignItems: "center" }}>
           <BackIcon
             className="backBtn"
             onClick={() => {
-              navigate("/home");
+              navigate("/community");
             }}
           >
             〈
@@ -155,6 +159,12 @@ const BackIcon = styled.span`
   border-radius: 50%;
   color: black;
   cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.7);
+    color: #868686;
+  }
 `;
 
 const OuterContainer = styled.div`
@@ -175,10 +185,6 @@ const Container = styled.div`
   margin: 0 auto;
   background-color: #fdfaf6;
   border-radius: 20px;
-  /* 중앙 정렬 및 양옆 공백 설정 */
-  /* max-width: 1200px; */ /* 이 부분을 제거합니다. */
-  /* margin: 0 auto; */ /* 이 부분을 제거합니다. */
-  /* padding: 0 1rem; */ /* 이 부분을 제거합니다. */
 `;
 
 const Title = styled.h3`

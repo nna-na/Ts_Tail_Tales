@@ -10,6 +10,8 @@ import Pagination from "../components/Pagination";
 import { FavoritesProvider } from "../components/FavoritesContext";
 import PetCard from "../components/Petcard";
 
+const ITEMS_PER_PAGE = 12;
+
 function Home() {
   const { data, isLoading, isError, error } = useQuery<Array<AnimalShelter>, Error>("animalData", fetchAnimalData);
 
@@ -32,12 +34,6 @@ function Home() {
     handleFilter();
   };
   // ------------------------------
-  const [selectedBeginDate, setSelectedBeginDate] = useState("");
-  const [selectedEndDate, setSelectedEndDate] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedBreed, setSelectedBreed] = useState("");
-
-  const ITEMS_PER_PAGE = 16;
 
   const handleFilter = () => {
     setCurrentPage(1);
@@ -61,14 +57,14 @@ function Home() {
     let matchesDate = true;
     let matchesLocation = true;
     let matchesBreed = true;
-    if (selectedBeginDate && selectedEndDate) {
-      matchesDate = formatDate(item.RECEPT_DE) >= selectedBeginDate && formatDate(item.RECEPT_DE) <= selectedEndDate;
+    if (queries.selectedBeginDate && queries.selectedEndDate) {
+      matchesDate = formatDate(item.RECEPT_DE) >= queries.selectedBeginDate && formatDate(item.RECEPT_DE) <= queries.selectedEndDate;
     }
-    if (selectedLocation) {
-      matchesLocation = item.SIGUN_NM.toLowerCase().includes(selectedLocation.toLowerCase());
+    if (queries.selectedLocation) {
+      matchesLocation = item.SIGUN_NM.toLowerCase().includes(queries.selectedLocation.toLowerCase());
     }
-    if (selectedBreed) {
-      matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === selectedBreed;
+    if (queries.selectedBreed) {
+      matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === queries.selectedBreed;
     }
     return matchesDate && matchesLocation && matchesBreed;
   });
@@ -80,9 +76,9 @@ function Home() {
   return (
     <FavoritesProvider>
       <Div>
-        <div className="filtered">
-          <span className="deadline">"공고 마감일"</span>이 얼마 남지 않은 아이들!
-        </div>
+        <FilteredSection>
+          <DeadlineText>"공고 마감일"</DeadlineText>이 얼마 남지 않은 친구들!
+        </FilteredSection>
         <CustomSlider items={nearingDeadline} />
         <Category
           query={{
@@ -91,21 +87,11 @@ function Home() {
             SIGUN_NM: queries.selectedLocation,
             SPECIES_NM: queries.selectedBreed,
           }}
-          // onChange={(e) => {
-          //   const { name, value } = e.target;
-          //   if (name === "PBLANC_BEGIN_DE") {
-          //     setSelectedBeginDate(value);
-          //   } else if (name === "PBLANC_END_DE") {
-          //     setSelectedEndDate(value);
-          //   } else if (name === "SIGUN_NM") {
-          //     setSelectedLocation(value);
-          //   } else if (name === "SPECIES_NM") {
-          //     setSelectedBreed(value);
-          //   }
-          //   handleFilter();
-          // }}
           onChange={changeHandler}
         />
+        <NewLifeSection className="filtered">
+          <span className="deadline">"새로운 삶"</span>을 기다리는 친구들!
+        </NewLifeSection>
         <Container>
           {currentItems?.map((item: AnimalShelter) => (
             <PetCard key={item.ABDM_IDNTFY_NO} item={item} />
@@ -121,32 +107,78 @@ function Home() {
 export default Home;
 
 const Div = styled.div`
-  background-color: #ffeaea;
+  background-color: #fdfaf6;
   position: relative;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 100vh;
+  height: 3600px;
 
   .filtered {
-    font-size: 2em;
+    font-size: 2.5em;
     display: flex;
     justify-content: center;
     padding: 100px 0 15px 0;
+    margin-top: 20px;
+    margin-bottom: 30px;
   }
 
   .deadline {
     font-weight: bolder;
-    color: red;
+    color: black;
+    font-weight: bold;
   }
 `;
 
 const Container = styled.div`
   display: flex;
   justify-content: center;
+  gap: 50px;
+  margin-bottom: 20px;
+
   flex-wrap: wrap;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+const FilteredSection = styled.div`
+  background-image: url("/image/homes/home08.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.5em;
+  padding: 100px 0 15px 0;
+  margin-bottom: 30px;
+  height: 300px;
+  object-fit: cover;
+  color: white;
+  background-color: #fcf3e3;
+`;
+
+const DeadlineText = styled.span`
+  font-weight: bolder;
+  color: white;
+  font-weight: bold;
+`;
+
+const NewLifeSection = styled.div`
+  background-image: url("/image/homes/home04.jpg");
+  background-size: contain; /* 이미지가 페이지 크기에 맞게 확대/축소됨 */
+  background-position: top center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.5em;
+  padding: 100px 0 15px 0;
+  margin-bottom: 30px;
+  object-fit: cover;
+  height: 300px;
+  filter: brightness(0.7);
 `;

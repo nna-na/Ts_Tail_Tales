@@ -6,12 +6,13 @@ export interface AnimalShelter {
   SHTER_NM: string;
   ServiceKey: string;
   PBLANC_IDNTFY_NO: string | undefined;
-  response: any;
+  // response: any;
+  response: string;
   SFETR_INFO: string;
   DISCVRY_PLC_INFO: string;
   SPECIES_NM: string;
   SEX_NM: string;
-  IMAGE_COURS: any;
+  IMAGE_COURS: string;
   STATE_NM: string;
   ABDM_IDNTFY_NO: string | undefined;
   SIGUN_NM: string;

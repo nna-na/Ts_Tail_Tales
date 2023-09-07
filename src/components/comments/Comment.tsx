@@ -9,7 +9,8 @@ import Pagination from "../Pagination";
 import styled from "styled-components";
 
 interface CommentProps {
-  comments?: any[];
+  // comments?: any[];
+  comments?: string[];
 }
 
 export default function Comment({ comments: commentsProp }: CommentProps) {
@@ -66,9 +67,8 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
       try {
         await supabase.from("comments").delete().eq("id", commentId);
         queryClient.invalidateQueries(["comments", id]);
-        window.location.reload();
       } catch (error) {
-        console.error("댓글 삭제 오류:", error);
+        alert("댓글 삭제 오류");
       }
     }
   };

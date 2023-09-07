@@ -16,65 +16,82 @@ const regions = ["전체", "가평군", "고양시", "과천시", "광명시", "
 
 export default function Category({ query, onChange }: CategoryProps) {
   const { PBLANC_BEGIN_DE, PBLANC_END_DE, SIGUN_NM, SPECIES_NM } = query;
+
   return (
     <Container className="category">
       <form className="form" onSubmit={(e) => e.preventDefault()}>
-        {/* 공고 시작, 마감일  */}
-        <div className="box-form">
-          <label className="label" htmlFor="bgnde">
-            <FaCalendarAlt className="icon" />
-            &nbsp;날짜
-            <b>*</b>
-          </label>
-          <span className="calender">
-            <input className="input" name="selectedBeginDate" id="PBLANC_BEGIN_DE" value={PBLANC_BEGIN_DE} onChange={onChange} type="date" />
-            <input className="input" name="selectedEndDate" id="PBLANC_END_DE" value={PBLANC_END_DE} onChange={onChange} type="date" />
-          </span>
-        </div>
-        {/* 경기도내 시군구 */}
-        <div className="box-form">
-          <label className="label" htmlFor="selectedLocation">
-            <MdLocationOn className="icon" />
-            &nbsp;시군구
-            <b>*</b>
-          </label>
-          <select className="select" name="selectedLocation" id="selectedLocation" value={SIGUN_NM} onChange={onChange}>
-            {regions?.map((region, idx) => (
-              <option value={region !== "전체" ? region : ""} key={idx}>
-                {region}
-              </option>
-            ))}
-          </select>
-        </div>
-        {/* 품종 */}
-        <div className="box-form">
-          <label className="label" htmlFor="selectedBreed">
-            <MdCategory className="icon" />
-            &nbsp;품종
-            <b>*</b>
-          </label>
-          <select className="select" name="selectedBreed" id="selectedBreed" value={SPECIES_NM} onChange={onChange}>
-            <option value="">모두</option>
-            <option value="[개]">강아지</option>
-            <option value="[고양이]">고양이</option>
-            <option value="[기타축종]">다른친구들</option>
-          </select>
-        </div>
+        <FlexContainer>
+          {/* 날짜 */}
+          <div className="box-form date">
+            <label className="label" htmlFor="bgnde">
+              <FaCalendarAlt className="icon" />
+              &nbsp;날짜
+              <b>*</b>
+            </label>
+            <CalenderContainer className="calender">
+              <CalenderInput className="input" name="selectedBeginDate" id="PBLANC_BEGIN_DE" value={PBLANC_BEGIN_DE} onChange={onChange} type="date" />
+              <CalenderInput className="input" name="selectedEndDate" id="PBLANC_END_DE" value={PBLANC_END_DE} onChange={onChange} type="date" />
+            </CalenderContainer>
+          </div>
+          {/* 시군구 */}
+          <div className="box-form location">
+            <label className="label" htmlFor="selectedLocation">
+              <MdLocationOn className="icon" />
+              &nbsp;시군구
+              <b>*</b>
+            </label>
+            <select className="select" name="selectedLocation" id="selectedLocation" value={SIGUN_NM} onChange={onChange}>
+              {regions?.map((region, idx) => (
+                <option value={region !== "전체" ? region : ""} key={idx}>
+                  {region}
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* 품종 */}
+          <div className="box-form breed">
+            <label className="label" htmlFor="selectedBreed">
+              <MdCategory className="icon" />
+              &nbsp;품종
+              <b>*</b>
+            </label>
+            <select className="select" name="selectedBreed" id="selectedBreed" value={SPECIES_NM} onChange={onChange}>
+              <option value="">모두</option>
+              <option value="[개]">강아지</option>
+              <option value="[고양이]">고양이</option>
+              <option value="[기타축종]">다른친구들</option>
+            </select>
+          </div>
+        </FlexContainer>
       </form>
     </Container>
   );
 }
 
 const Container = styled.div`
-  margin-top: 50px;
+  padding: 10px;
+  transform: scale(0.9);
+  display: flex;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  background-color: #746464;
+  border-radius: 200px;
+  margin: 0 auto;
+  width: 1000px;
+  margin-top: 100px;
   margin-bottom: 50px;
-  background-color: white;
-  padding: 30px 30px 30px 30px;
+
+  .label {
+    display: flex;
+    justify-content: center;
+    white-space: nowrap;
+  }
 
   .form {
-    margin-left: 200px;
     display: flex;
-    flex-wrap: wrap; /* 나열되는 항목을 여러 줄로 강제로 내려가게 설정 */
+    flex-wrap: wrap; //나열되는 항목을 여러 줄로 강제로 내려가게 설정
     gap: 1rem; /* 각 항목 사이의 간격 조절 */
   }
 
@@ -95,4 +112,39 @@ const Container = styled.div`
     border-radius: 5px;
     border: 2px solid gray;
   }
+
+  /* 날짜, 시군구, 품종 스타일 설정 */
+  .date,
+  .location,
+  .breed {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .icon {
+    font-size: 24px;
+    color: white;
+  }
+`;
+
+const FlexContainer = styled.div`
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  flex-wrap: wrap;
+`;
+
+const CalenderContainer = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 10px;
+`;
+
+const CalenderInput = styled.input`
+  margin: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 2px solid gray;
 `;

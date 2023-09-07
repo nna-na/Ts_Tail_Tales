@@ -5,12 +5,14 @@ export interface AnimalShelter {
   SHTER_NM: string;
   ServiceKey: string;
   PBLANC_IDNTFY_NO: string | undefined;
-  response: any;
+  // response: any;
+  response: string;
   SFETR_INFO: string;
   DISCVRY_PLC_INFO: string;
   SPECIES_NM: string;
   SEX_NM: string;
-  IMAGE_COURS: any;
+  // IMAGE_COURS: any;
+  IMAGE_COURS: string;
   STATE_NM: string;
   ABDM_IDNTFY_NO: string | undefined;
   SIGUN_NM: string;
@@ -23,9 +25,7 @@ interface FavoritesContextValue {
   toggleFavorite: (item: AnimalShelter) => void;
 }
 
-const FavoritesContext = createContext<FavoritesContextValue | undefined>(
-  undefined
-);
+const FavoritesContext = createContext<FavoritesContextValue | undefined>(undefined);
 
 export function useFavorites() {
   const context = useContext(FavoritesContext);
@@ -40,14 +40,10 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
 
   function toggleFavorite(item: AnimalShelter) {
     setFavorites((prevFavorites) => {
-      const isFavorite = prevFavorites.some(
-        (favItem) => favItem.ABDM_IDNTFY_NO === item.ABDM_IDNTFY_NO
-      );
+      const isFavorite = prevFavorites.some((favItem) => favItem.ABDM_IDNTFY_NO === item.ABDM_IDNTFY_NO);
 
       if (isFavorite) {
-        return prevFavorites.filter(
-          (favItem) => favItem.ABDM_IDNTFY_NO !== item.ABDM_IDNTFY_NO
-        );
+        return prevFavorites.filter((favItem) => favItem.ABDM_IDNTFY_NO !== item.ABDM_IDNTFY_NO);
       } else {
         return [...prevFavorites, item];
       }
@@ -59,9 +55,5 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     toggleFavorite,
   };
 
-  return (
-    <FavoritesContext.Provider value={contextValue}>
-      {children}
-    </FavoritesContext.Provider>
-  );
+  return <FavoritesContext.Provider value={contextValue}>{children}</FavoritesContext.Provider>;
 }

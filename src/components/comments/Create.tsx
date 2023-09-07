@@ -64,14 +64,14 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
         const { data, error } = await supabase.from("comments").upsert([newComment]);
 
         if (error) {
-          console.error("댓글 작성 중 오류 발생:", error);
+          alert("댓글 작성 중 오류 발생");
           throw new Error("댓글 작성 오류");
         }
 
         // 반환값으로 Promise<void> 사용
         return;
       } catch (error) {
-        console.error("댓글 작성 중 오류 발생:", error);
+        alert("댓글 작성 중 오류 발생");
         throw error;
       }
     },
@@ -111,7 +111,7 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       setContent("");
       onCommentAdded();
     } catch (error) {
-      console.error("댓글 작성 오류:", error);
+      alert("댓글 작성 오류");
     }
   };
 

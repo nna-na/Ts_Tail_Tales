@@ -87,13 +87,26 @@ export default function PostDetail() {
   return (
     <OuterContainer>
       <Container>
-        <BackButton onClick={() => navigate("/community")} className="backbutton">
+        {/* <BackButton onClick={() => navigate("/community")} className="backbutton">
           <BackIcon className="backicon">&lt;</BackIcon>
         </BackButton>
 
         <UserInfo>
           <strong>{post.userNickname}</strong>님의 글입니다.
-        </UserInfo>
+        </UserInfo> */}
+        <StDetailText style={{ display: "flex", alignItems: "center" }}>
+          <BackIcon
+            className="backBtn"
+            onClick={() => {
+              navigate("/home");
+            }}
+          >
+            〈
+          </BackIcon>
+          <h2 className="detailtext">
+            <strong>{post.userNickname}</strong>님의 글입니다.
+          </h2>
+        </StDetailText>
 
         <Title>{post.title}</Title>
         <Content>
@@ -115,33 +128,44 @@ export default function PostDetail() {
   );
 }
 
+const StDetailText = styled.div`
+  margin-top: 100px;
+  padding-left: 20px;
+  color: black;
+  // margin-bottom: 150px;
+  .backBtn {
+    background: none;
+    border: none;
+    color: black;
+  }
+  .detailtext {
+    margin: 0 auto;
+    max-width: 350px;
+    padding: 20px 0 20px;
+  }
+
+  strong {
+    color: #746464;
+  }
+`;
+const BackIcon = styled.span`
+  margin-right: 5px;
+  font-size: 20px;
+  font-weight: bolder;
+  border-radius: 50%;
+  color: black;
+  cursor: pointer;
+`;
+
 const OuterContainer = styled.div`
   background-color: #fdfaf6;
   display: flex;
   justify-content: center;
-`;
-
-const BackButton = styled.button`
-  padding: 10px 20px;
-  background-color: #fdfaf6;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  &:hover {
-    background-color: #bdb7b0;
-    transform: scale(1.05);
-  }
-`;
-
-const BackIcon = styled.span`
-  margin-right: 5px;
-  font-size: 20px;
-  border-radius: 50%;
-  color: black;
+  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
 `;
 
 const Container = styled.div`
@@ -155,11 +179,6 @@ const Container = styled.div`
   /* max-width: 1200px; */ /* 이 부분을 제거합니다. */
   /* margin: 0 auto; */ /* 이 부분을 제거합니다. */
   /* padding: 0 1rem; */ /* 이 부분을 제거합니다. */
-`;
-
-const UserInfo = styled.p`
-  text-align: center;
-  margin-top: 20px;
 `;
 
 const Title = styled.h3`

@@ -13,13 +13,7 @@ interface FavoriteButtonProps {
   onRemoveFavorite?: () => void;
 }
 
-function FavoriteButton({
-  item,
-  isLoggedIn,
-  isFavorite,
-  onToggleFavorite,
-  onRemoveFavorite,
-}: FavoriteButtonProps) {
+function FavoriteButton({ item, isLoggedIn, isFavorite, onToggleFavorite, onRemoveFavorite }: FavoriteButtonProps) {
   const handleToggleFavorite = async (event: React.MouseEvent) => {
     event.stopPropagation();
 
@@ -29,11 +23,10 @@ function FavoriteButton({
     }
 
     try {
-      const { data: userData, error: userError } =
-        await supabase.auth.getUser();
+      const { data: userData, error: userError } = await supabase.auth.getUser();
 
       if (userError) {
-        console.error("Error getting user:", userError);
+        alert("사용자 정보를 가져오는 중 오류 발생");
         return;
       }
 
@@ -41,34 +34,22 @@ function FavoriteButton({
       const userId = user?.id;
 
       if (!userId) {
-        console.error("User ID not found.");
+        alert("사용자의 ID를 찾을 수 없습니다.");
         return;
       }
 
-      const { data: existingFavorites, error: existingFavoritesError } =
-        await supabase
-          .from("favorites")
-          .select()
-          .eq("userId", userId)
-          .eq("animalId", item.ABDM_IDNTFY_NO);
+      const { data: existingFavorites, error: existingFavoritesError } = await supabase.from("favorites").select().eq("userId", userId).eq("animalId", item.ABDM_IDNTFY_NO);
 
       if (existingFavoritesError) {
-        console.error(
-          "Error fetching existing favorites:",
-          existingFavoritesError
-        );
+        alert("기존 즐겨찾기를 가져오는 중 오류 발생");
         return;
       }
 
       if (existingFavorites && existingFavorites.length > 0) {
-        const { error: deleteError } = await supabase
-          .from("favorites")
-          .delete()
-          .eq("userId", userId)
-          .eq("animalId", item.ABDM_IDNTFY_NO);
+        const { error: deleteError } = await supabase.from("favorites").delete().eq("userId", userId).eq("animalId", item.ABDM_IDNTFY_NO);
 
         if (deleteError) {
-          console.error("Error deleting favorite:", deleteError);
+          alert("즐겨찾기 삭제 중 오류 발생");
           return;
         }
         if (onRemoveFavorite) {
@@ -83,12 +64,12 @@ function FavoriteButton({
         });
 
         if (addError) {
-          console.error("Error adding favorite:", addError);
+          alert("즐겨찾기 추가 중 오류 발생");
           return;
         }
       }
     } catch (error) {
-      console.error("Error toggling favorite:", error);
+      alert("즐겨찾기 전환 중 오류 발생");
     }
 
     onToggleFavorite(); // 호출해서 상태 변경 요청
@@ -99,13 +80,13 @@ function FavoriteButton({
       {isFavorite ? (
         <FaHeart
           style={{
-            color: "#f8b3b3",
+            color: "#ff4828",
           }}
         />
       ) : (
-        <FaRegHeart
+        <FaHeart
           style={{
-            color: "#f8b3b3",
+            color: "rgba(87, 76, 76, 0.3)",
           }}
         />
       )}
@@ -116,9 +97,11 @@ function FavoriteButton({
 export default FavoriteButton;
 
 const HeartBtn = styled.button`
+  // position: absolute;
+  // margin: 5px 5px;
   border: none;
-  background-color: white;
-  font-size: 30px;
+  background: none;
+  font-size: 35px;
   cursor: pointer;
   transition: transform 0.3s ease; /* 추가: 변환 애니메이션 효과 */
 

@@ -13,7 +13,9 @@ export default function PostCreate() {
   // 사용자 정보 가져오기
   const storedUser = sessionStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
-  const userNickname = user ? user.user_metadata.user_name || user.user_metadata.full_name : null;
+  const userNickname = user
+    ? user.user_metadata.user_name || user.user_metadata.full_name
+    : null;
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -64,91 +66,114 @@ export default function PostCreate() {
     }
   };
 
+  const handleGoBack = async () => {
+    if (window.confirm("이전으로 가면 작성 내용이 사라집니다.")) {
+      navigate("/community");
+    }
+  };
+
   return (
-    <Container>
-      <StDetailText style={{ display: "flex", alignItems: "center" }}>
-        <BackIcon
-          className="backBtn"
-          onClick={() => {
-            navigate("/community");
-          }}
-        >
-          〈
-        </BackIcon>
+    <OuterContainer>
+      <Container>
         <h2 className="detailtext">게시글 작성</h2>
-      </StDetailText>
-      <Form onSubmit={handleSubmit}>
-        <FormItem>
-          <label>제목:</label>
-          <Input type="text" value={title} onChange={handleTitleChange} placeholder="제목" />
-        </FormItem>
-        <FormItem>
-          <label>내용:</label>
-          <PostImg onContentChange={handleContentChange} initialContent={content} />
-        </FormItem>
-        <SubmitButton type="submit">작성</SubmitButton>
-      </Form>
-    </Container>
+        <Form onSubmit={handleSubmit}>
+          <FormItem>
+            <Input
+              type="text"
+              value={title}
+              onChange={handleTitleChange}
+              placeholder="제목을 입력해주세요"
+            />
+          </FormItem>
+          <FormItem>
+            <PostImg
+              onContentChange={handleContentChange}
+              initialContent={content}
+            />
+          </FormItem>
+          <FormButtons>
+            <SubmitButton
+              type="button"
+              className="backbtn"
+              onClick={handleGoBack}
+            >
+              이전
+            </SubmitButton>
+            <SubmitButton type="submit" className="submitbtn">
+              등록
+            </SubmitButton>
+          </FormButtons>
+        </Form>
+      </Container>
+    </OuterContainer>
   );
 }
 
+const OuterContainer = styled.div`
+  background-color: #fdfaf6;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+`;
+
 const Container = styled.div`
-  padding: 20px;
-  width: 1000px;
+  padding: 100px;
   margin: 0 auto;
   background-color: #fdfaf6;
-`;
-const StDetailText = styled.div`
-  // margin-top: 30px;
-  padding-left: 20px;
-  color: black;
-  .backBtn {
-    background: none;
-    border: none;
-    color: black;
-  }
-  .detailtext {
-    margin: 0 auto;
-    max-width: 350px;
-    padding: 20px 0 20px;
-  }
 
-  strong {
-    color: #746464;
+  h2 {
+    text-align: center;
+    margin-bottom: 40px;
   }
 `;
-const BackIcon = styled.span`
-  margin-right: 5px;
-  font-size: 20px;
-  font-weight: bolder;
-  border-radius: 50%;
-  color: black;
-  cursor: pointer;
-`;
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
+
+const FormButtons = styled.div`
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+`;
+
 const FormItem = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
 `;
+
 const Input = styled.input`
   width: 978px;
   padding: 20px 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
+  text-align: center;
 `;
+
 const SubmitButton = styled.button`
-  padding: 10px 20px;
-  background-color: #f8b3b3;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 8px;
+  width: 192px;
+  height: 44px;
+  padding: 8px;
+  border-radius: 999px;
+  background: #746464;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+
+  ${(props) =>
+    props.className === "backbtn"
+      ? "background: #bdb7b0;"
+      : "background: #746464;"}
+
   &:hover {
     background-color: #dd3a3a;
     transform: scale(1.05);

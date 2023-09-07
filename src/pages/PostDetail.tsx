@@ -98,13 +98,6 @@ export default function PostDetail() {
   return (
     <OuterContainer>
       <Container>
-        {/* <BackButton onClick={() => navigate("/community")} className="backbutton">
-          <BackIcon className="backicon">&lt;</BackIcon>
-        </BackButton>
-
-        <UserInfo>
-          <strong>{post.userNickname}</strong>님의 글입니다.
-        </UserInfo> */}
         <StDetailText style={{ display: "flex", alignItems: "center" }}>
           <BackIcon
             className="backBtn"
@@ -166,6 +159,12 @@ const BackIcon = styled.span`
   border-radius: 50%;
   color: black;
   cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.7);
+    color: #868686;
+  }
 `;
 
 const OuterContainer = styled.div`
@@ -186,10 +185,6 @@ const Container = styled.div`
   margin: 0 auto;
   background-color: #fdfaf6;
   border-radius: 20px;
-  /* 중앙 정렬 및 양옆 공백 설정 */
-  /* max-width: 1200px; */ /* 이 부분을 제거합니다. */
-  /* margin: 0 auto; */ /* 이 부분을 제거합니다. */
-  /* padding: 0 1rem; */ /* 이 부분을 제거합니다. */
 `;
 
 const Title = styled.h3`

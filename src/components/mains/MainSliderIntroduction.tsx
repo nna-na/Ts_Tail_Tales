@@ -91,8 +91,6 @@ const Button = styled.button`
   z-index: 2;
   position: absolute;
   bottom: 180px;
-  left: 50%;
-  transform: translateX(-50%);
   transition: transform 0.3s ease;
 
   &:hover {
@@ -103,7 +101,7 @@ const Button = styled.button`
 const DownArrow = styled.div`
   color: white;
   position: absolute;
-  bottom: 20px;
+  bottom: 130px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;

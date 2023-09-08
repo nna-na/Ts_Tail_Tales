@@ -26,7 +26,7 @@ function FavoriteButton({ item, isLoggedIn, isFavorite, onToggleFavorite, onRemo
       const { data: userData, error: userError } = await supabase.auth.getUser();
 
       if (userError) {
-        alert("사용자 정보를 가져오는 중 오류 발생");
+        alert("로그인 후 즐겨찾기를 이용해주세요.");
         return;
       }
 

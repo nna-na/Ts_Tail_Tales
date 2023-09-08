@@ -40,7 +40,7 @@ function Mypage() {
 
       const user = userData?.user;
       const email = user?.email;
-      const nickname = user?.user_metadata.name;
+      const nickname = user?.user_metadata.name || user?.user_metadata.user_name;
       const avatar = user?.user_metadata.avatar_url;
 
       setUserEmail(email || ""); // 이메일을 상태에 저장

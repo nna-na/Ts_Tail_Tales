@@ -1,7 +1,7 @@
 import React from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { styled } from "styled-components";
+import styled from "styled-components";
 
 const MainSliderIntroduction = () => {
   const navigate = useNavigate();
@@ -51,31 +51,30 @@ const Container = styled.div`
   justify-content: center;
   height: 100vh;
   background-color: #f0f0f0;
-  position: relative;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  margin-top: 0;
 `;
 
 const ImageContainer = styled.div`
   flex: 1;
   width: 100%;
   position: relative;
-  img {
-    width: 100%;
-    height: auto;
+  overflow: hidden;
+
+  @media (min-width: 768px) {
+    padding: 0 2rem;
+    background: #fdfaf6;
   }
 `;
 
 const ImageBackground = styled.img`
-  background-image: url("/image/main/main1.png");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
   width: 100%;
   height: 100%;
+  object-fit: cover;
   z-index: 1;
 `;
 
@@ -86,13 +85,14 @@ const Button = styled.button`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: #fdfaf6;
   border: none;
-  padding: 10px 10px 10px 10px;
+  padding: 10px;
   border-radius: 30px;
   cursor: pointer;
   z-index: 2;
   position: absolute;
-  top: 65%;
-  left: center;
+  bottom: 180px;
+  left: 50%;
+  transform: translateX(-50%);
   transition: transform 0.3s ease;
 
   &:hover {
@@ -103,7 +103,7 @@ const Button = styled.button`
 const DownArrow = styled.div`
   color: white;
   position: absolute;
-  bottom: 20%;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;

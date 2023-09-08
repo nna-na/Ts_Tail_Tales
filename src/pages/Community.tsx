@@ -4,11 +4,18 @@ import { Link } from "react-router-dom";
 import { supabase } from "../supabase";
 import Pagination from "../components/Pagination";
 
+interface Comment {
+  id: number;
+  content: string;
+  userNickname: string;
+}
+
 interface Post {
   id: number;
-  author: string;
+  userNickname: string;
   title: string;
   content: string;
+  comments: Comment[];
   date: string;
 }
 
@@ -23,17 +30,31 @@ export default function Community() {
 
   const currentPosts = posts.slice(indexOfFirstItem, indexOfLastItem);
 
+  const handleRowClick = (postId: number) => {
+    window.location.href = `/post-detail/${postId}`;
+  };
+
+  const formattedDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    };
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, options);
+  };
+
   const fetchPosts = async () => {
     try {
       const { data: posts, error } = await supabase.from("posts").select("*").order("date", { ascending: false });
 
       if (error) {
-        alert("게시물 가져오기 오류");
+        console.error("게시물 가져오기 오류:", error);
       } else {
         setPosts(posts);
       }
     } catch (error) {
-      alert("게시물 가져오기 오류");
+      console.error("게시물 가져오기 오류:", error);
     }
   };
 
@@ -41,98 +62,176 @@ export default function Community() {
     fetchPosts();
   }, []);
 
-  const user = JSON.parse(sessionStorage.getItem("user") || "{}") as { email: string } | null;
+  const user = JSON.parse(sessionStorage.getItem("user") || "{}") as {
+    email: string;
+  } | null;
 
   return (
-    <>
-      <Title>커뮤니티</Title>
+    <StDetailDivContainer>
       <Container>
-        <PostsList>
-          {currentPosts?.map((post, index) => (
-            <PostItem key={post.id}>
-              <PostNumber>{index + 1}</PostNumber>
-              <PostContent>
-                <Link to={`/post-detail/${post.id}`} style={{ textDecoration: "none" }}>
-                  <PostTitle>{post.title}</PostTitle>
-                </Link>
-                <PostInfo>
-                  <div>{post.author}</div>
-                  <div>{post.date}</div>
-                </PostInfo>
-              </PostContent>
-            </PostItem>
-          ))}
-        </PostsList>
-        {user?.email && (
-          <CreateButton to="/create">
-            <CreateBtn className="fas fa-plus">작성하기</CreateBtn>
-          </CreateButton>
-        )}
+        <ContentContainer>
+          <TitleContainer>
+            <LogoImage src="/image/logo/logo.png" alt="Logo" />
+          </TitleContainer>
+          <br />
+
+          <Table>
+            <thead>
+              <tr>
+                <th className="no-border">No</th>
+                <th className="no-border">제목</th>
+                <th className="no-border">작성자</th>
+                <th className="no-border">작성날짜</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentPosts.map((post, index) => (
+                <StyledRow key={post.id} onClick={() => handleRowClick(post.id)}>
+                  <td>{posts.length - (index + indexOfFirstItem)} </td>
+                  <td>{post.title}</td>
+                  <td>{post.userNickname}</td>
+                  <td>{formattedDate(post.date)}</td>
+                </StyledRow>
+              ))}
+            </tbody>
+          </Table>
+          <PaginationContainer>
+            <Pagination currentPage={currentPage} totalPages={Math.ceil(posts.length / itemsPerPage)} setCurrentPage={setCurrentPage} />
+          </PaginationContainer>
+          {user?.email && (
+            <CreateButton to="/create">
+              <CreateBtn className="fas fa-plus">작성하기</CreateBtn>
+            </CreateButton>
+          )}
+        </ContentContainer>
       </Container>
-      <PaginationContainer>
-        <Pagination currentPage={currentPage} totalPages={Math.ceil(posts.length / itemsPerPage)} setCurrentPage={setCurrentPage} />
-      </PaginationContainer>
-    </>
+    </StDetailDivContainer>
   );
 }
 
-const Title = styled.div`
-  font-size: 1.5rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 20px;
-  margin-top: 50px;
+const StDetailDivContainer = styled.div`
+  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #fdfaf6;
+`;
+const Container = styled.div`
+  // min-height: 100vh;
+  padding: 20px;
 `;
 
-const Container = styled.div`
-  padding: 20px;
-  position: relative;
+const TitleContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 90%;
+  margin-bottom: 20px;
+`;
+
+const LogoImage = styled.img`
+  width: 130px;
+  height: 80px;
+  margin-right: 20px;
+`;
+
+const ContentContainer = styled.div`
+  padding: 70px;
+  max-width: 1000px;
   margin: 0 auto;
 `;
 
-const PostsList = styled.div`
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fdfaf6;
+
+  thead th {
+    background-color: #9f9292;
+    color: white;
+    text-align: left;
+    padding: 12px;
+    font-weight: bold;
+    border: 2px solid #2c2626;
+  }
+
+  th.no-border {
+    border: none;
+  }
+
+  td {
+    padding: 12px;
+    text-align: left;
+    border-top: 1px solid #ddd;
+  }
+
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 10%;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 50%;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 10%;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 15%;
+  }
+
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 0%;
+  }
+`;
+
+const StyledRow = styled.tr`
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  td {
+    padding: 12px;
+    text-align: left;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
+
+  &:hover {
+    background-color: #cfc3b5;
+    animation: flash 0.5s;
+  }
+
+  @keyframes flash {
+    0% {
+      background-color: transparent;
+    }
+    50% {
+      background-color: #cfc6bc;
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+`;
+
+const PaginationContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 20px;
-`;
-
-const PostItem = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const PostNumber = styled.div`
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-right: 10px;
-`;
-
-const PostContent = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const PostTitle = styled.h2`
-  font-size: 1.3rem;
-  margin: 0;
-`;
-
-const PostInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #777;
+  justify-content: center;
+  margin-top: 50px;
 `;
 
 const CreateButton = styled(Link)`
   position: fixed;
+  /* top: 120px; */
   bottom: 20px;
-  right: 20px;
+  right: 60px;
   width: 100px;
   height: 40px;
   background-color: #746464;
@@ -154,9 +253,4 @@ const CreateButton = styled(Link)`
 
 const CreateBtn = styled.h2`
   font-size: 15px;
-`;
-const PaginationContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 50px;
 `;

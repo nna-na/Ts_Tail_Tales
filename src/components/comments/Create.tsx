@@ -148,7 +148,7 @@ const InputContainer = styled.div`
 `;
 
 const CreateTextarea = styled.textarea`
-  padding: 10px;
+  padding: 8px;
   border: 1px solid white;
   border-radius: 8px;
   resize: none;
@@ -167,15 +167,5 @@ const CreateButton = styled.button`
   width: fit-content;
   &:hover {
     background-color: #606060;
-  }
-`;
-
-const CreateStyle = styled(CreateContainer)`
-  ${CreateForm} {
-    ${InputContainer} {
-      ${CreateTextarea}, ${CreateButton} {
-        width: 100%;
-      }
-    }
   }
 `;

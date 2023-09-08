@@ -60,20 +60,41 @@ function MainSliderFunction() {
   );
 }
 
+const Contain = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  background-color: white;
+
+  /* 기존 스타일 유지 */
+
+  /* 중앙 정렬 및 양옆 공백 설정 */
+  max-width: 1200px; /* 원하는 최대 너비로 조정 */
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  @media (min-width: 768px) {
+    padding: 0 2rem;
+    background: #fdfaf6;
+  }
+`;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  background-color: #746464;
   position: relative;
-
-  /* 배경 이미지 설정 */
   background-image: url("/image/mains/main19.gif");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  width: 100%;
+  min-height: 100vh; /* 최소 높이를 화면 높이로 설정 */
+
+  /* 헤더 영역의 스타일 */
+  margin-top: -90px;
+  padding-top: 10px; /* 헤더의 높이만큼 padding-top 설정 */
 
   &::before {
     content: "";
@@ -82,7 +103,6 @@ const Container = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -94,17 +114,27 @@ const TitleText = styled.h1`
 const ImageContainer = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column; /* 작은 화면에서는 세로로 배치 */
+  }
 `;
 
 const ImageWrapper = styled.div`
   text-align: center;
-  margin: 0 10px;
+  margin: 10px; /* 작은 화면과 큰 화면 간격 동일하게 설정 */
+  width: 33.33%; /* 큰 화면에서는 세로로 1줄에 3개의 이미지가 나오도록 너비 조정 */
   opacity: 0; /* 처음에는 숨김 */
   transform: translateX(-100%); /* 왼쪽에서 슬라이드 시작 */
   transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out;
   &.show {
     opacity: 1; /* 나타날 때 투명도 증가 */
     transform: translateX(0); /* 왼쪽으로 슬라이드 */
+  }
+
+  @media (max-width: 768px) {
+    width: 100%; /* 작은 화면에서는 한 개씩 세로로 배치하기 위해 너비 조정 */
   }
 `;
 
@@ -121,11 +151,21 @@ const Img = styled.img`
   &:hover {
     filter: brightness(110%);
   }
+
+  @media (max-width: 768px) {
+    width: 200px; /* 작은 화면에서 이미지 크기를 줄임 */
+    height: 150px;
+  }
 `;
 
 const Space = styled.span`
   padding-left: 50px;
   padding-right: 50px;
+
+  @media (max-width: 768px) {
+    padding-left: 20px; /* 작은 화면에서 간격을 줄임 */
+    padding-right: 20px;
+  }
 `;
 
 const ImageCaption = styled.p`
@@ -140,6 +180,11 @@ const ImageCaption = styled.p`
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
   font-weight: bold;
+
+  @media (max-width: 768px) {
+    margin-left: 10px;
+    width: 180px;
+  }
 `;
 
 export default MainSliderFunction;

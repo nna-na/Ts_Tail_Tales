@@ -130,7 +130,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                   />
                 </div>
                 <div style={{ flex: 1 }}>
-                  {email === comment.email ? <strong style={{ color: "#f8b3b3" }}>{comment.userNickname || "익명"}</strong> : <strong>{comment.userNickname || "익명"}</strong>}
+                  {email === comment.email ? <strong style={{ color: "#96908a" }}>{comment.userNickname || "익명"}</strong> : <strong>{comment.userNickname || "익명"}</strong>}
 
                   <br />
                   <span style={{ color: "gray" }}>

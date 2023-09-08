@@ -51,8 +51,8 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  background-color: #f0f0f0;
+  min-height: 100vh;
+  background-color: linear-gradient(to bottom, #f0f0f0);
 `;
 const CenteredText = styled.div`
   text-align: center;
@@ -66,8 +66,8 @@ const ImageSlider = styled.div`
 `;
 
 const Image = styled.img`
-  width: 280px;
-  height: 200px;
+  width: 30%; /* 이미지를 슬라이더 너비에 맞게 조정 */
+  height: auto; /* 높이는 자동으로 조정되도록 설정 */
   border-radius: 20px;
   object-fit: cover;
   margin: 10px;

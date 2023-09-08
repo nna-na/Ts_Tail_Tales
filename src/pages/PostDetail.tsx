@@ -3,17 +3,8 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import styled from "styled-components";
 import Create from "../components/comments/Create";
-import Comment from "../components/comments/Comment";
 import { supabase } from "../supabase";
 import ReactHtmlParser from "react-html-parser";
-import { FiArrowLeft } from "react-icons/fi"; // 이모티콘을 위한 아이콘 라이브러리 import
-
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-  userNickname: string;
-}
 
 export default function PostDetail() {
   const queryClient = useQueryClient();
@@ -23,15 +14,10 @@ export default function PostDetail() {
   // 게시물 데이터 가져오기
   const {
     data: post,
-    isLoading,
     isError,
     error,
   } = useQuery(["posts", id], async () => {
-    const { data, error } = await supabase
-      .from("posts")
-      .select("*")
-      .eq("id", id)
-      .single();
+    const { data, error } = await supabase.from("posts").select("*").eq("id", id).single();
 
     if (error) {
       throw error;
@@ -39,33 +25,6 @@ export default function PostDetail() {
 
     return data;
   });
-
-  // 댓글 목록 가져오기
-  const { data: comments, isLoading: isLoadingComments } = useQuery(
-    ["comments", id],
-    async () => {
-      const { data, error } = await supabase
-        .from("comments")
-        .select("*")
-        .eq("postId", id)
-        .order("date", { ascending: true });
-
-      if (error) {
-        throw error;
-      }
-
-      return data;
-    }
-  );
-
-  // 게시물 수정 후 댓글 목록 다시 가져오기
-  const refreshPostData = async () => {
-    await queryClient.invalidateQueries(["comments", id]);
-  };
-
-  if (isLoading || isLoadingComments) {
-    return <LoadingText>로딩 중 ...</LoadingText>;
-  }
 
   if (isError) {
     return <ErrorText>{(error as Error).message}</ErrorText>;
@@ -125,8 +84,12 @@ export default function PostDetail() {
           </ButtonContainer>
         </Content>
 
-        <Create onCommentAdded={refreshPostData} postId={post.id} />
-        <Comment comments={comments} />
+        <Create
+          onCommentAdded={() => {
+            queryClient.invalidateQueries(["comments", id]);
+          }}
+          postId={post.id}
+        />
       </Container>
     </OuterContainer>
   );
@@ -136,7 +99,7 @@ const StDetailText = styled.div`
   margin-top: 100px;
   padding-left: 20px;
   color: black;
-  // margin-bottom: 150px;
+
   .backBtn {
     background: none;
     border: none;
@@ -203,9 +166,9 @@ const Content = styled.div`
   border: 1px solid #fdfaf6;
   border-radius: 8px;
   text-align: center;
-  overflow: hidden; /* 내용이 넘칠 경우 숨김 처리 */
+  overflow: hidden;
   margin-bottom: 20px;
-  padding: 20px; /* 내용의 안쪽 여백 조정 */
+  padding: 20px;
   background-color: white;
   border-radius: 20px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
@@ -246,11 +209,6 @@ const DeleteButton = styled.button`
   &:hover {
     background-color: #606060;
   }
-`;
-
-const LoadingText = styled.div`
-  font-size: 1.2rem;
-  color: gray;
 `;
 
 const ErrorText = styled.div`

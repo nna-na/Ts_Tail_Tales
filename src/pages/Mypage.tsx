@@ -33,10 +33,10 @@ function Mypage() {
     const getUserInfo = async () => {
       const { data: userData, error: userError } = await supabase.auth.getUser();
 
-      if (userError) {
-        alert("사용자 정보 가져오는 중 오류 발생");
-        return;
-      }
+      // if (userError) {
+      //   alert("사용자 정보 가져오는 중 오류 발생");
+      //   return;
+      // }
 
       const user = userData?.user;
       const email = user?.email;

@@ -72,7 +72,7 @@ function Detail() {
                 <span>{item.RECEPT_DE}</span>
               </div>
               <div className="row">
-                <span>빌견장소</span>
+                <span>발견장소</span>
                 <span>{item.DISCVRY_PLC_INFO}</span>
               </div>
               <div className="row">

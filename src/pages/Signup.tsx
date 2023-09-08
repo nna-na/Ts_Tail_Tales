@@ -32,10 +32,11 @@ function SignUp() {
     } else if (password.length < 6) {
       alert("비밀번호 6자리 이상 입력해주세요.");
       return;
-    } else if (!/^(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/.test(password)) {
-      alert("비밀번호는 영문, 숫자, 특수 문자 중 하나 이상을 포함해야 합니다.");
-      return;
     }
+    // else if (!/^(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/.test(password)) {
+    //   alert("비밀번호는 영문, 숫자, 특수 문자 중 하나 이상을 포함해야 합니다.");
+    //   return;
+    // }
 
     if (!password || !passwordConfirm) {
       alert("비밀번호 또는 비밀번호 확인을 확인해주세요.");
@@ -97,7 +98,7 @@ function SignUp() {
             <InputBox type="password" id="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} />
             <br />
             <InputBox type="password" id="passwordConfirm" placeholder="비밀번호 확인" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
-            <p>영문 · 숫자 · 특수문자 조합, 최소 6자리 이상</p>
+            <p>최소 6자리 이상</p>
           </div>
           <div>
             <InputLabel>닉네임</InputLabel>

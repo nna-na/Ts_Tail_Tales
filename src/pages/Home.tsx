@@ -11,7 +11,10 @@ import { FavoritesProvider } from "../components/FavoritesContext";
 import PetCard from "../components/Petcard";
 
 function Home() {
-  const { data, isLoading, isError, error } = useQuery<Array<AnimalShelter>, Error>("animalData", fetchAnimalData);
+  const { data, isLoading, isError, error } = useQuery<
+    Array<AnimalShelter>,
+    Error
+  >("animalData", fetchAnimalData);
 
   const [currentPage, setCurrentPage] = useState(1);
   // 1. useState가 너무 많다. -> useState 하나로 관리하면 편하지 않을까?
@@ -23,7 +26,9 @@ function Home() {
     selectedBreed: "",
   });
 
-  const changeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const changeHandler = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setQueries({
       ...queries,
@@ -32,10 +37,6 @@ function Home() {
     handleFilter();
   };
   // ------------------------------
-  const [selectedBeginDate, setSelectedBeginDate] = useState("");
-  const [selectedEndDate, setSelectedEndDate] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedBreed, setSelectedBreed] = useState("");
 
   const ITEMS_PER_PAGE = 16;
 
@@ -61,14 +62,19 @@ function Home() {
     let matchesDate = true;
     let matchesLocation = true;
     let matchesBreed = true;
-    if (selectedBeginDate && selectedEndDate) {
-      matchesDate = formatDate(item.RECEPT_DE) >= selectedBeginDate && formatDate(item.RECEPT_DE) <= selectedEndDate;
+    if (queries.selectedBeginDate && queries.selectedEndDate) {
+      matchesDate =
+        formatDate(item.RECEPT_DE) >= queries.selectedBeginDate &&
+        formatDate(item.RECEPT_DE) <= queries.selectedEndDate;
     }
-    if (selectedLocation) {
-      matchesLocation = item.SIGUN_NM.toLowerCase().includes(selectedLocation.toLowerCase());
+    if (queries.selectedLocation) {
+      matchesLocation = item.SIGUN_NM.toLowerCase().includes(
+        queries.selectedLocation.toLowerCase()
+      );
     }
-    if (selectedBreed) {
-      matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === selectedBreed;
+    if (queries.selectedBreed) {
+      matchesBreed =
+        item.SPECIES_NM.split("]")[0] + "]" === queries.selectedBreed;
     }
     return matchesDate && matchesLocation && matchesBreed;
   });
@@ -81,7 +87,8 @@ function Home() {
     <FavoritesProvider>
       <Div>
         <div className="filtered">
-          <span className="deadline">"공고 마감일"</span>이 얼마 남지 않은 아이들!
+          <span className="deadline">"공고 마감일"</span>이 얼마 남지 않은
+          아이들!
         </div>
         <CustomSlider items={nearingDeadline} />
         <Category
@@ -112,7 +119,11 @@ function Home() {
           ))}
         </Container>
         {/* 페이지네이션 컴포넌트 추가 */}
-        <Pagination currentPage={currentPage} totalPages={Math.ceil(AnimalsItems.length / ITEMS_PER_PAGE)} setCurrentPage={setCurrentPage} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(AnimalsItems.length / ITEMS_PER_PAGE)}
+          setCurrentPage={setCurrentPage}
+        />
       </Div>
     </FavoritesProvider>
   );

@@ -34,7 +34,9 @@ function Layout() {
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
-      const nickname = parsedUser.user_metadata.user_name || parsedUser.user_metadata.full_name;
+      const nickname =
+        parsedUser.user_metadata.user_name ||
+        parsedUser.user_metadata.full_name;
       setUserNickname(nickname);
     }
 
@@ -43,37 +45,41 @@ function Layout() {
     // 2. sessionStorage에 저장한다 & sessionStorage에서 없애버림
 
     // 로그인 여부를 감시하는 로직
-    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
-      // 유저가 로그인을 했으면
-      if (event === "SIGNED_IN" && session) {
-        const parsedUser = session.user;
-        // useState에 user 저장
-        setUser(parsedUser);
-        // 세션 스토리지에 user 정보를 넣어준다.
-        sessionStorage.setItem("user", JSON.stringify(parsedUser));
+    const authSubscription = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        // 유저가 로그인을 했으면
+        if (event === "SIGNED_IN" && session) {
+          const parsedUser = session.user;
+          // useState에 user 저장
+          setUser(parsedUser);
+          // 세션 스토리지에 user 정보를 넣어준다.
+          sessionStorage.setItem("user", JSON.stringify(parsedUser));
 
-        // 닉네임은 parsedUser에서 user_name이나 full_name을 가져온다.
-        const nickname = parsedUser.user_metadata.user_name || parsedUser.user_metadata.full_name;
-        // useState에 저장한다
-        setUserNickname(nickname);
+          // 닉네임은 parsedUser에서 user_name이나 full_name을 가져온다.
+          const nickname =
+            parsedUser.user_metadata.user_name ||
+            parsedUser.user_metadata.full_name;
+          // useState에 저장한다
+          setUserNickname(nickname);
 
-        // email이 있으면
-        if (parsedUser.email) {
-          // userEmail이라는 sessionStorage에 키로 넣어준다.
-          sessionStorage.setItem("userEmail", parsedUser.email);
+          // email이 있으면
+          if (parsedUser.email) {
+            // userEmail이라는 sessionStorage에 키로 넣어준다.
+            sessionStorage.setItem("userEmail", parsedUser.email);
+          }
+          // userNickname이라는 sessionStorage에 키로 넣어준다.
+          sessionStorage.setItem("userNickname", nickname);
+
+          // 로그아웃하면 useState도 지우고, sessionStorage도 지운다.
+        } else if (event === "SIGNED_OUT") {
+          setUser(null);
+          sessionStorage.removeItem("user");
+          setUserNickname(null);
+          sessionStorage.removeItem("userNickname");
+          sessionStorage.removeItem("userEmail");
         }
-        // userNickname이라는 sessionStorage에 키로 넣어준다.
-        sessionStorage.setItem("userNickname", nickname);
-
-        // 로그아웃하면 useState도 지우고, sessionStorage도 지운다.
-      } else if (event === "SIGNED_OUT") {
-        setUser(null);
-        sessionStorage.removeItem("user");
-        setUserNickname(null);
-        sessionStorage.removeItem("userNickname");
-        sessionStorage.removeItem("userEmail");
       }
-    });
+    );
 
     const handleScroll = () => {
       // 여기서 100은 헤더가 사라지기 시작하는 스크롤 위치입니다. 원하는 값으로 조정할 수 있습니다.
@@ -97,11 +103,18 @@ function Layout() {
       return (
         <UserContainer>
           <UserImage>
-            <img src={user?.user_metadata.avatar_url || process.env.PUBLIC_URL + "/image/header/profile.jpg"} alt="User Avatar" />
+            <img
+              src={
+                user?.user_metadata.avatar_url ||
+                process.env.PUBLIC_URL + "/image/header/profile.jpg"
+              }
+              alt="User Avatar"
+            />
           </UserImage>
           <UserName>
             <span>
-              <Buttons to={`/mypage/${user.id}`}>{userNickname}님</Buttons>, 환영합니다!
+              <Buttons to={`/mypage/${user.id}`}>{userNickname}님</Buttons>,
+              환영합니다!
             </span>
           </UserName>
         </UserContainer>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid"; // uuid 패키지에서 v4 함수 임포트
@@ -8,41 +8,16 @@ import PostImg from "../components/posts/PostImg";
 import { FiArrowLeft } from "react-icons/fi";
 
 export default function PostCreate(data: any) {
-  const [title, setTitle] = useState("");
-  const [user, setUser] = useState<User | null>(null);
-  const [userNickname, setUserNickname] = useState<string | null>(null);
-  const [content, setContent] = useState("");
+  const [title, setTitle] = React.useState("");
+  const [content, setContent] = React.useState("");
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   // 사용자 정보 가져오기
-  //   const storedUser = sessionStorage.getItem("user");
-  //   if (storedUser) {
-  //     const user = JSON.parse(storedUser);
-  //     setUser(user);
-  //     setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   if (data && data.initialContent) {
-  //     setContent(data.initialContent);
-  //   }
-  // }, [data]);
-
-  useEffect(() => {
-    // 사용자 정보 가져오기
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      setUser(user);
-      setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
-    }
-
-    if (data && data.initialContent) {
-      setContent(data.initialContent);
-    }
-  }, [data]);
+  // 사용자 정보 가져오기
+  const storedUser = sessionStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
+  const userNickname = user
+    ? user.user_metadata.user_name || user.user_metadata.full_name
+    : null;
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -68,14 +43,14 @@ export default function PostCreate(data: any) {
     }
 
     try {
-      const { data, error } = await supabase.from("posts").upsert([
+      const { data, error } = await supabase.from("posts").insert([
         {
           id: uuid(),
           title,
           content,
           date: new Date().toISOString(),
           userNickname: userNickname,
-          email: user!.email,
+          email: user?.email,
         },
       ]);
 
@@ -109,11 +84,19 @@ export default function PostCreate(data: any) {
         <h2>게시글 작성</h2>
         <FormItem>
           <label>제목:</label>
-          <Input type="text" value={title} onChange={handleTitleChange} placeholder="제목" />
+          <Input
+            type="text"
+            value={title}
+            onChange={handleTitleChange}
+            placeholder="제목"
+          />
         </FormItem>
         <FormItem>
           <label>내용:</label>
-          <PostImg onContentChange={handleContentChange} initialContent={content} />
+          <PostImg
+            onContentChange={handleContentChange}
+            initialContent={content}
+          />
         </FormItem>
         <SubmitButton type="submit">작성</SubmitButton>
       </Form>
@@ -139,12 +122,6 @@ const BackButton = styled.button`
     background-color: #f8b3b3;
     transform: scale(1.05);
   }
-
-  /* @media (max-width: 768px) {
-    // 화면 너비가 768px 이하일 때
-    margin-left: 0; // 마진을 0으로 조정하여 가운데 정렬
-    margin-top: 10px; // 상단 마진을 추가하여 버튼 간 간격 확보/
-  } */
 `;
 
 const BackIcon = styled(FiArrowLeft)`
@@ -168,7 +145,7 @@ const Input = styled.input`
   padding: 20px 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
-  border-radius: 8px; /* 테두리 둥글게 처리 */
+  border-radius: 8px;
 `;
 
 const SubmitButton = styled.button`
@@ -177,7 +154,7 @@ const SubmitButton = styled.button`
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 8px; /* 테두리 둥글게 처리 */
+  border-radius: 8px;
   &:hover {
     background-color: #dd3a3a;
     transform: scale(1.05);

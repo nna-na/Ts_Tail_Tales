@@ -39,7 +39,6 @@ export default function PostDetail() {
 
     return data;
   });
-  console.log("detailpostid", post);
 
   // 댓글 목록 가져오기
   const { data: comments, isLoading: isLoadingComments } = useQuery(
@@ -97,107 +96,156 @@ export default function PostDetail() {
   };
 
   return (
-    <Container>
-      <BackButton onClick={() => navigate("/community")} className="backbutton">
-        <BackIcon className="backicon" />
-        뒤로가기
-      </BackButton>
-      <p>
-        <strong>{post.userNickname}</strong>님의 글입니다.
-      </p>
-      <ButtonContainer>
-        {isUserAuthorized && (
-          <>
-            <EditButton to={`/post-edit/${post.id}`}>수정</EditButton>
-            <DeleteButton onClick={handleDelete}>삭제</DeleteButton>
-          </>
-        )}
-      </ButtonContainer>
-      <Title>{post.title}</Title>
-      <Content>{ReactHtmlParser(post.content)}</Content>
+    <OuterContainer>
+      <Container>
+        <StDetailText style={{ display: "flex", alignItems: "center" }}>
+          <BackIcon
+            className="backBtn"
+            onClick={() => {
+              navigate("/community");
+            }}
+          >
+            〈
+          </BackIcon>
+          <h2 className="detailtext">
+            <strong>{post.userNickname}</strong>님의 글입니다.
+          </h2>
+        </StDetailText>
 
-      <Create onCommentAdded={refreshPostData} postId={post.id} />
-      <Comment comments={comments} />
-    </Container>
+        <Title>{post.title}</Title>
+        <Content>
+          {ReactHtmlParser(post.content)}
+          <ButtonContainer>
+            {isUserAuthorized && (
+              <>
+                <EditButton to={`/post-edit/${post.id}`}>수정</EditButton>
+                <DeleteButton onClick={handleDelete}>삭제</DeleteButton>
+              </>
+            )}
+          </ButtonContainer>
+        </Content>
+
+        <Create onCommentAdded={refreshPostData} postId={post.id} />
+        <Comment comments={comments} />
+      </Container>
+    </OuterContainer>
   );
 }
 
-const BackButton = styled.button`
-  padding: 10px 20px;
-  background-color: #f8b3b3;
-  color: white;
-  border: none;
-  border-radius: 8px;
+const StDetailText = styled.div`
+  margin-top: 100px;
+  padding-left: 20px;
+  color: black;
+  // margin-bottom: 150px;
+  .backBtn {
+    background: none;
+    border: none;
+    color: black;
+  }
+  .detailtext {
+    margin: 0 auto;
+    max-width: 350px;
+    padding: 20px 0 20px;
+  }
+
+  strong {
+    color: #746464;
+  }
+`;
+const BackIcon = styled.span`
+  margin-right: 5px;
+  font-size: 20px;
+  font-weight: bolder;
+  border-radius: 50%;
+  color: black;
   cursor: pointer;
-  text-decoration: none;
+  transition: transform 0.3s ease;
+
   &:hover {
-    background-color: #f8b3b3;
-    transform: scale(1.05);
+    transform: scale(1.7);
+    color: #868686;
   }
 `;
 
-const BackIcon = styled(FiArrowLeft)`
-  margin-right: 5px;
+const OuterContainer = styled.div`
+  background-color: #fdfaf6;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
 `;
 
 const Container = styled.div`
   padding: 20px;
-  width: 1000px;
-  margin: 0 auto; /* 수평 가운데 정렬 */
-
-  // /* 중앙 정렬 및 양옆 공백 설정 */
-  // max-width: 1200px; /* 원하는 최대 너비로 조정 */
-  // margin: 0 auto;
-  // padding: 0 1rem;
-
-  // @media (min-width: 700px) {
-  //   padding: 0 2rem;
-  // }
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: #fdfaf6;
+  border-radius: 20px;
 `;
 
 const Title = styled.h3`
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
-  height: 60px; /* 높이 조정 */
+  border: 1px solid #fdfaf6;
+  border-radius: 3px;
+  padding: 10px;
+  font-size: 32px;
   text-align: center;
-  font-size: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 20px 0; /* 위 아래 여백 추가 */
+  margin: 20px 0;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const Content = styled.div`
-  border: 1px solid #e8e8e8;
+  border: 1px solid #fdfaf6;
   border-radius: 8px;
   text-align: center;
   overflow: hidden; /* 내용이 넘칠 경우 숨김 처리 */
+  margin-bottom: 20px;
+  padding: 20px; /* 내용의 안쪽 여백 조정 */
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
-  justify-content: center;
   margin-top: 20px;
+  justify-content: flex-end;
+  padding: 10px 0;
 `;
 
 const EditButton = styled(Link)`
-  color: gray;
-  margin-right: 5px;
+  background-color: #bdb7b0;
+  color: white;
+  padding: 8px 16px;
   border: none;
-  background: none;
+  border-radius: 20px;
   cursor: pointer;
   text-decoration: none;
-  font-size: 15px;
+  font-size: 13px;
+  margin-right: 10px;
+  &:hover {
+    background-color: #606060;
+  }
 `;
 
 const DeleteButton = styled.button`
-  color: #dd3a3a;
-  margin-right: 5px;
+  background-color: #746464;
+  color: white;
+  padding: 8px 16px;
   border: none;
-  background: none;
+  border-radius: 20px;
   cursor: pointer;
   text-decoration: none;
-  font-size: 15px;
+  font-size: 13px;
+  margin-right: 10px;
+  &:hover {
+    background-color: #606060;
+  }
 `;
 
 const LoadingText = styled.div`

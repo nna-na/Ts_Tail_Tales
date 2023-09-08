@@ -33,12 +33,12 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
         // 댓글 업데이트
         const { data, error } = await supabase.from("comments").update(updatedComment).eq("id", updatedComment.id);
         if (error) {
-          console.error("댓글 수정 중 오류 발생:", error);
+          alert("댓글 수정 중 오류 발생");
           throw error;
         }
         return updatedComment;
       } catch (error) {
-        console.error("댓글 수정 중 오류 발생:", error);
+        alert("댓글 수정 중 오류 발생");
         throw error;
       }
     },
@@ -80,7 +80,7 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
     try {
       await updateComment.mutateAsync(updatedComment);
     } catch (error) {
-      console.error("댓글 수정 오류:", error);
+      alert("댓글 수정 오류");
       return;
     }
     queryClient.invalidateQueries(["comments", id]);
@@ -126,17 +126,21 @@ const Textarea = styled.textarea`
   font-size: 15px;
   padding: 10px;
   margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid white;
 `;
 const SubmitButton = styled.button`
-  padding: 10px 20px;
-  background-color: #f8b3b3;
+  background-color: #bdb7b0;
   color: white;
+  padding: 8px 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: 20px;
   cursor: pointer;
+  text-decoration: none;
+  font-size: 15px;
+  margin-right: 10px;
   &:hover {
-    background-color: #dd3a3a;
-    transform: scale(1.05);
+    background-color: #606060;
   }
 `;
 const LoadingText = styled.div`

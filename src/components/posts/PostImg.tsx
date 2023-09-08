@@ -34,7 +34,7 @@ async function uploadImageToSupabase(imageFile: File): Promise<string> {
       throw new Error("Failed to obtain the image URL");
     }
   } catch (error) {
-    console.error("Error uploading image to Supabase:", error);
+    alert("이미지 업로드 중 오류 발생");
     throw error;
   }
 }
@@ -56,11 +56,9 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
 
     input.onchange = async () => {
       const file = input.files?.[0];
-
       if (file) {
         try {
           const imageUrl = await uploadImageToSupabase(file);
-          console.log("URL 이름 :", imageUrl);
 
           const quillEditor = quillRef.current?.getEditor();
           const range = quillEditor?.getSelection();
@@ -72,7 +70,7 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
             quillEditor.setSelection(newIndex, 0);
           }
         } catch (error) {
-          console.error("Error uploading image:", error);
+          alert("이미지 업로드 중 오류 발생");
         }
       }
     };
@@ -91,10 +89,10 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
         style={{
           width: "100%",
           height: "90%",
-          borderRadius: "20px",
         }}
         value={content}
         onChange={handleContentChange}
+        placeholder="내용을 입력해주세요"
         ref={(el) => {
           if (el) {
             quillRef.current = el;
@@ -113,8 +111,7 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
 }
 const PostImgContainer = styled.div`
   width: 1000px;
-  height: 400px;
+  height: 450px;
   margin-bottom: 50px;
-  border: 1px solid #ccc;
-  border-radius: 8px; /* 테두리 둥글게 처리 */
+  background-color: white;
 `;

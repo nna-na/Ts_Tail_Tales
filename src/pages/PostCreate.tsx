@@ -1,36 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid"; // uuid 패키지에서 v4 함수 임포트
-import { User } from "@supabase/supabase-js";
 import { supabase } from "../supabase";
 import PostImg from "../components/posts/PostImg";
 import { FiArrowLeft } from "react-icons/fi";
 
-export default function PostCreate(data: any) {
-  const [title, setTitle] = useState("");
-  const [user, setUser] = useState<User | null>(null);
-  const [userNickname, setUserNickname] = useState<string | null>(null);
-  const [content, setContent] = useState("");
+export default function PostCreate() {
+  const [title, setTitle] = React.useState("");
+  const [content, setContent] = React.useState("");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // 사용자 정보 가져오기
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      setUser(user);
-      setUserNickname(
-        user.user_metadata.user_name || user.user_metadata.full_name
-      );
-    }
-  }, []);
-
-  useEffect(() => {
-    if (data && data.initialContent) {
-      setContent(data.initialContent);
-    }
-  }, [data]);
+  // 사용자 정보 가져오기
+  const storedUser = sessionStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
+  const userNickname = user
+    ? user.user_metadata.user_name || user.user_metadata.full_name
+    : null;
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -42,29 +27,28 @@ export default function PostCreate(data: any) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title && !content) {
-      window.alert("제목을 입력해주세요, 내용을 입력해주세요.");
+
+    if (!title && !content.trim()) {
+      alert("제목과 내용을 입력해주세요.");
       return;
     }
     if (!title) {
-      window.alert("제목을 입력해주세요.");
+      alert("제목을 입력해주세요.");
       return;
     }
-    if (!content) {
-      window.alert("내용을 입력해주세요.");
+    if (!content.trim()) {
+      alert("내용을 입력해주세요.");
       return;
     }
-
     try {
-      // Supabase에 데이터 추가
-      const { data, error } = await supabase.from("posts").upsert([
+      const { error } = await supabase.from("posts").insert([
         {
-          id: uuid(), // uuid 함수 사용
+          id: uuid(),
           title,
           content,
           date: new Date().toISOString(),
           userNickname: userNickname,
-          email: user!.email,
+          email: user?.email,
         },
       ]);
 
@@ -72,11 +56,8 @@ export default function PostCreate(data: any) {
         console.error("게시글 작성 오류:", error);
         return;
       }
-
-      console.log("게시글 작성 결과:", data);
-      window.alert("작성이 완료되었습니다.");
+      alert("작성이 완료되었습니다.");
       navigate("/community");
-
       // 입력 필드 초기화
       setTitle("");
       setContent("");
@@ -85,64 +66,69 @@ export default function PostCreate(data: any) {
     }
   };
 
+  const handleGoBack = async () => {
+    if (window.confirm("이전으로 가면 작성 내용이 사라집니다.")) {
+      navigate("/community");
+    }
+  };
+
   return (
-    <Container>
-      <BackButton
-        onClick={() => {
-          window.history.back();
-        }}
-      >
-        <BackIcon />
-        뒤로가기
-      </BackButton>
-      <Form onSubmit={handleSubmit}>
-        <h2>게시글 작성</h2>
-        <FormItem>
-          <label>제목:</label>
-          <Input type="text" value={title} onChange={handleTitleChange} />
-        </FormItem>
-        <FormItem>
-          <label>내용:</label>
-          <PostImg
-            onContentChange={handleContentChange}
-            initialContent={content}
-          />
-          {/* data.content가 아닌 content를 사용 */}
-        </FormItem>
-        <SubmitButton type="submit">작성</SubmitButton>
-      </Form>
-    </Container>
+    <OuterContainer>
+      <Container>
+        <h2 className="detailtext">게시글 작성</h2>
+        <Form onSubmit={handleSubmit}>
+          <FormItem>
+            <Input
+              type="text"
+              value={title}
+              onChange={handleTitleChange}
+              placeholder="제목을 입력해주세요"
+            />
+          </FormItem>
+          <FormItem>
+            <PostImg
+              onContentChange={handleContentChange}
+              initialContent={content}
+            />
+          </FormItem>
+          <FormButtons>
+            <SubmitButton
+              type="button"
+              className="backbtn"
+              onClick={handleGoBack}
+            >
+              이전
+            </SubmitButton>
+            <SubmitButton type="submit" className="submitbtn">
+              등록
+            </SubmitButton>
+          </FormButtons>
+        </Form>
+      </Container>
+    </OuterContainer>
   );
 }
 
+const OuterContainer = styled.div`
+  background-color: #fdfaf6;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+`;
+
 const Container = styled.div`
-  padding: 20px;
-  width: 1000px;
+  padding: 100px;
   margin: 0 auto;
-`;
+  background-color: #fdfaf6;
 
-const BackButton = styled.button`
-  padding: 10px 20px;
-  background-color: #f8b3b3;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  text-decoration: none;
-  &:hover {
-    background-color: #f8b3b3;
-    transform: scale(1.05);
+  h2 {
+    text-align: center;
+    margin-bottom: 40px;
   }
-
-  /* @media (max-width: 768px) {
-    // 화면 너비가 768px 이하일 때
-    margin-left: 0; // 마진을 0으로 조정하여 가운데 정렬
-    margin-top: 10px; // 상단 마진을 추가하여 버튼 간 간격 확보/
-  } */
-`;
-
-const BackIcon = styled(FiArrowLeft)`
-  margin-right: 5px;
 `;
 
 const Form = styled.form`
@@ -151,28 +137,45 @@ const Form = styled.form`
   align-items: center;
 `;
 
+const FormButtons = styled.div`
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+`;
+
 const FormItem = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
-  width: 1000px;
 `;
 
 const Input = styled.input`
   width: 978px;
-  padding: 10px;
+  height: 30px;
+  padding: 15px 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
-  border-radius: 8px; /* 테두리 둥글게 처리 */
+  border-radius: 8px;
+  text-align: center;
+  font-size: large;
 `;
 
 const SubmitButton = styled.button`
-  padding: 10px 20px;
-  background-color: #f8b3b3;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 8px; /* 테두리 둥글게 처리 */
+  width: 192px;
+  height: 44px;
+  padding: 8px;
+  border-radius: 999px;
+  background: #746464;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+
+  ${(props) =>
+    props.className === "backbtn"
+      ? "background: #bdb7b0;"
+      : "background: #746464;"}
+
   &:hover {
     background-color: #dd3a3a;
     transform: scale(1.05);

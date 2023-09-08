@@ -1,166 +1,194 @@
 import React, { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../supabase";
 import { User } from "@supabase/supabase-js";
+import styled from "styled-components";
+import ScrollToTop from "../components/ScrollToTop";
 
 function Layout() {
-  // 사용자 및 사용자 닉네임 상태를 관리하는 상태 변수 정의
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [user, setUser] = useState<User | null>(null);
   const [userNickname, setUserNickname] = useState<string | null>(null);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
 
   useEffect(() => {
-    // 세션 스토리지에서 사용자 정보 가져오기
     const storedUser = sessionStorage.getItem("user");
+
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      const nickname = parsedUser.user_metadata.user_name || parsedUser.user_metadata.full_name;
+      setUserNickname(nickname);
     }
 
-    // Supabase 인증 상태 변경 이벤트 구독
     const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) {
-        // 사용자가 로그인한 경우 상태 업데이트 및 세션 스토리지에 저장
-        setUser(session.user);
-        sessionStorage.setItem("user", JSON.stringify(session.user));
+        const parsedUser = session.user;
+        setUser(parsedUser);
+        sessionStorage.setItem("user", JSON.stringify(parsedUser));
+
+        const nickname = parsedUser.user_metadata.user_name || parsedUser.user_metadata.full_name;
+        setUserNickname(nickname);
+
+        if (parsedUser.email) {
+          sessionStorage.setItem("userEmail", parsedUser.email);
+        }
+        sessionStorage.setItem("userNickname", nickname);
       } else if (event === "SIGNED_OUT") {
-        // 사용자가 로그아웃한 경우 상태 초기화 및 세션 스토리지에서 사용자 정보 삭제
         setUser(null);
         sessionStorage.removeItem("user");
+        setUserNickname(null);
+        sessionStorage.removeItem("userNickname");
+        sessionStorage.removeItem("userEmail");
       }
     });
 
+    // const handleScroll = () => {
+    //   if (window.scrollY > 600) {
+    //     setIsHeaderVisible(false);
+    //   } else {
+    //     setIsHeaderVisible(true);
+    //   }
+    // };
+
+    // window.addEventListener("scroll", handleScroll);
+
     return () => {
-      // 컴포넌트 언마운트 시 인증 상태 변경 이벤트 구독 해제
       authSubscription.data.subscription.unsubscribe();
+      // window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  useEffect(() => {
-    // 사용자가 로그인한 경우 사용자 닉네임 설정 및 세션 스토리지에 저장
-    if (user) {
-      setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
-      if (user.email) {
-        sessionStorage.setItem("userEmail", user.email);
-      }
-
-      sessionStorage.setItem("userNickname", user.user_metadata.user_name || user.user_metadata.full_name);
-    }
-  }, [user]);
-
-  const renderLoginButton = () => {
-    if (user) {
-      // 사용자가 로그인한 경우 로그아웃 링크를 표시
-      return (
-        <Link
-          style={{
-            color: "white",
-            textDecoration: "none",
-          }}
-          to="/"
-          onClick={async () => {
-            await supabase.auth.signOut();
-            setUser(null);
-            setUserNickname(null); // 로그아웃 시 사용자 닉네임 초기화
-            sessionStorage.removeItem("user"); // 로그아웃 시 사용자 정보 제거
-            sessionStorage.removeItem("userNickname"); // 로그아웃 시 사용자 닉네임 제거
-            sessionStorage.removeItem("userEmail"); // 로그아웃 시 사용자 이메일 제거
-            alert("로그아웃 됐다~~~");
-          }}
-        >
-          로그아웃
-        </Link>
-      );
-    } else {
-      return (
-        <Link to="/login" style={{ color: "white", textDecoration: "none" }}>
-          로그인
-        </Link>
-      );
-    }
-  };
+  const shouldShowScrollToTop = location.pathname !== "/";
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        position: "relative",
-        paddingBottom: "90px",
-        boxSizing: "border-box",
-      }}
-    >
-      <header
-        style={{
-          position: "fixed",
-          height: "30px",
-          left: 0,
-          right: 0,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center", // 수직 가운데 정렬을 위해 추가
-          padding: "24px",
-          backgroundColor: "#746464",
-          color: "white",
-          zIndex: 1000,
-        }}
-      >
-        <Link to="/" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "30px" }}>
-          TailTales
-        </Link>
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            alignItems: "center", // 수직 가운데 정렬을 위해 추가
-          }}
-        >
-          {user && (userNickname || user?.user_metadata.full_name) ? (
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  overflow: "hidden",
-                  marginRight: "10px",
+    <Wrap>
+      {isHeaderVisible && (
+        <Header>
+          <LogoLink to="/">TailTales</LogoLink>
+          <HeaderContent>
+            {user && userNickname && (
+              <UserContainer>
+                <UserImage>
+                  <img src={user?.user_metadata.avatar_url || process.env.PUBLIC_URL + "/image/header/profile.jpg"} alt="User Avatar" />
+                </UserImage>
+                <UserName>
+                  <span>
+                    <Buttons to={`/mypage/${user.id}`}>{userNickname}님</Buttons>, 환영합니다!
+                  </span>
+                </UserName>
+              </UserContainer>
+            )}
+            <Buttons to="/home">기다리는 친구들 |</Buttons>
+            <Buttons to="/community">커뮤니티 |</Buttons>
+            {user ? (
+              <LogoutButton
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  setUser(null);
+                  setUserNickname(null);
+                  alert("로그아웃이 완료되었습니다.");
+                  navigate("/");
                 }}
               >
-                <img
-                  src={
-                    user?.user_metadata.avatar_url || process.env.PUBLIC_URL + "/image/profile.jpg" // 기본 이미지 경로
-                  }
-                  alt="User Avatar"
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              </div>
-              <span>
-                {userNickname ? (
-                  <Link to={`/mypage/${user.id}`} style={{ color: "white", textDecoration: "none", fontWeight: "bold" }}>
-                    {userNickname}님
-                  </Link>
-                ) : (
-                  `${user?.user_metadata.full_name}님`
-                )}
-                , 환영합니다!
-              </span>
-            </div>
-          ) : null}
-          <Link to="/home" style={{ color: "white", textDecoration: "none" }}>
-            기다리는 친구들 |
-          </Link>
-          <Link to="/community" style={{ color: "white", textDecoration: "none" }}>
-            커뮤니티 |
-          </Link>
-          {renderLoginButton()} {/* 이 위치에서 renderLoginButton 함수 호출 */}
-        </div>
-      </header>
-      <div
-        style={{
-          paddingTop: "80px",
-        }}
-      >
+                로그아웃
+              </LogoutButton>
+            ) : (
+              <Buttons to="/login">로그인</Buttons>
+            )}
+          </HeaderContent>
+        </Header>
+      )}
+
+      <OutletWrap>
         <Outlet />
-      </div>
-    </div>
+      </OutletWrap>
+      {shouldShowScrollToTop && <ScrollToTop />}
+    </Wrap>
   );
 }
 
 export default Layout;
+
+const Header = styled.header`
+  position: fixed;
+  height: 32px;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  background-color: transparent;
+  color: white;
+  z-index: 1000;
+`;
+
+const LogoLink = styled(Link)`
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 30px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.2), 1px -1px 0 rgba(0, 0, 0, 0.2), -1px 1px 0 rgba(0, 0, 0, 0.2), 1px 1px 0 rgba(0, 0, 0, 0.2);
+`;
+
+const HeaderContent = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.2), 1px -1px 0 rgba(0, 0, 0, 0.2), -1px 1px 0 rgba(0, 0, 0, 0.2), 1px 1px 0 rgba(0, 0, 0, 0.2);
+`;
+
+const UserContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const UserImage = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 10px;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+const UserName = styled.span`
+  color: white;
+  font-weight: bold;
+`;
+
+const Wrap = styled.header`
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 90px;
+  box-sizing: border-box;
+`;
+
+const OutletWrap = styled.div`
+  padding-top: 80px;
+`;
+
+const Buttons = styled(Link)`
+  text-decoration: none;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.2), 1px -1px 0 rgba(0, 0, 0, 0.2), -1px 1px 0 rgba(0, 0, 0, 0.2), 1px 1px 0 rgba(0, 0, 0, 0.2);
+`;
+
+const LogoutButton = styled.button`
+  color: white;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.2), 1px -1px 0 rgba(0, 0, 0, 0.2), -1px 1px 0 rgba(0, 0, 0, 0.2), 1px 1px 0 rgba(0, 0, 0, 0.2);
+`;

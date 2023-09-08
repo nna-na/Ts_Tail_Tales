@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { styled } from "styled-components";
+import { useQuery } from "react-query";
 import { fetchAnimalData, formatDate, AnimalShelter } from "../api/fetchData";
 import Category from "../components/Category";
 import "slick-carousel/slick/slick.css";
@@ -8,51 +9,46 @@ import CustomSlider from "../components/Slider";
 import Pagination from "../components/Pagination";
 import { FavoritesProvider } from "../components/FavoritesContext";
 import PetCard from "../components/Petcard";
+import { useLocation } from "react-router-dom";
+
+const ITEMS_PER_PAGE = 12;
 
 function Home() {
-  const [data, setData] = useState<Array<AnimalShelter>>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const location = useLocation();
+
+  const { data, isLoading, isError, error } = useQuery<Array<AnimalShelter>, Error>("animalData", fetchAnimalData);
+
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 16;
-  const [selectedBeginDate, setSelectedBeginDate] = useState("");
-  const [selectedEndDate, setSelectedEndDate] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedBreed, setSelectedBreed] = useState("");
+  // 1. useState가 너무 많다. -> useState 하나로 관리하면 편하지 않을까?
+  // ------------------------------
+  const [queries, setQueries] = useState({
+    selectedBeginDate: "",
+    selectedEndDate: "",
+    selectedLocation: "",
+    selectedBreed: "",
+  });
 
-  useEffect(() => {
-    const fetchDataFromApi = async () => {
-      try {
-        setError(null);
-        setLoading(true);
-        const fetchedData = await fetchAnimalData();
-        console.log("fetchedData", fetchedData);
-
-        setData(fetchedData); // 첫 페이지에서 필요한 것만 GET
-      } catch (e: Error | unknown) {
-        if (e instanceof Error) {
-          setError(e);
-        } else {
-          setError(new Error("An error occurred"));
-        }
-      }
-      setLoading(false);
-    };
-    fetchDataFromApi();
-  }, []);
+  const changeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setQueries({
+      ...queries,
+      [name]: value,
+    });
+    handleFilter();
+  };
+  // ------------------------------
 
   const handleFilter = () => {
     setCurrentPage(1);
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-  if (!data) return null;
+  if (isLoading) return <div>Loading...</div>;
+  if (isError || !data) {
+    const errorMessage = isError ? error?.message : "An error occurred";
+    return <div>Error: {errorMessage}</div>;
+  }
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
-  const nearingDeadline = data.filter((item) => {
+  const nearingDeadline = data.filter((item: AnimalShelter) => {
     const today = new Date();
     const endOfNotice = new Date(formatDate(item.PBLANC_END_DE));
     const fiveDaysAfter = new Date(today);
@@ -60,68 +56,65 @@ function Home() {
     return endOfNotice <= fiveDaysAfter;
   });
 
-  const filteredItems = data.filter((item) => {
+  const AnimalsItems = data.filter((item: AnimalShelter) => {
     let matchesDate = true;
     let matchesLocation = true;
     let matchesBreed = true;
-    if (selectedBeginDate && selectedEndDate) {
-      matchesDate =
-        formatDate(item.RECEPT_DE) >= selectedBeginDate &&
-        formatDate(item.RECEPT_DE) <= selectedEndDate;
+    if (queries.selectedBeginDate && queries.selectedEndDate) {
+      matchesDate = formatDate(item.RECEPT_DE) >= queries.selectedBeginDate && formatDate(item.RECEPT_DE) <= queries.selectedEndDate;
     }
-    if (selectedLocation) {
-      matchesLocation = item.SIGUN_NM.toLowerCase().includes(
-        selectedLocation.toLowerCase()
-      );
+    if (queries.selectedLocation) {
+      matchesLocation = item.SIGUN_NM.toLowerCase().includes(queries.selectedLocation.toLowerCase());
     }
-    if (selectedBreed) {
-      matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === selectedBreed;
+    if (queries.selectedBreed) {
+      matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === queries.selectedBreed;
     }
     return matchesDate && matchesLocation && matchesBreed;
   });
 
-  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+  const currentItems = AnimalsItems.slice(indexOfFirstItem, indexOfLastItem);
+
+  // const handleCopyClipBoard = async (text: string) => {
+  //   try {
+  //     await navigator.clipboard.writeText(text);
+  //     alert("클립보드에 링크가 복사되었어요.");
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+  // const baseUrl = "  https://ts-tail-tales.vercel.app";
 
   return (
     <FavoritesProvider>
       <Div>
-        <div className="filtered">
-          <span className="deadline">"공고 마감일"</span>이 얼마 남지 않은
-          아이들!
-        </div>
+        <FilteredSection>
+          {/* <button onClick={() => handleCopyClipBoard(`${baseUrl}${location?.pathname}`)}>링크 복사</button> */}
+          <DeadlineText>"공고 마감일"</DeadlineText>이 얼마 남지 않은 친구들!
+        </FilteredSection>
         <CustomSlider items={nearingDeadline} />
         <Category
           query={{
-            PBLANC_BEGIN_DE: selectedBeginDate,
-            PBLANC_END_DE: selectedEndDate,
-            SIGUN_NM: selectedLocation,
-            SPECIES_NM: selectedBreed,
+            PBLANC_BEGIN_DE: queries.selectedBeginDate,
+            PBLANC_END_DE: queries.selectedEndDate,
+            SIGUN_NM: queries.selectedLocation,
+            SPECIES_NM: queries.selectedBreed,
           }}
-          onChange={(e) => {
-            const { name, value } = e.target;
-            if (name === "PBLANC_BEGIN_DE") {
-              setSelectedBeginDate(value);
-            } else if (name === "PBLANC_END_DE") {
-              setSelectedEndDate(value);
-            } else if (name === "SIGUN_NM") {
-              setSelectedLocation(value);
-            } else if (name === "SPECIES_NM") {
-              setSelectedBreed(value);
-            }
-            handleFilter();
-          }}
+          onChange={changeHandler}
         />
+        <NewLifeSection className="filtered">
+          <span className="deadline">"새로운 삶"</span>을 기다리는 친구들!
+        </NewLifeSection>
         <Container>
           {currentItems?.map((item: AnimalShelter) => (
-            <PetCard key={item.ABDM_IDNTFY_NO} item={item} />
+            <>
+              <PetCard key={item.ABDM_IDNTFY_NO} item={item} />
+            </>
           ))}
         </Container>
         {/* 페이지네이션 컴포넌트 추가 */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
-          setCurrentPage={setCurrentPage}
-        />
+        <Pagination currentPage={currentPage} totalPages={Math.ceil(AnimalsItems.length / ITEMS_PER_PAGE)} setCurrentPage={setCurrentPage} />
       </Div>
     </FavoritesProvider>
   );
@@ -130,30 +123,77 @@ function Home() {
 export default Home;
 
 const Div = styled.div`
-  background-color: #ffeaea;
+  background-color: #fdfaf6;
+  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3600px;
 
   .filtered {
-    font-size: 2em;
+    font-size: 2.5em;
     display: flex;
     justify-content: center;
-    padding: 15px 0 15px 0;
+    padding: 100px 0 15px 0;
+    margin-top: 20px;
+    margin-bottom: 30px;
   }
 
   .deadline {
     font-weight: bolder;
-    color: red;
+    color: black;
+    font-weight: bold;
   }
 `;
 
 const Container = styled.div`
-  // display: flex;
-  // flex-wrap: wrap;
-  // justify-content: space-between;
-  // margin: 50px;
   display: flex;
   justify-content: center;
+  gap: 50px;
+  margin-bottom: 20px;
+
   flex-wrap: wrap;
-  // margin: 100px;
-  grid-template-columns: repeat(3, 1fr); /* 세 개의 컬럼으로 그리드 설정 */
-  gap: 30px; /* 컬럼 간의 간격 */
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+const FilteredSection = styled.div`
+  background-image: url("/image/homes/home08.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.5em;
+  padding: 100px 0 15px 0;
+  margin-bottom: 30px;
+  height: 300px;
+  object-fit: cover;
+  color: white;
+`;
+
+const DeadlineText = styled.span`
+  font-weight: bolder;
+  color: white;
+  font-weight: bold;
+`;
+
+const NewLifeSection = styled.div`
+  background-image: url("/image/homes/home04.jpg");
+  background-size: contain; /* 이미지가 페이지 크기에 맞게 확대/축소됨 */
+  background-position: top center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.5em;
+  padding: 100px 0 15px 0;
+  margin-bottom: 30px;
+  object-fit: cover;
+  height: 300px;
+  filter: brightness(0.7);
 `;

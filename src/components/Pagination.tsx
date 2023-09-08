@@ -11,11 +11,7 @@ interface PaginationProps {
   setCurrentPage: (page: number) => void;
 }
 
-function Pagination({
-  currentPage,
-  totalPages,
-  setCurrentPage,
-}: PaginationProps) {
+function Pagination({ currentPage, totalPages, setCurrentPage }: PaginationProps) {
   const prevPage = currentPage > 1 ? currentPage - 1 : null;
   const nextPage = currentPage < totalPages ? currentPage + 1 : null;
 
@@ -34,11 +30,7 @@ function Pagination({
       const isActive = i === currentPage;
 
       pageNumbers.push(
-        <StyledPageNumber
-          key={i}
-          isActive={isActive}
-          onClick={() => handlePageClick(i)}
-        >
+        <StyledPageNumber key={i} isActive={isActive} onClick={() => handlePageClick(i)}>
           {i}
         </StyledPageNumber>
       );
@@ -50,19 +42,13 @@ function Pagination({
   return (
     <Div>
       {prevPage && (
-        <StyledPageNumber
-          isActive={false}
-          onClick={() => handlePageClick(prevPage)}
-        >
+        <StyledPageNumber isActive={false} onClick={() => handlePageClick(prevPage)}>
           이전
         </StyledPageNumber>
       )}
       {renderPageNumbers()}
       {nextPage && (
-        <StyledPageNumber
-          isActive={false}
-          onClick={() => handlePageClick(nextPage)}
-        >
+        <StyledPageNumber isActive={false} onClick={() => handlePageClick(nextPage)}>
           다음
         </StyledPageNumber>
       )}
@@ -75,7 +61,7 @@ export default Pagination;
 const Div = styled.div`
   display: flex;
   justify-content: center;
-  padding-bottom: 50px;
+  padding-top: 30px;
 `;
 
 const StyledPageNumber = styled.div<PageNumberProps>`

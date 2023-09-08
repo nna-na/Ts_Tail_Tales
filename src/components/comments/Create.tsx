@@ -24,18 +24,16 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
   }, []);
 
   useEffect(() => {
-    const authSubscription = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "SIGNED_IN" && session) {
-          setUser(session.user);
-          sessionStorage.setItem("user", JSON.stringify(session.user));
-        } else if (event === "SIGNED_OUT") {
-          setUser(null);
-          setUserNickname(null);
-          sessionStorage.removeItem("user");
-        }
+    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        setUser(session.user);
+        sessionStorage.setItem("user", JSON.stringify(session.user));
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+        setUserNickname(null);
+        sessionStorage.removeItem("user");
       }
-    );
+    });
 
     return () => {
       authSubscription.data.subscription.unsubscribe();
@@ -44,13 +42,8 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
 
   useEffect(() => {
     if (user) {
-      setUserNickname(
-        user.user_metadata.user_name || user.user_metadata.full_name
-      );
-      sessionStorage.setItem(
-        "userNickname",
-        user.user_metadata.user_name || user.user_metadata.full_name
-      );
+      setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
+      sessionStorage.setItem("userNickname", user.user_metadata.user_name || user.user_metadata.full_name);
     }
   }, [user]);
 
@@ -68,19 +61,17 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
   >(
     async (newComment) => {
       try {
-        const { data, error } = await supabase
-          .from("comments")
-          .upsert([newComment]);
+        const { data, error } = await supabase.from("comments").upsert([newComment]);
 
         if (error) {
-          console.error("댓글 작성 중 오류 발생:", error);
+          alert("댓글 작성 중 오류 발생");
           throw new Error("댓글 작성 오류");
         }
 
         // 반환값으로 Promise<void> 사용
         return;
       } catch (error) {
-        console.error("댓글 작성 중 오류 발생:", error);
+        alert("댓글 작성 중 오류 발생");
         throw error;
       }
     },
@@ -120,54 +111,61 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       setContent("");
       onCommentAdded();
     } catch (error) {
-      console.error("댓글 작성 오류:", error);
+      alert("댓글 작성 오류");
     }
   };
 
   return (
     <CreateContainer>
       <CreateForm onSubmit={handleSubmit}>
-        <CreateTextarea
-          placeholder="댓글을 입력하세요"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <CreateButton type="submit">작성</CreateButton>
+        <InputContainer>
+          <CreateTextarea placeholder="댓글을 입력하세요" value={content} onChange={(e) => setContent(e.target.value)} />
+          <CreateButton type="submit">작성</CreateButton>
+        </InputContainer>
       </CreateForm>
     </CreateContainer>
   );
 }
-
 const CreateContainer = styled.div`
+  margin-top: 20px;
   padding: 20px;
+  border: 1px solid #fdfaf6;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const CreateForm = styled.form`
   display: flex;
   flex-direction: column;
-  align-items: center;
+`;
+
+const InputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
 `;
 
 const CreateTextarea = styled.textarea`
-  width: 100%;
-  height: 50px;
-  font-size: 15px;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: none;
-  border: 1px solid #b5b5b5;
+  padding: 8px;
+  border: 1px solid white;
   border-radius: 8px;
+  resize: none;
 `;
 
 const CreateButton = styled.button`
-  padding: 10px 20px;
-  background-color: #f8b3b3;
-  border-radius: 8px;
+  background-color: #746464;
   color: white;
+  padding: 8px 16px;
   border: none;
+  border-radius: 20px;
   cursor: pointer;
+  text-decoration: none;
+  font-size: 13px;
+  align-self: flex-end;
+  width: fit-content;
   &:hover {
-    background-color: #dd3a3a;
-    transform: scale(1.05);
+    background-color: #606060;
   }
 `;

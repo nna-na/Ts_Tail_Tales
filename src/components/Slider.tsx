@@ -40,7 +40,7 @@ const StyledSlider = styled(Slider)`
     /* font-weight: 900;
     font-size: 20px;
     line-height: 1; */
-    color: #8dbaff; /* 아이콘 색상 변경 */
+    color: #746464; /* 아이콘 색상 변경 */
     opacity: 1;
     transition: all 0.3s ease;
   }

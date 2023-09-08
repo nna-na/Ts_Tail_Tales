@@ -4,32 +4,42 @@ import { styled } from "styled-components";
 import Kakao from "./Kakao";
 import { formatDate } from "../api/fetchData";
 import { FiArrowLeft } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 function Detail() {
   const location = useLocation();
+  console.log("location", location);
+
+  const navigate = useNavigate();
   const { item } = location.state;
+
+  useEffect(() => {
+    // 페이지 진입 시 스크롤을 맨 위로 이동
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleInquiryClick = () => {
     alert("입양 문의하기 버튼이 클릭되었습니다.");
   };
+
   return (
-    <>
-      <BackButton
-        onClick={() => {
-          window.history.back();
-        }}
-      >
-        <BackIcon />
-        뒤로가기
-      </BackButton>
+    <StDetailDivContainer>
       <DetailContainer className="detail container">
+        <StDetailText style={{ display: "flex", alignItems: "center" }}>
+          <BackIcon
+            className="backBtn"
+            onClick={() => {
+              navigate("/home");
+            }}
+          >
+            〈
+          </BackIcon>
+          <h2 className="detailtext">상세보기</h2>
+        </StDetailText>
         <div className="top">
           <div className="img-container">
-            <img
-              className="petimg"
-              src={item.IMAGE_COURS}
-              alt={item.ABDM_IDNTFY_NO}
-            />
+            <img className="petimg" src={item.IMAGE_COURS} alt={item.ABDM_IDNTFY_NO} />
             <div id={item.ABDM_IDNTFY_NO} data-pet={item.pet} />
           </div>
           <div className="description">
@@ -53,8 +63,7 @@ function Detail() {
               <div className="row">
                 <span>나이 / 체중</span>
                 <span>
-                  {new Date().getFullYear() - item.AGE_INFO.slice(0, 4) + 1}살 /
-                  &nbsp;
+                  {new Date().getFullYear() - item.AGE_INFO.slice(0, 4) + 1}살 / &nbsp;
                   {item.BDWGH_INFO.split("(")[0]}kg
                 </span>
               </div>
@@ -73,8 +82,7 @@ function Detail() {
               <div className="row">
                 <span>공고기한</span>
                 <span>
-                  {formatDate(item.PBLANC_BEGIN_DE)} ~
-                  {formatDate(item.PBLANC_END_DE)}
+                  {formatDate(item.PBLANC_BEGIN_DE)} ~{formatDate(item.PBLANC_END_DE)}
                 </span>
               </div>
               <div className="row">
@@ -96,51 +104,71 @@ function Detail() {
             </div>
           </div>
         </div>
-        <InquiryButton onClick={handleInquiryClick}>
-          입양 문의하기
-        </InquiryButton>
+        <InquiryButton onClick={handleInquiryClick}>입양 문의하기</InquiryButton>
         <div className="location">
           <p>
             <span>{item.SHTER_NM}</span>
             에서 기다리고 있어요!
           </p>
-
-          <Kakao
-            lat={item.REFINE_WGS84_LAT}
-            log={item.REFINE_WGS84_LOGT}
-            shelter={item.SHTER_NM}
-            kind={item.SPECIES_NM.split(" ")[0]}
-          />
+          <div className="kakaomap">
+            <Kakao lat={item.REFINE_WGS84_LAT} log={item.REFINE_WGS84_LOGT} shelter={item.SHTER_NM} kind={item.SPECIES_NM.split(" ")[0]} />
+          </div>
         </div>
       </DetailContainer>
-    </>
+    </StDetailDivContainer>
   );
 }
 
 export default Detail;
-const BackButton = styled.button`
-  margin-top: 20px;
-  margin-left: 200px;
-  padding: 10px 20px;
-  background-color: #f8b3b3;
-  color: white;
-  border: none;
-  border-radius: 8px;
+
+const StDetailDivContainer = styled.div`
+  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #fdfaf6;
+`;
+
+const StDetailText = styled.div`
+  margin-top: 100px;
+  padding-left: 20px;
+  color: black;
+  .backBtn {
+    background: none;
+    border: none;
+    color: black;
+  }
+  .detailtext {
+    margin: 0 auto;
+    max-width: 350px;
+    padding: 20px 0 20px;
+  }
+
+  strong {
+    color: #746464;
+  }
+`;
+const BackIcon = styled.span`
+  margin-right: 5px;
+  font-size: 20px;
+  font-weight: bolder;
+  border-radius: 50%;
+  color: black;
   cursor: pointer;
-  text-decoration: none;
+  transition: transform 0.3s ease;
+
   &:hover {
-    background-color: #f8b3b3;
-    transform: scale(1.05);
+    transform: scale(1.7);
+    color: #868686;
   }
 `;
 
-const BackIcon = styled(FiArrowLeft)`
-  margin-right: 5px;
-`;
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  background-color: white;
 
   /* 기존 스타일 유지 */
 
@@ -151,6 +179,7 @@ const DetailContainer = styled.div`
 
   @media (min-width: 768px) {
     padding: 0 2rem;
+    background: #fdfaf6;
   }
 
   .petimg {
@@ -160,6 +189,7 @@ const DetailContainer = styled.div`
   }
 
   .top {
+    background: white;
     border: 1px solid black;
     padding: 15px 15px 15px 15px;
     border-radius: 20px;
@@ -252,19 +282,30 @@ const DetailContainer = styled.div`
         font-weight: 600;
       }
     }
+
+    .kakaomap {
+      padding-bottom: 20px;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+    }
   }
 `;
+
 const InquiryButton = styled.button`
-  /* 스타일링 설정 */
-  background-color: ${(props) => props.theme.primaryColor};
-  color: #000000;
+  margin: 0 auto;
+  width: 232px;
+  height: 44px;
+  color: white;
   border: none;
   padding: 0.5rem 1rem;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  border-radius: 999px;
+  background: #746464;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+
+  transition: transform 0.3s ease;
 
   &:hover {
-    background-color: ${(props) => props.theme.primaryColorHover};
+    transform: scale(1.05);
   }
 `;

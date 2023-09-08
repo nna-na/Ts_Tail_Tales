@@ -17,11 +17,11 @@ export default function Delete({ id, onDelete }: DeleteProps) {
         const { error } = await supabase.from("comments").delete().eq("id", id);
 
         if (error) {
-          console.error("댓글 삭제 중 오류 발생:", error);
+          alert("댓글 삭제 중 오류 발생");
           throw new Error("댓글 삭제 오류");
         }
       } catch (error) {
-        console.error("댓글 삭제 중 오류 발생:", error);
+        alert("댓글 삭제 중 오류 발생");
         throw error;
       }
     },
@@ -38,7 +38,7 @@ export default function Delete({ id, onDelete }: DeleteProps) {
       try {
         await deleteCommentMutation.mutateAsync();
       } catch (error) {
-        console.error("댓글 삭제 오류:", error);
+        alert("댓글 삭제 오류");
       }
     }
   };

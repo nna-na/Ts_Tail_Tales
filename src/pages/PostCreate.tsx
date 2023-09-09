@@ -1,17 +1,15 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid"; // uuid 패키지에서 v4 함수 임포트
-import { User } from "@supabase/supabase-js";
 import { supabase } from "../supabase";
 import PostImg from "../components/posts/PostImg";
 import { FiArrowLeft } from "react-icons/fi";
 
-export default function PostCreate(data: any) {
+export default function PostCreate() {
   const [title, setTitle] = React.useState("");
   const [content, setContent] = React.useState("");
   const navigate = useNavigate();
-
   // 사용자 정보 가져오기
   const storedUser = sessionStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
@@ -29,6 +27,7 @@ export default function PostCreate(data: any) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!title && !content.trim()) {
       alert("제목과 내용을 입력해주세요.");
       return;
@@ -41,9 +40,8 @@ export default function PostCreate(data: any) {
       alert("내용을 입력해주세요.");
       return;
     }
-
     try {
-      const { data, error } = await supabase.from("posts").insert([
+      const { error } = await supabase.from("posts").insert([
         {
           id: uuid(),
           title,
@@ -58,10 +56,8 @@ export default function PostCreate(data: any) {
         console.error("게시글 작성 오류:", error);
         return;
       }
-
       alert("작성이 완료되었습니다.");
       navigate("/community");
-
       // 입력 필드 초기화
       setTitle("");
       setContent("");
@@ -70,68 +66,81 @@ export default function PostCreate(data: any) {
     }
   };
 
+  const handleGoBack = async () => {
+    if (window.confirm("이전으로 가면 작성 내용이 사라집니다.")) {
+      navigate("/community");
+    }
+  };
+
   return (
-    <Container>
-      <BackButton
-        onClick={() => {
-          navigate("/community");
-        }}
-      >
-        <BackIcon />
-        뒤로가기
-      </BackButton>
-      <Form onSubmit={handleSubmit}>
-        <h2>게시글 작성</h2>
-        <FormItem>
-          <label>제목:</label>
-          <Input
-            type="text"
-            value={title}
-            onChange={handleTitleChange}
-            placeholder="제목"
-          />
-        </FormItem>
-        <FormItem>
-          <label>내용:</label>
-          <PostImg
-            onContentChange={handleContentChange}
-            initialContent={content}
-          />
-        </FormItem>
-        <SubmitButton type="submit">작성</SubmitButton>
-      </Form>
-    </Container>
+    <OuterContainer>
+      <Container>
+        <h2 className="detailtext">게시글 작성</h2>
+        <Form onSubmit={handleSubmit}>
+          <FormItem>
+            <Input
+              type="text"
+              value={title}
+              onChange={handleTitleChange}
+              placeholder="제목을 입력해주세요"
+            />
+          </FormItem>
+          <FormItem>
+            <PostImg
+              onContentChange={handleContentChange}
+              initialContent={content}
+            />
+          </FormItem>
+          <FormButtons>
+            <SubmitButton
+              type="button"
+              className="backbtn"
+              onClick={handleGoBack}
+            >
+              이전
+            </SubmitButton>
+            <SubmitButton type="submit" className="submitbtn">
+              등록
+            </SubmitButton>
+          </FormButtons>
+        </Form>
+      </Container>
+    </OuterContainer>
   );
 }
 
+const OuterContainer = styled.div`
+  background-color: #fdfaf6;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+`;
+
 const Container = styled.div`
-  padding: 20px;
-  width: 1000px;
+  padding: 100px;
   margin: 0 auto;
-`;
+  background-color: #fdfaf6;
 
-const BackButton = styled.button`
-  padding: 10px 20px;
-  background-color: #f8b3b3;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  text-decoration: none;
-  &:hover {
-    background-color: #f8b3b3;
-    transform: scale(1.05);
+  h2 {
+    text-align: center;
+    margin-bottom: 40px;
   }
-`;
-
-const BackIcon = styled(FiArrowLeft)`
-  margin-right: 5px;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
+`;
+
+const FormButtons = styled.div`
+  display: flex;
+  gap: 10px;
+  justify-content: center;
 `;
 
 const FormItem = styled.div`
@@ -142,19 +151,31 @@ const FormItem = styled.div`
 
 const Input = styled.input`
   width: 978px;
-  padding: 20px 10px;
+  height: 30px;
+  padding: 15px 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
+  text-align: center;
+  font-size: large;
 `;
 
 const SubmitButton = styled.button`
-  padding: 10px 20px;
-  background-color: #f8b3b3;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 8px;
+  width: 192px;
+  height: 44px;
+  padding: 8px;
+  border-radius: 999px;
+  background: #746464;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+
+  ${(props) =>
+    props.className === "backbtn"
+      ? "background: #bdb7b0;"
+      : "background: #746464;"}
+
   &:hover {
     background-color: #dd3a3a;
     transform: scale(1.05);

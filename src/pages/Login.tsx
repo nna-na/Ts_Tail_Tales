@@ -57,8 +57,6 @@ function Login() {
     });
     if (response.error) {
       console.error(response.error);
-    } else {
-      alert("로그인 완료");
     }
   };
 

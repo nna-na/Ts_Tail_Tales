@@ -64,11 +64,7 @@ export default function Kakao({ lat, log, kind, shelter }: KakaoProps) {
 
       // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
 
-      const markerImage = new window.kakao.maps.MarkerImage(
-        imageSrc,
-        imageSize,
-        imageOption
-      );
+      const markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
       const markerPosition = new window.kakao.maps.LatLng(lat, log);
 
       // 마커를 생성
@@ -79,10 +75,7 @@ export default function Kakao({ lat, log, kind, shelter }: KakaoProps) {
       // 마커가 지도 위에 표시되도록 설정
       marker.setMap(map);
       // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능
-      const content =
-        '<div class="customoverlay">' +
-        `    <span class="title">${shelter}</span>` +
-        "</div>";
+      const content = '<div class="customoverlay">' + `    <span class="title">${shelter}</span>` + "</div>";
       // 커스텀 오버레이가 표시될 위치입니다
       const position = new kakao.maps.LatLng(lat, log);
       // 커스텀 오버레이를 생성합니다

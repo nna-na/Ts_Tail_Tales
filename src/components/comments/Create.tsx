@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import styled from "styled-components";
-import { v4 as uuid } from "uuid";
+import { v4 as uuid } from "uuid"; // uuid 패키지에서 v4 함수 임포트
 import { User } from "@supabase/supabase-js";
 import { supabase } from "../../supabase";
 
@@ -13,6 +13,8 @@ interface CreateProps {
 export default function Create({ onCommentAdded, postId }: CreateProps) {
   const [content, setContent] = useState("");
   const [user, setUser] = useState<User | null>(null);
+  const [userNickname, setUserNickname] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
@@ -20,6 +22,37 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       setUser(JSON.parse(storedUser));
     }
   }, []);
+
+  useEffect(() => {
+    const authSubscription = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN" && session) {
+          setUser(session.user);
+          sessionStorage.setItem("user", JSON.stringify(session.user));
+        } else if (event === "SIGNED_OUT") {
+          setUser(null);
+          setUserNickname(null);
+          sessionStorage.removeItem("user");
+        }
+      }
+    );
+
+    return () => {
+      authSubscription.data.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      setUserNickname(
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
+      sessionStorage.setItem(
+        "userNickname",
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
+    }
+  }, [user]);
 
   const createCommentMutation = useMutation<
     void,
@@ -32,22 +65,31 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       postId: string;
       avatar_url: string;
     }
-  >(async (newComment) => {
-    try {
-      const { error } = await supabase.from("comments").insert([newComment]);
+  >(
+    async (newComment) => {
+      try {
+        const { data, error } = await supabase
+          .from("comments")
+          .upsert([newComment]);
 
-      if (error) {
+        if (error) {
+          alert("댓글 작성 중 오류 발생");
+          throw new Error("댓글 작성 오류");
+        }
+
+        // 반환값으로 Promise<void> 사용
+        return;
+      } catch (error) {
         alert("댓글 작성 중 오류 발생");
-        throw new Error("댓글 작성 오류");
+        throw error;
       }
-
-      // 반환값으로 Promise<void> 사용
-      return;
-    } catch (error) {
-      alert("댓글 작성 중 오류 발생");
-      throw error;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("comments");
+      },
     }
-  });
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,14 +108,14 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       id: uuid(),
       postId,
       content,
-      userNickname: user?.user_metadata.full_name,
-      date: new Date().toISOString().slice(0, 19).replace("T", " "),
+      userNickname: userNickname || user?.user_metadata.full_name,
+      date: new Date().toISOString().slice(0, 19).replace("T", " "), // 현재 시간을 문자열로 변환
       email: user!.email,
       avatar_url: user?.user_metadata.avatar_url || "",
     };
 
     try {
-      createCommentMutation.mutate(newComment);
+      await createCommentMutation.mutateAsync(newComment);
       alert("댓글이 작성되었습니다.");
       setContent("");
       onCommentAdded();
@@ -86,7 +128,11 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
     <CreateContainer>
       <CreateForm onSubmit={handleSubmit}>
         <InputContainer>
-          <CreateTextarea placeholder="댓글을 입력하세요" value={content} onChange={(e) => setContent(e.target.value)} />
+          <CreateTextarea
+            placeholder="댓글을 입력하세요"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
           <CreateButton type="submit">작성</CreateButton>
         </InputContainer>
       </CreateForm>

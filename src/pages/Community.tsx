@@ -46,7 +46,10 @@ export default function Community() {
 
   const fetchPosts = async () => {
     try {
-      const { data: posts, error } = await supabase.from("posts").select("*").order("date", { ascending: false });
+      const { data: posts, error } = await supabase
+        .from("posts")
+        .select("*")
+        .order("date", { ascending: false });
 
       if (error) {
         console.error("게시물 가져오기 오류:", error);
@@ -86,7 +89,10 @@ export default function Community() {
             </thead>
             <tbody>
               {currentPosts.map((post, index) => (
-                <StyledRow key={post.id} onClick={() => handleRowClick(post.id)}>
+                <StyledRow
+                  key={post.id}
+                  onClick={() => handleRowClick(post.id)}
+                >
                   <td>{posts.length - (index + indexOfFirstItem)} </td>
                   <td>{post.title}</td>
                   <td>{post.userNickname}</td>
@@ -96,7 +102,11 @@ export default function Community() {
             </tbody>
           </Table>
           <PaginationContainer>
-            <Pagination currentPage={currentPage} totalPages={Math.ceil(posts.length / itemsPerPage)} setCurrentPage={setCurrentPage} />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(posts.length / itemsPerPage)}
+              setCurrentPage={setCurrentPage}
+            />
           </PaginationContainer>
           {user?.email && (
             <CreateButton to="/create">
@@ -137,7 +147,7 @@ const LogoImage = styled.img`
 `;
 
 const ContentContainer = styled.div`
-  padding: 70px;
+  padding-top: 70px;
   max-width: 1000px;
   margin: 0 auto;
 `;

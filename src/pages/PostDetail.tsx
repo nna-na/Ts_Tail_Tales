@@ -132,6 +132,26 @@ export default function PostDetail() {
   );
 }
 
+const OuterContainer = styled.div`
+  background-color: #fdfaf6;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+`;
+
+const Container = styled.div`
+  padding: 20px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: #fdfaf6;
+  border-radius: 20px;
+`;
+
 const StDetailText = styled.div`
   margin-top: 100px;
   padding-left: 20px;
@@ -167,26 +187,6 @@ const BackIcon = styled.span`
   }
 `;
 
-const OuterContainer = styled.div`
-  background-color: #fdfaf6;
-  display: flex;
-  justify-content: center;
-  position: relative;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-`;
-
-const Container = styled.div`
-  padding: 20px;
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  background-color: #fdfaf6;
-  border-radius: 20px;
-`;
-
 const Title = styled.h3`
   border: 1px solid #fdfaf6;
   border-radius: 3px;
@@ -203,12 +203,17 @@ const Content = styled.div`
   border: 1px solid #fdfaf6;
   border-radius: 8px;
   text-align: center;
-  overflow: hidden; /* 내용이 넘칠 경우 숨김 처리 */
+  overflow: hidden;
   margin-bottom: 20px;
-  padding: 20px; /* 내용의 안쪽 여백 조정 */
+  padding: 20px;
   background-color: white;
   border-radius: 20px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 `;
 
 const ButtonContainer = styled.div`

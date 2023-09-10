@@ -92,11 +92,7 @@ export default function PostImg({
 
   return (
     <PostImgContainer>
-      <ReactQuill
-        style={{
-          width: "100%",
-          height: "90%",
-        }}
+      <StReactQuill
         value={content}
         onChange={handleContentChange}
         placeholder="내용을 입력해주세요"
@@ -139,4 +135,18 @@ const PostImgContainer = styled.div`
   height: 450px;
   margin-bottom: 50px;
   background-color: white;
+
+  @media screen and (max-width: 700px) {
+    width: 370px;
+    height: 350px;
+  }
+`;
+
+const StReactQuill = styled(ReactQuill)`
+  width: 100%;
+  height: 91%;
+
+  @media screen and (max-width: 700px) {
+    height: 82%;
+  }
 `;

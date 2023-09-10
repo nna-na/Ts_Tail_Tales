@@ -132,6 +132,26 @@ export default function PostDetail() {
   );
 }
 
+const OuterContainer = styled.div`
+  background-color: #fdfaf6;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+`;
+
+const Container = styled.div`
+  padding: 20px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: #fdfaf6;
+  border-radius: 20px;
+`;
+
 const StDetailText = styled.div`
   margin-top: 100px;
   padding-left: 20px;
@@ -165,26 +185,6 @@ const BackIcon = styled.span`
     transform: scale(1.7);
     color: #868686;
   }
-`;
-
-const OuterContainer = styled.div`
-  background-color: #fdfaf6;
-  display: flex;
-  justify-content: center;
-  position: relative;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-`;
-
-const Container = styled.div`
-  padding: 20px;
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  background-color: #fdfaf6;
-  border-radius: 20px;
 `;
 
 const Title = styled.h3`

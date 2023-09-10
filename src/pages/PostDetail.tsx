@@ -203,12 +203,17 @@ const Content = styled.div`
   border: 1px solid #fdfaf6;
   border-radius: 8px;
   text-align: center;
-  overflow: hidden; /* 내용이 넘칠 경우 숨김 처리 */
+  overflow: hidden;
   margin-bottom: 20px;
-  padding: 20px; /* 내용의 안쪽 여백 조정 */
+  padding: 20px;
   background-color: white;
   border-radius: 20px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 `;
 
 const ButtonContainer = styled.div`

@@ -230,7 +230,7 @@ const RightSide = styled.div`
   }
 `;
 
-//----------------------------
+//--------------------------
 const SignupContainer = styled.div`
   display: flex;
   justify-content: center;

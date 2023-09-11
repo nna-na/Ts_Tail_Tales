@@ -16,7 +16,10 @@ const ITEMS_PER_PAGE = 12;
 function Home() {
   const location = useLocation();
 
-  const { data, isLoading, isError, error } = useQuery<Array<AnimalShelter>, Error>("animalData", fetchAnimalData);
+  const { data, isLoading, isError, error } = useQuery<
+    Array<AnimalShelter>,
+    Error
+  >("animalData", fetchAnimalData);
 
   const [currentPage, setCurrentPage] = useState(1);
   // 1. useState가 너무 많다. -> useState 하나로 관리하면 편하지 않을까?
@@ -28,7 +31,9 @@ function Home() {
     selectedBreed: "",
   });
 
-  const changeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const changeHandler = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setQueries({
       ...queries,
@@ -61,13 +66,18 @@ function Home() {
     let matchesLocation = true;
     let matchesBreed = true;
     if (queries.selectedBeginDate && queries.selectedEndDate) {
-      matchesDate = formatDate(item.RECEPT_DE) >= queries.selectedBeginDate && formatDate(item.RECEPT_DE) <= queries.selectedEndDate;
+      matchesDate =
+        formatDate(item.RECEPT_DE) >= queries.selectedBeginDate &&
+        formatDate(item.RECEPT_DE) <= queries.selectedEndDate;
     }
     if (queries.selectedLocation) {
-      matchesLocation = item.SIGUN_NM.toLowerCase().includes(queries.selectedLocation.toLowerCase());
+      matchesLocation = item.SIGUN_NM.toLowerCase().includes(
+        queries.selectedLocation.toLowerCase()
+      );
     }
     if (queries.selectedBreed) {
-      matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === queries.selectedBreed;
+      matchesBreed =
+        item.SPECIES_NM.split("]")[0] + "]" === queries.selectedBreed;
     }
     return matchesDate && matchesLocation && matchesBreed;
   });
@@ -114,7 +124,11 @@ function Home() {
           ))}
         </Container>
         {/* 페이지네이션 컴포넌트 추가 */}
-        <Pagination currentPage={currentPage} totalPages={Math.ceil(AnimalsItems.length / ITEMS_PER_PAGE)} setCurrentPage={setCurrentPage} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(AnimalsItems.length / ITEMS_PER_PAGE)}
+          setCurrentPage={setCurrentPage}
+        />
       </Div>
     </FavoritesProvider>
   );

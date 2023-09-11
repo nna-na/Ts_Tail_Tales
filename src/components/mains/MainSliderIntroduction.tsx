@@ -9,7 +9,10 @@ const MainSliderIntroduction = () => {
   return (
     <Container>
       <ImageContainer>
-        <ImageBackground src="/image/mains/main1.jpg" alt="강아지, 고양이 사진" />
+        <ImageBackground
+          src="/image/mains/main1.jpg"
+          alt="강아지, 고양이 사진"
+        />
         <TextWrap>
           <h1>
             유기견, 유기묘들에게 <br /> 새로운 삶을 선물해주세요

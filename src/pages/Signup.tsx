@@ -51,25 +51,28 @@ function SignUp() {
       return;
     }
     try {
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            user_name: nickname,
+      const { data: signUpData, error: signUpError } =
+        await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              user_name: nickname,
+            },
           },
-        },
-      });
+        });
       if (!signUpError) {
         // 회원 가입 성공 시 추가 정보 업데이트
         if (signUpData?.user) {
           // .user 프로퍼티 확인
-          const { data: profileData, error: profileError } = await supabase.from("profiles").upsert([
-            {
-              id: signUpData.user.id as string,
-              nickname,
-            },
-          ]);
+          const { data: profileData, error: profileError } = await supabase
+            .from("profiles")
+            .upsert([
+              {
+                id: signUpData.user.id as string,
+                nickname,
+              },
+            ]);
           alert("회원 가입 완료되었습니다.");
           navigate("/home");
         } else {
@@ -82,6 +85,7 @@ function SignUp() {
       alert("알 수 없는 오류가 발생했습니다.");
     }
   };
+
   return (
     <SignupContainer>
       <LeftSide>
@@ -91,18 +95,42 @@ function SignUp() {
         <form onSubmit={signupHandler}>
           <div>
             <InputLabel className="emailtext">이메일</InputLabel>
-            <InputBox type="email" id="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <InputBox
+              type="email"
+              id="email"
+              placeholder="이메일"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div>
             <InputLabel>비밀번호</InputLabel>
-            <InputBox type="password" id="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <InputBox
+              type="password"
+              id="password"
+              placeholder="비밀번호"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
             <br />
-            <InputBox type="password" id="passwordConfirm" placeholder="비밀번호 확인" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
+            <InputBox
+              type="password"
+              id="passwordConfirm"
+              placeholder="비밀번호 확인"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+            />
             <p>최소 6자리 이상</p>
           </div>
           <div>
             <InputLabel>닉네임</InputLabel>
-            <InputBox type="text" id="nickname" placeholder="닉네임" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+            <InputBox
+              type="text"
+              id="nickname"
+              placeholder="닉네임"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+            />
           </div>
           <StButton type="submit">회원가입</StButton>
         </form>
@@ -134,7 +162,6 @@ const LeftSide = styled.div`
 
 const RightSide = styled.div`
   width: 50%;
-  /* padding: 20px; */
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -142,7 +169,6 @@ const RightSide = styled.div`
   background: #fdfaf6;
 
   h2 {
-    /* font-family: Haan Baekje M; */
     padding: 100px 0 20px;
     margin-top: 50px;
   }
@@ -154,7 +180,6 @@ const RightSide = styled.div`
   form {
     display: flex;
     flex-direction: column;
-    /* margin-top: 50px; */
 
     div {
       margin-bottom: 10px;
@@ -166,33 +191,29 @@ const RightSide = styled.div`
     }
 
     input {
-      width: 270px;
+      width: 100%; /* Adjust input width for smaller screens */
       height: 45px;
-      /* margin: 5px; */
       padding: 5px 10px;
       font-size: 15px;
-      /* border: 1px solid #b4b4b4; */
       border: none;
       border-radius: 10px;
       background: #e4dfd9;
       transition: transform 0.3s ease;
       cursor: pointer;
-      /* color: #888888; */
-      /* display: inline-block; */
-      /* outline: none; */
+
       &:focus {
         border-radius: 10px;
       }
+
       &:hover {
         transform: scale(1.05);
       }
     }
 
     button {
-      width: 192px;
+      width: 100%; /* Adjust button width for smaller screens */
       height: 44px;
-      /* padding: 8px; */
-      margin: 5px 55px;
+      margin: 5px 0; /* Adjust margin for smaller screens */
       cursor: pointer;
       font-size: 15px;
       border: none;
@@ -201,6 +222,7 @@ const RightSide = styled.div`
       background: #746464;
       box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s ease;
+
       &:hover {
         transform: scale(1.05);
       }
@@ -208,7 +230,7 @@ const RightSide = styled.div`
   }
 `;
 
-//----------------------------
+//--------------------------
 const SignupContainer = styled.div`
   display: flex;
   justify-content: center;

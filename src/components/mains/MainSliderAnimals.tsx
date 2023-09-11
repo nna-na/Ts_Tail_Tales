@@ -4,7 +4,18 @@ import { styled } from "styled-components";
 function MainSliderAnimals() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const images = ["/image/mains/main2.jpg", "/image/mains/main3.jpeg", "/image/mains/main4.jpg", "/image/mains/main5.jpg", "/image/mains/main16.jpg", "/image/mains/main15.jpg", "/image/mains/main12.jpg", "/image/mains/main14.jpg", "/image/mains/main13.jpg", "/image/mains/main17.jpg"];
+  const images = [
+    "/image/mains/main2.jpg",
+    "/image/mains/main3.jpeg",
+    "/image/mains/main4.jpg",
+    "/image/mains/main5.jpg",
+    "/image/mains/main16.jpg",
+    "/image/mains/main15.jpg",
+    "/image/mains/main12.jpg",
+    "/image/mains/main14.jpg",
+    "/image/mains/main13.jpg",
+    "/image/mains/main17.jpg",
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -21,7 +32,8 @@ function MainSliderAnimals() {
     <Container>
       <CenteredText>
         <h1>
-          함께 나누고 도움을 줄 수 있는 <br /> 입양 사이트 <span style={{ color: "#746464" }}>테일테일즈</span>
+          함께 나누고 도움을 줄 수 있는 <br /> 입양 사이트{" "}
+          <span style={{ color: "#746464" }}>테일테일즈</span>
         </h1>
         <span>지역 내 많은 보호소 중 가깝고, 확실한 정보를 제공합니다.</span>
       </CenteredText>

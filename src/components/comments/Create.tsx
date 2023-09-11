@@ -4,18 +4,15 @@ import styled from "styled-components";
 import { v4 as uuid } from "uuid"; // uuid 패키지에서 v4 함수 임포트
 import { User } from "@supabase/supabase-js";
 import { supabase } from "../../supabase";
-
 interface CreateProps {
   onCommentAdded: () => void;
   postId: string;
 }
-
 export default function Create({ onCommentAdded, postId }: CreateProps) {
   const [content, setContent] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [userNickname, setUserNickname] = useState<string | null>(null);
   const queryClient = useQueryClient();
-
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
@@ -24,33 +21,9 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
   }, []);
 
   useEffect(() => {
-    const authSubscription = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "SIGNED_IN" && session) {
-          setUser(session.user);
-          sessionStorage.setItem("user", JSON.stringify(session.user));
-        } else if (event === "SIGNED_OUT") {
-          setUser(null);
-          setUserNickname(null);
-          sessionStorage.removeItem("user");
-        }
-      }
-    );
-
-    return () => {
-      authSubscription.data.subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
     if (user) {
-      setUserNickname(
-        user.user_metadata.user_name || user.user_metadata.full_name
-      );
-      sessionStorage.setItem(
-        "userNickname",
-        user.user_metadata.user_name || user.user_metadata.full_name
-      );
+      setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
+      sessionStorage.setItem("userNickname", user.user_metadata.user_name || user.user_metadata.full_name);
     }
   }, [user]);
 
@@ -65,45 +38,31 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       postId: string;
       avatar_url: string;
     }
-  >(
-    async (newComment) => {
-      try {
-        const { data, error } = await supabase
-          .from("comments")
-          .upsert([newComment]);
-
-        if (error) {
-          alert("댓글 작성 중 오류 발생");
-          throw new Error("댓글 작성 오류");
-        }
-
-        // 반환값으로 Promise<void> 사용
-        return;
-      } catch (error) {
+  >(async (newComment) => {
+    try {
+      const { data, error } = await supabase.from("comments").insert([newComment]);
+      if (error) {
         alert("댓글 작성 중 오류 발생");
-        throw error;
+        throw new Error("댓글 작성 오류");
       }
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries("comments");
-      },
+      // 반환값으로 Promise<void> 사용
+      return;
+    } catch (error) {
+      alert("댓글 작성 중 오류 발생");
+      throw error;
     }
-  );
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!user) {
       alert("로그인이 필요합니다.");
       return;
     }
-
     if (!content) {
       window.alert("내용을 입력해주세요.");
       return;
     }
-
     const newComment = {
       id: uuid(),
       postId,
@@ -113,26 +72,22 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       email: user!.email,
       avatar_url: user?.user_metadata.avatar_url || "",
     };
-
-    try {
-      await createCommentMutation.mutateAsync(newComment);
-      alert("댓글이 작성되었습니다.");
-      setContent("");
-      onCommentAdded();
-    } catch (error) {
-      alert("댓글 작성 오류");
-    }
+    createCommentMutation.mutate(newComment, {
+      onSuccess: () => {
+        alert("댓글이 작성되었습니다.");
+        setContent("");
+        onCommentAdded();
+      },
+      onError: () => {
+        alert("댓글 작성 오류");
+      },
+    });
   };
-
   return (
     <CreateContainer>
       <CreateForm onSubmit={handleSubmit}>
         <InputContainer>
-          <CreateTextarea
-            placeholder="댓글을 입력하세요"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
+          <CreateTextarea placeholder="댓글을 입력하세요" value={content} onChange={(e) => setContent(e.target.value)} />
           <CreateButton type="submit">작성</CreateButton>
         </InputContainer>
       </CreateForm>
@@ -147,26 +102,22 @@ const CreateContainer = styled.div`
   background-color: white;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 `;
-
 const CreateForm = styled.form`
   display: flex;
   flex-direction: column;
 `;
-
 const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 10px;
 `;
-
 const CreateTextarea = styled.textarea`
   padding: 8px;
   border: 1px solid white;
   border-radius: 8px;
   resize: none;
 `;
-
 const CreateButton = styled.button`
   background-color: #746464;
   color: white;

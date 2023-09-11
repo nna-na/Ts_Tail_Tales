@@ -6,14 +6,6 @@ import Create from "../components/comments/Create";
 import Comment from "../components/comments/Comment";
 import { supabase } from "../supabase";
 import ReactHtmlParser from "react-html-parser";
-import { FiArrowLeft } from "react-icons/fi"; // 이모티콘을 위한 아이콘 라이브러리 import
-
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-  userNickname: string;
-}
 
 export default function PostDetail() {
   const queryClient = useQueryClient();
@@ -27,11 +19,7 @@ export default function PostDetail() {
     isError,
     error,
   } = useQuery(["posts", id], async () => {
-    const { data, error } = await supabase
-      .from("posts")
-      .select("*")
-      .eq("id", id)
-      .single();
+    const { data, error } = await supabase.from("posts").select("*").eq("id", id).single();
 
     if (error) {
       throw error;
@@ -40,30 +28,7 @@ export default function PostDetail() {
     return data;
   });
 
-  // 댓글 목록 가져오기
-  const { data: comments, isLoading: isLoadingComments } = useQuery(
-    ["comments", id],
-    async () => {
-      const { data, error } = await supabase
-        .from("comments")
-        .select("*")
-        .eq("postId", id)
-        .order("date", { ascending: true });
-
-      if (error) {
-        throw error;
-      }
-
-      return data;
-    }
-  );
-
-  // 게시물 수정 후 댓글 목록 다시 가져오기
-  const refreshPostData = async () => {
-    await queryClient.invalidateQueries(["comments", id]);
-  };
-
-  if (isLoading || isLoadingComments) {
+  if (isLoading) {
     return <LoadingText>로딩 중 ...</LoadingText>;
   }
 
@@ -125,8 +90,8 @@ export default function PostDetail() {
           </ButtonContainer>
         </Content>
 
-        <Create onCommentAdded={refreshPostData} postId={post.id} />
-        <Comment comments={comments} />
+        <Create onCommentAdded={() => queryClient.invalidateQueries(["comments", id])} postId={post.id} />
+        <Comment postId={post.id} />
       </Container>
     </OuterContainer>
   );
@@ -156,12 +121,13 @@ const StDetailText = styled.div`
   margin-top: 100px;
   padding-left: 20px;
   color: black;
-  // margin-bottom: 150px;
+
   .backBtn {
     background: none;
     border: none;
     color: black;
   }
+
   .detailtext {
     margin: 0 auto;
     max-width: 350px;
@@ -172,6 +138,7 @@ const StDetailText = styled.div`
     color: #746464;
   }
 `;
+
 const BackIcon = styled.span`
   margin-right: 5px;
   font-size: 20px;
@@ -233,6 +200,7 @@ const EditButton = styled(Link)`
   text-decoration: none;
   font-size: 13px;
   margin-right: 10px;
+
   &:hover {
     background-color: #606060;
   }
@@ -248,6 +216,7 @@ const DeleteButton = styled.button`
   text-decoration: none;
   font-size: 13px;
   margin-right: 10px;
+
   &:hover {
     background-color: #606060;
   }

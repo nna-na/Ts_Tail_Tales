@@ -5,53 +5,67 @@ function MainSliderFooter() {
   // 각각의 프로필 정보를 배열로 정의
   const profiles = [
     {
-      name: "홍길동",
-      githubLink: "GitHub 링크 주소 1",
-      blogLink: "블로그 링크 주소 1",
+      name: "이수진",
+      githubLink: "https://github.com/leesoojinn",
+      blogLink: "https://soozin.tistory.com/",
+      imageSrc: "/image/footer/LSJ.jpg",
     },
     {
-      name: "김철수",
-      githubLink: "GitHub 링크 주소 2",
-      blogLink: "블로그 링크 주소 2",
+      name: "이예지",
+      githubLink: "https://github.com/nna-na",
+      blogLink: "https://velog.io/@yellog",
+      imageSrc: "/image/footer/LYJ.jpg",
     },
     {
-      name: "김철수",
-      githubLink: "GitHub 링크 주소 2",
-      blogLink: "블로그 링크 주소 2",
+      name: "안치훈",
+      githubLink: "https://github.com/chihoonahn0319",
+      blogLink: "https://clgnseowkd.tistory.com/",
+      imageSrc: "/image/footer/ACH.jpg",
     },
     {
-      name: "김철수",
-      githubLink: "GitHub 링크 주소 2",
-      blogLink: "블로그 링크 주소 2",
+      name: "도지은",
+      githubLink: "https://github.com/jinny0526",
+      blogLink: "https://dfsfdffsfdf.tistory.com/",
+      imageSrc: "/image/mains/main4.jpg",
     },
     {
-      name: "김철수",
-      githubLink: "GitHub 링크 주소 2",
-      blogLink: "블로그 링크 주소 2",
+      name: "김윤지",
+      blogLink: "https://blog.naver.com/99_yj",
+      imageSrc: "/image/footer/KYJ.png",
     },
   ];
 
   return (
     <>
       <Container />
-      <Text>기다리는 친구들</Text>
-      <Text>커뮤니티</Text>
-      <Text>마이페이지</Text>
+      <Text>
+        <p className="p-1">유기동물방지 분양입양 TailTales 보호소</p>
+        <p>Company Name (주)테일테일즈</p>
+        <p>사업자등록번호 : 0000-0000</p>
+        <p className="p-2">리더: 이수진 | 부리더: 이예지 | 팀원: 안치훈 | 팀원: 도지은 | 디자이너: 김윤지</p>
+        <p className="p-3">본사문의: tailtailes@gmail.com</p>
+        <p>© 2023. 테일테일즈 all rights reserved.</p>
+      </Text>
+
       <AboutUsText>About Us</AboutUsText>
       <DottedLine />
       <Content>
         {profiles.map((profile, index) => (
           <ImageWrapper key={index}>
-            <Image src="/image/mains/main1.jpg" alt={profile.name} />
+            <Image src={profile.imageSrc} alt={profile.name} />
             <ImageDescriptionBox>
               <ImageDescription>{profile.name}</ImageDescription>
               <LinkGroup>
-                <GitHubLink href={profile.githubLink} target="_blank" rel="noopener noreferrer">
-                  <GitHubIcon src="/image/footer/git.png" alt="GitHub 아이콘" />
-                </GitHubLink>
-                <BlogLink href={profile.blogLink} target="_blank" rel="noopener noreferrer">
-                  <BlogIcon src="/image/footer/blog.png" alt="블로그 아이콘" />
-                </BlogLink>
+                {profile.githubLink && (
+                  <GitHubLink href={profile.githubLink} target="_blank" rel="noopener noreferrer">
+                    <GitHubIcon src="/image/footer/git.png" alt="GitHub 아이콘" />
+                  </GitHubLink>
+                )}
+                {profile.blogLink && (
+                  <BlogLink href={profile.blogLink} target="_blank" rel="noopener noreferrer">
+                    <BlogIcon src="/image/footer/blog.png" alt="블로그 아이콘" />
+                  </BlogLink>
+                )}
               </LinkGroup>
             </ImageDescriptionBox>
           </ImageWrapper>
@@ -67,7 +81,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: flex-end;
   height: 5vh;
-  background: linear-gradient(to bottom, #4d5441, rgba(116, 100, 100, 0));
+  /* background: linear-gradient(to bottom, #4d5441, rgba(116, 100, 100, 0)); */
   border-radius: 0 0 50px 50px;
 `;
 
@@ -96,16 +110,23 @@ const Content = styled.div`
   justify-content: center;
 `;
 
-const Text = styled.p`
+const Text = styled.div`
   margin-top: 20px;
   margin-left: 30px;
   font-weight: bold;
   color: #333;
+
+  .p-1,
+  .p-2,
+  .p-3 {
+    margin-bottom: 30px;
+  }
 `;
 
 const AboutUsText = styled.h2`
   text-align: center;
-  margin-top: 10%;
+  margin-top: 5%;
+  // margin-bottom: 50%;
 `;
 
 const DottedLine = styled.div`
@@ -120,11 +141,13 @@ const ImageDescriptionBox = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-color: #746464;
+  /* background-color: #746464; */
   padding: 10px;
-  color: white;
+  color: black;
   border-radius: 20px;
-  margin-top: 10px; /* 간격을 조절합니다 */
+  /* margin-top: 10px; */
+  min-width: 80px;
+  min-height: 80px;
 `;
 
 const ImageDescription = styled.p`

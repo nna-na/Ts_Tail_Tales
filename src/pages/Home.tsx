@@ -9,11 +9,13 @@ import CustomSlider from "../components/Slider";
 import Pagination from "../components/Pagination";
 import { FavoritesProvider } from "../components/FavoritesContext";
 import PetCard from "../components/Petcard";
-// import SlidePetcard from "../components/SlidePetcard";
+import { useLocation } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 12;
 
 function Home() {
+  const location = useLocation();
+
   const { data, isLoading, isError, error } = useQuery<
     Array<AnimalShelter>,
     Error
@@ -84,10 +86,21 @@ function Home() {
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
   const currentItems = AnimalsItems.slice(indexOfFirstItem, indexOfLastItem);
 
+  // const handleCopyClipBoard = async (text: string) => {
+  //   try {
+  //     await navigator.clipboard.writeText(text);
+  //     alert("클립보드에 링크가 복사되었어요.");
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+  // const baseUrl = "  https://ts-tail-tales.vercel.app";
+
   return (
     <FavoritesProvider>
       <Div>
         <FilteredSection>
+          {/* <button onClick={() => handleCopyClipBoard(`${baseUrl}${location?.pathname}`)}>링크 복사</button> */}
           <DeadlineText>"공고 마감일"</DeadlineText>이 얼마 남지 않은 친구들!
         </FilteredSection>
         <CustomSlider items={nearingDeadline} />
@@ -105,7 +118,9 @@ function Home() {
         </NewLifeSection>
         <Container>
           {currentItems?.map((item: AnimalShelter) => (
-            <PetCard key={item.ABDM_IDNTFY_NO} item={item} />
+            <>
+              <PetCard key={item.ABDM_IDNTFY_NO} item={item} />
+            </>
           ))}
         </Container>
         {/* 페이지네이션 컴포넌트 추가 */}
@@ -173,7 +188,6 @@ const FilteredSection = styled.div`
   height: 300px;
   object-fit: cover;
   color: white;
-  background-color: #fcf3e3;
 `;
 
 const DeadlineText = styled.span`

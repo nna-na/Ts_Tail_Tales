@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../supabase";
 import { User } from "@supabase/supabase-js";
 import styled from "styled-components";
@@ -7,6 +7,7 @@ import ScrollToTop from "../components/ScrollToTop";
 
 function Layout() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [user, setUser] = useState<User | null>(null);
   const [userNickname, setUserNickname] = useState<string | null>(null);
@@ -50,21 +51,22 @@ function Layout() {
       }
     );
 
-    const handleScroll = () => {
-      if (window.scrollY > 600) {
-        setIsHeaderVisible(false);
-      } else {
-        setIsHeaderVisible(true);
-      }
-    };
+    // const handleScroll = () => {
+    //   if (window.scrollY > 600) {
+    //     setIsHeaderVisible(false);
+    //   } else {
+    //     setIsHeaderVisible(true);
+    //   }
+    // };
 
-    window.addEventListener("scroll", handleScroll);
+    // window.addEventListener("scroll", handleScroll);
 
     return () => {
       authSubscription.data.subscription.unsubscribe();
-      window.removeEventListener("scroll", handleScroll);
+      // window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+  const shouldShowScrollToTop = location.pathname !== "/";
 
   return (
     <Wrap>
@@ -117,7 +119,7 @@ function Layout() {
       <OutletWrap>
         <Outlet />
       </OutletWrap>
-      <ScrollToTop />
+      {shouldShowScrollToTop && <ScrollToTop />}
     </Wrap>
   );
 }
@@ -127,6 +129,7 @@ export default Layout;
 const Header = styled.header`
   position: fixed;
   height: 32px;
+
   top: 0;
   left: 0;
   right: 0;

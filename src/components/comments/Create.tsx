@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation } from "react-query";
 import styled from "styled-components";
-import { v4 as uuid } from "uuid"; // uuid 패키지에서 v4 함수 임포트
+import { v4 as uuid } from "uuid";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "../../supabase";
 
@@ -13,8 +13,6 @@ interface CreateProps {
 export default function Create({ onCommentAdded, postId }: CreateProps) {
   const [content, setContent] = useState("");
   const [user, setUser] = useState<User | null>(null);
-  const [userNickname, setUserNickname] = useState<string | null>(null);
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
@@ -22,30 +20,6 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       setUser(JSON.parse(storedUser));
     }
   }, []);
-
-  useEffect(() => {
-    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        setUser(session.user);
-        sessionStorage.setItem("user", JSON.stringify(session.user));
-      } else if (event === "SIGNED_OUT") {
-        setUser(null);
-        setUserNickname(null);
-        sessionStorage.removeItem("user");
-      }
-    });
-
-    return () => {
-      authSubscription.data.subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
-      sessionStorage.setItem("userNickname", user.user_metadata.user_name || user.user_metadata.full_name);
-    }
-  }, [user]);
 
   const createCommentMutation = useMutation<
     void,
@@ -58,29 +32,22 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       postId: string;
       avatar_url: string;
     }
-  >(
-    async (newComment) => {
-      try {
-        const { data, error } = await supabase.from("comments").upsert([newComment]);
+  >(async (newComment) => {
+    try {
+      const { error } = await supabase.from("comments").insert([newComment]);
 
-        if (error) {
-          alert("댓글 작성 중 오류 발생");
-          throw new Error("댓글 작성 오류");
-        }
-
-        // 반환값으로 Promise<void> 사용
-        return;
-      } catch (error) {
+      if (error) {
         alert("댓글 작성 중 오류 발생");
-        throw error;
+        throw new Error("댓글 작성 오류");
       }
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries("comments");
-      },
+
+      // 반환값으로 Promise<void> 사용
+      return;
+    } catch (error) {
+      alert("댓글 작성 중 오류 발생");
+      throw error;
     }
-  );
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,14 +66,14 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       id: uuid(),
       postId,
       content,
-      userNickname: userNickname || user?.user_metadata.full_name,
-      date: new Date().toISOString().slice(0, 19).replace("T", " "), // 현재 시간을 문자열로 변환
+      userNickname: user?.user_metadata.full_name,
+      date: new Date().toISOString().slice(0, 19).replace("T", " "),
       email: user!.email,
       avatar_url: user?.user_metadata.avatar_url || "",
     };
 
     try {
-      await createCommentMutation.mutateAsync(newComment);
+      createCommentMutation.mutate(newComment);
       alert("댓글이 작성되었습니다.");
       setContent("");
       onCommentAdded();
@@ -148,7 +115,7 @@ const InputContainer = styled.div`
 `;
 
 const CreateTextarea = styled.textarea`
-  padding: 10px;
+  padding: 8px;
   border: 1px solid white;
   border-radius: 8px;
   resize: none;
@@ -167,15 +134,5 @@ const CreateButton = styled.button`
   width: fit-content;
   &:hover {
     background-color: #606060;
-  }
-`;
-
-const CreateStyle = styled(CreateContainer)`
-  ${CreateForm} {
-    ${InputContainer} {
-      ${CreateTextarea}, ${CreateButton} {
-        width: 100%;
-      }
-    }
   }
 `;

@@ -10,18 +10,14 @@ import Pagination from "../components/Pagination";
 import { FavoritesProvider } from "../components/FavoritesContext";
 import PetCard from "../components/Petcard";
 import { useLocation } from "react-router-dom";
-
-const ITEMS_PER_PAGE = 12;
+import usePageHook from "../hooks/pageHook";
 
 function Home() {
   const location = useLocation();
+  const { currentPage, setCurrentPage, indexOfLastItem, indexOfFirstItem, itemsPerPage } = usePageHook(12);
 
-  const { data, isLoading, isError, error } = useQuery<
-    Array<AnimalShelter>,
-    Error
-  >("animalData", fetchAnimalData);
+  const { data, isLoading, isError, error } = useQuery<Array<AnimalShelter>, Error>("animalData", fetchAnimalData);
 
-  const [currentPage, setCurrentPage] = useState(1);
   // 1. useState가 너무 많다. -> useState 하나로 관리하면 편하지 않을까?
   // ------------------------------
   const [queries, setQueries] = useState({
@@ -31,9 +27,7 @@ function Home() {
     selectedBreed: "",
   });
 
-  const changeHandler = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const changeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setQueries({
       ...queries,
@@ -61,30 +55,23 @@ function Home() {
     return endOfNotice <= fiveDaysAfter;
   });
 
-  const AnimalsItems = data.filter((item: AnimalShelter) => {
+  const FilteredAnimals = data.filter((item: AnimalShelter) => {
     let matchesDate = true;
     let matchesLocation = true;
     let matchesBreed = true;
     if (queries.selectedBeginDate && queries.selectedEndDate) {
-      matchesDate =
-        formatDate(item.RECEPT_DE) >= queries.selectedBeginDate &&
-        formatDate(item.RECEPT_DE) <= queries.selectedEndDate;
+      matchesDate = formatDate(item.RECEPT_DE) >= queries.selectedBeginDate && formatDate(item.RECEPT_DE) <= queries.selectedEndDate;
     }
     if (queries.selectedLocation) {
-      matchesLocation = item.SIGUN_NM.toLowerCase().includes(
-        queries.selectedLocation.toLowerCase()
-      );
+      matchesLocation = item.SIGUN_NM.toLowerCase().includes(queries.selectedLocation.toLowerCase());
     }
     if (queries.selectedBreed) {
-      matchesBreed =
-        item.SPECIES_NM.split("]")[0] + "]" === queries.selectedBreed;
+      matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === queries.selectedBreed;
     }
     return matchesDate && matchesLocation && matchesBreed;
   });
 
-  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  const currentItems = AnimalsItems.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = FilteredAnimals.slice(indexOfFirstItem, indexOfLastItem);
 
   // const handleCopyClipBoard = async (text: string) => {
   //   try {
@@ -123,12 +110,7 @@ function Home() {
             </>
           ))}
         </Container>
-        {/* 페이지네이션 컴포넌트 추가 */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(AnimalsItems.length / ITEMS_PER_PAGE)}
-          setCurrentPage={setCurrentPage}
-        />
+        <Pagination currentPage={currentPage} totalPages={Math.ceil(FilteredAnimals.length / itemsPerPage)} setCurrentPage={setCurrentPage} />
       </Div>
     </FavoritesProvider>
   );
@@ -157,7 +139,7 @@ const Div = styled.div`
 
   .deadline {
     font-weight: bolder;
-    color: black;
+    color: white;
     font-weight: bold;
   }
 `;

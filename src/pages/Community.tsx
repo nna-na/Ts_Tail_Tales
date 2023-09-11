@@ -3,6 +3,9 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase";
 import Pagination from "../components/Pagination";
+import usePageHook from "../hooks/pageHook";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 interface Comment {
   id: number;
@@ -22,17 +25,15 @@ interface Post {
 const ITEMS_PER_PAGE = 9;
 
 export default function Community() {
-  const [currentPage, setCurrentPage] = useState(1);
-
+  const { currentPage, setCurrentPage, indexOfLastItem, indexOfFirstItem } = usePageHook(9);
   const [posts, setPosts] = useState<Post[]>([]);
 
-  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+  const navigate = useNavigate();
 
   const currentPosts = posts.slice(indexOfFirstItem, indexOfLastItem);
 
   const handleRowClick = (postId: number) => {
-    window.location.href = `/post-detail/${postId}`;
+    navigate(`/post-detail/${postId}`);
   };
 
   const formattedDate = (dateString: string) => {
@@ -50,12 +51,26 @@ export default function Community() {
       const { data: posts, error } = await supabase.from("posts").select("*").order("date", { ascending: false });
 
       if (error) {
-        console.error("게시물 가져오기 오류:", error);
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "게시물 가져오는 중 오류",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 1200,
+        });
       } else {
         setPosts(posts);
       }
     } catch (error) {
-      console.error("게시물 가져오기 오류:", error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "게시물 가져오는 중 오류",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
     }
   };
 

@@ -5,6 +5,7 @@ import { v4 as uuid } from "uuid"; // uuid 패키지에서 v4 함수 임포트
 import { supabase } from "../supabase";
 import PostImg from "../components/posts/PostImg";
 import { FiArrowLeft } from "react-icons/fi";
+import Swal from "sweetalert2";
 
 export default function PostCreate() {
   const [title, setTitle] = React.useState("");
@@ -13,9 +14,7 @@ export default function PostCreate() {
   // 사용자 정보 가져오기
   const storedUser = sessionStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
-  const userNickname = user
-    ? user.user_metadata.user_name || user.user_metadata.full_name
-    : null;
+  const userNickname = user ? user.user_metadata.user_name || user.user_metadata.full_name : null;
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -29,15 +28,36 @@ export default function PostCreate() {
     e.preventDefault();
 
     if (!title && !content.trim()) {
-      alert("제목과 내용을 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "제목과 내용을 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
     if (!title) {
-      alert("제목을 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "제목을 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
     if (!content.trim()) {
-      alert("내용을 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "내용을 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
     try {
@@ -53,21 +73,52 @@ export default function PostCreate() {
       ]);
 
       if (error) {
-        console.error("게시글 작성 오류:", error);
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "게시글 작성 오류",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 1200,
+        });
         return;
       }
-      alert("작성이 완료되었습니다.");
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "작성이 완료되었습니다.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       navigate("/community");
       // 입력 필드 초기화
       setTitle("");
       setContent("");
     } catch (error) {
-      console.error("게시글 작성 오류:", error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "게시글 작성 오류",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
     }
   };
 
   const handleGoBack = async () => {
-    if (window.confirm("이전으로 가면 작성 내용이 사라집니다.")) {
+    const result = await Swal.fire({
+      title: "이전으로 가면 작성 내용이 사라집니다.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "이전",
+      cancelButtonText: "취소",
+    });
+
+    if (result.isConfirmed) {
       navigate("/community");
     }
   };
@@ -78,25 +129,13 @@ export default function PostCreate() {
         <h2 className="detailtext">게시글 작성</h2>
         <Form onSubmit={handleSubmit}>
           <FormItem>
-            <Input
-              type="text"
-              value={title}
-              onChange={handleTitleChange}
-              placeholder="제목을 입력해주세요"
-            />
+            <Input type="text" value={title} onChange={handleTitleChange} placeholder="제목을 입력해주세요" />
           </FormItem>
           <FormItem>
-            <PostImg
-              onContentChange={handleContentChange}
-              initialContent={content}
-            />
+            <PostImg onContentChange={handleContentChange} initialContent={content} />
           </FormItem>
           <FormButtons>
-            <SubmitButton
-              type="button"
-              className="backbtn"
-              onClick={handleGoBack}
-            >
+            <SubmitButton type="button" className="backbtn" onClick={handleGoBack}>
               이전
             </SubmitButton>
             <SubmitButton type="submit" className="submitbtn">
@@ -194,10 +233,7 @@ const SubmitButton = styled.button`
   background: #746464;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
 
-  ${(props) =>
-    props.className === "backbtn"
-      ? "background: #bdb7b0;"
-      : "background: #746464;"}
+  ${(props) => (props.className === "backbtn" ? "background: #bdb7b0;" : "background: #746464;")}
 
   &:hover {
     background-color: #dd3a3a;

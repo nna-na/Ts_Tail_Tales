@@ -4,81 +4,88 @@ import { formatDate, AnimalShelter } from "../api/fetchData";
 import styled from "styled-components";
 import FavoriteButton from "./FavoriteButton ";
 import { supabase } from "../supabase";
+import Swal from "sweetalert2";
+
 export interface SlidePetCardProps {
   item: AnimalShelter; // 이 부분에서 item의 타입을 AnimalShelter로 지정
   onRemoveFavorite?: () => void;
 }
-const SlidePetcard = React.memo(
-  ({ item, onRemoveFavorite }: SlidePetCardProps) => {
-    const navigate = useNavigate();
-    const [isFavorite, setIsFavorite] = useState(false);
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const user = JSON.parse(sessionStorage.getItem("user") || "");
-          const { id: userId } = user;
-          // 서버에서 즐겨찾기 상태 가져오기
-          const { data: existingFavorites, error: existingFavoritesError } =
-            await supabase
-              .from("favorites")
-              .select()
-              .eq("userId", userId)
-              .eq("animalId", item.ABDM_IDNTFY_NO);
-          if (existingFavoritesError) {
-            alert("기존 즐겨찾기를 가져오는 중 오류 발생");
-            return;
-          }
-          setIsFavorite(existingFavorites && existingFavorites.length > 0);
-        } catch (error) {
-          alert("즐겨찾기를 불러오는 중 오류 발생");
+const SlidePetcard = React.memo(({ item, onRemoveFavorite }: SlidePetCardProps) => {
+  const navigate = useNavigate();
+  const [isFavorite, setIsFavorite] = useState(false);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const user = JSON.parse(sessionStorage.getItem("user") || "");
+        const { id: userId } = user;
+        // 서버에서 즐겨찾기 상태 가져오기
+        const { data: existingFavorites, error: existingFavoritesError } = await supabase.from("favorites").select().eq("userId", userId).eq("animalId", item.ABDM_IDNTFY_NO);
+        if (existingFavoritesError) {
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "기존 즐겨찾기를 가져오는 중 오류 발생",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+          });
+          return;
         }
-      };
-      fetchData();
-    }, [item.ABDM_IDNTFY_NO]);
-    const handleToggleFavorite = () => {
-      setIsFavorite((prevIsFavorite) => !prevIsFavorite);
+        setIsFavorite(existingFavorites && existingFavorites.length > 0);
+      } catch (error) {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "즐겨찾기를 불러오는 중 오류 발생",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+      }
     };
-    return (
-      <ImgContainer>
-        <div
-          onClick={() =>
-            navigate(`/detail/${item.ABDM_IDNTFY_NO}`, {
-              state: { item },
-            })
-          }
-        >
-          <div className="favorite-container">
-            <FavoriteButton
-              item={item}
-              isLoggedIn={true}
-              isFavorite={isFavorite}
-              onToggleFavorite={handleToggleFavorite}
-              onRemoveFavorite={() => {
-                if (item.ABDM_IDNTFY_NO && onRemoveFavorite) {
-                  onRemoveFavorite();
-                }
-              }}
-            />
-            {/* <p className="number">{item.ABDM_IDNTFY_NO}</p> */}
-          </div>
-          <Img className="petimg" src={item.IMAGE_COURS} alt="Pet Thumbnail" />
-          <ImageCaption>
-            <p>{formatDate(item.RECEPT_DE)}</p>
-            <p>{item.SPECIES_NM}</p>
-            {/* <p>성별 : {item.SEX_NM}</p> */}
-            {/* <p>발견장소 : {item.DISCVRY_PLC_INFO} </p> */}
-            {/* <p>특징: {item.SFETR_INFO}</p> */}
-            {/* <p>상태: {item.STATE_NM}</p> */}
-            <p>{item.SIGUN_NM} </p>
-          </ImageCaption>
-          <DetailsMessage className="details-message">
-            눌러서 상세를 보세요!!
-          </DetailsMessage>
+    fetchData();
+  }, [item.ABDM_IDNTFY_NO]);
+  const handleToggleFavorite = () => {
+    setIsFavorite((prevIsFavorite) => !prevIsFavorite);
+  };
+  return (
+    <ImgContainer>
+      <div
+        onClick={() =>
+          navigate(`/detail/${item.ABDM_IDNTFY_NO}`, {
+            state: { item },
+          })
+        }
+      >
+        <div className="favorite-container">
+          <FavoriteButton
+            item={item}
+            isLoggedIn={true}
+            isFavorite={isFavorite}
+            onToggleFavorite={handleToggleFavorite}
+            onRemoveFavorite={() => {
+              if (item.ABDM_IDNTFY_NO && onRemoveFavorite) {
+                onRemoveFavorite();
+              }
+            }}
+          />
+          {/* <p className="number">{item.ABDM_IDNTFY_NO}</p> */}
         </div>
-      </ImgContainer>
-    );
-  }
-);
+        <Img className="petimg" src={item.IMAGE_COURS} alt="Pet Thumbnail" />
+        <ImageCaption>
+          <p>{formatDate(item.RECEPT_DE)}</p>
+          <p>{item.SPECIES_NM}</p>
+          {/* <p>성별 : {item.SEX_NM}</p> */}
+          {/* <p>발견장소 : {item.DISCVRY_PLC_INFO} </p> */}
+          {/* <p>특징: {item.SFETR_INFO}</p> */}
+          {/* <p>상태: {item.STATE_NM}</p> */}
+          <p>{item.SIGUN_NM} </p>
+        </ImageCaption>
+        <DetailsMessage className="details-message">눌러서 상세를 보세요!!</DetailsMessage>
+      </div>
+    </ImgContainer>
+  );
+});
 export default SlidePetcard;
 
 const ImgContainer = styled.div`

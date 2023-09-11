@@ -5,8 +5,19 @@ import { supabase } from "../supabase";
 import styled from "styled-components";
 import Pagination from "../components/Pagination";
 import { useNavigate } from "react-router-dom";
+import usePageHook from "../hooks/pageHook";
+import Swal from "sweetalert2";
+import MyProfile from "../components/MyProfile";
 
-const ITEMS_PER_PAGE = 3;
+// 컴포넌트: 태그가 있음 -> 화면 그려줌 => 대문자로 시작해야 함 (규칙)
+// 일반 함수: 기능은 하지만 화면 그려주는 거 안함
+// 리액트 훅: use~~~~ 로 시작하는 함수 (리액트 기능을 사용하는 함수)
+// 커스텀 훅: 리액트 훅을 이용해서 나만의 훅을 만든 것
+
+/**
+ * 목적: page 관련된 코드를 따로 빼고 싶다
+ *
+ */
 
 function Mypage() {
   const [userEmail, setUserEmail] = useState("");
@@ -15,16 +26,10 @@ function Mypage() {
   const [favoriteAnimals, setFavoriteAnimals] = useState<AnimalShelter[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const { currentPage, setCurrentPage, indexOfLastItem, indexOfFirstItem, itemsPerPage } = usePageHook(3);
+  // const [currentPage, setCurrentPage] = useState(1);
 
   const navigate = useNavigate();
-
-  const handlePageChange = (newPage: number): void => {
-    setCurrentPage(newPage);
-  };
-
-  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
 
   const currentFavoriteAnimals = favoriteAnimals.slice(indexOfFirstItem, indexOfLastItem);
 
@@ -32,11 +37,6 @@ function Mypage() {
     // 유저 정보 가져오기
     const getUserInfo = async () => {
       const { data: userData, error: userError } = await supabase.auth.getUser();
-
-      // if (userError) {
-      //   alert("사용자 정보 가져오는 중 오류 발생");
-      //   return;
-      // }
 
       const user = userData?.user;
       const email = user?.email;
@@ -68,7 +68,14 @@ function Mypage() {
         const { data: favoriteData, error: favoriteError } = await supabase.from("favorites").select("animalId").eq("email", userEmail);
 
         if (favoriteError) {
-          alert("사용자 즐겨찾기 항목 가져오기 오류");
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "사용자 즐겨찾기 항목 가져오기 오류",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 1200,
+          });
           return;
         }
 
@@ -114,8 +121,13 @@ function Mypage() {
         <LeftContent>
           {/* 좌측 컨텐츠 */}
           <h3>Your Profile</h3>
+          <MyProfile />
           <AvatarImage src={userAvatar || process.env.PUBLIC_URL + "/image/header/profile.jpg"} alt="User Avatar" />
           <h4>{userNickname}님, 반가워요!</h4>
+          <BottomText>
+            동물 친구들이 당신과 함께라면,
+            <br /> 언제나 활기찬 행복이 가득합니다
+          </BottomText>
         </LeftContent>
         <RightContent>
           {/* 우측 컨텐츠 */}
@@ -137,7 +149,7 @@ function Mypage() {
           ) : (
             <p>Loading...</p>
           )}
-          {!loading && <Pagination currentPage={currentPage} totalPages={Math.ceil(favoriteAnimals.length / ITEMS_PER_PAGE)} setCurrentPage={handlePageChange} />}
+          {!loading && <Pagination currentPage={currentPage} totalPages={Math.ceil(favoriteAnimals.length / itemsPerPage)} setCurrentPage={setCurrentPage} />}
         </RightContent>
       </ContentContainer>
     </MyPage>
@@ -211,11 +223,14 @@ const ContentContainer = styled.div`
   display: flex;
   align-items: flex-start; /* 위쪽 정렬 */
   height: 600px;
+
+  div {
+  }
 `;
 
 const LeftContent = styled.div`
   width: 25%;
-  height: 100%;
+  // height: 100%;
   background-color: #746464;
   padding-top: 20px;
   display: flex;
@@ -251,7 +266,8 @@ const RightContent = styled.div`
   width: 75%;
   height: 100%;
   background-color: #fdfaf6;
-  padding-top: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -280,11 +296,19 @@ const Container = styled.div`
   grid-template-columns: repeat(3, 1fr);
   padding-right: 65px;
   gap: 20px;
+  padding-top: 30px;
 `;
 
 const AvatarImage = styled.img`
-  width: 100px;
-  height: 100px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
   margin-top: 20px;
+`;
+
+const BottomText = styled.h5`
+  position: absolute;
+  bottom: 15%;
+  font-size: 16px;
+  color: #746464;
 `;

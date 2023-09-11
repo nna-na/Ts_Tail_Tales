@@ -5,6 +5,8 @@ import Edit from "./Edit";
 import { supabase } from "../../supabase";
 import Pagination from "../Pagination";
 import styled from "styled-components";
+import usePageHook from "../../hooks/pageHook";
+import Swal from "sweetalert2";
 
 interface CommentProps {
   // comments?: any[];
@@ -12,13 +14,14 @@ interface CommentProps {
   postId?: string;
 }
 
-const ITEMS_PER_PAGE = 5;
-
 export default function Comment({ comments: commentsProp }: CommentProps) {
   const { id } = useParams<{ id: string }>();
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [deleted, setDeleted] = useState(false);
   const queryClient = useQueryClient();
+
+  const { currentPage, setCurrentPage, indexOfLastItem, indexOfFirstItem, itemsPerPage } = usePageHook(5);
+
   const {
     data: commentData,
     isLoading,
@@ -40,27 +43,60 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
     }
   );
 
+  // 아 여기네 중복으로 사용되고있나,,,?
+  // 넹그럼 저 Delete.tsx의 용도는 머져..?
+
+  // const handleDelete = async (commentId: string) => {
+  //   if (window.confirm("정말 삭제?")) {
+  //     try {
+  //       await supabase.from("comments").delete().eq("id", commentId);
+  //       queryClient.invalidateQueries(["comments", id]);
+  //     } catch (error) {
+  //       Swal.fire({
+  //         position: "center",
+  //         icon: "error",
+  //         title: "댓글 삭제 오류",
+  //         showConfirmButton: false,
+  //         timerProgressBar: true,
+  //         timer: 3000,
+  //       });
+  //     }
+  //   }
+  // };
+
   const handleDelete = async (commentId: string) => {
-    if (window.confirm("정말 삭제하시겠습니까?")) {
+    const result = await Swal.fire({
+      title: "정말 삭제하시겠습니까?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+    });
+
+    if (result.isConfirmed) {
       try {
         await supabase.from("comments").delete().eq("id", commentId);
         queryClient.invalidateQueries(["comments", id]);
       } catch (error) {
-        alert("댓글 삭제 오류");
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "댓글 삭제 오류",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
       }
     }
   };
-
-  const [currentPage, setCurrentPage] = useState(1);
 
   const handlePageChange = (newPage: number): void => {
     setCurrentPage(newPage);
   };
 
-  const indexOfLastComment = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstComment = indexOfLastComment - ITEMS_PER_PAGE;
-
-  const currentComments = commentData?.slice(indexOfFirstComment, indexOfLastComment);
+  const currentComments = commentData?.slice(indexOfFirstItem, indexOfLastItem);
 
   if (isLoading) {
     return <div>로딩 중 ...</div>;
@@ -145,7 +181,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
               )}
             </CommentContainer>
           ))}
-          <Pagination currentPage={currentPage} totalPages={Math.ceil(commentData.length / ITEMS_PER_PAGE)} setCurrentPage={handlePageChange} />
+          <Pagination currentPage={currentPage} totalPages={Math.ceil(commentData.length / itemsPerPage)} setCurrentPage={handlePageChange} />
         </>
       )}
     </div>

@@ -2,6 +2,7 @@ import React, { useState, FormEvent } from "react";
 import { supabase } from "../supabase";
 import { styled } from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 function SignUp() {
   const [email, setEmail] = useState("");
@@ -12,25 +13,60 @@ function SignUp() {
   const signupHandler = async (e: FormEvent) => {
     e.preventDefault();
     if (!email && !password && !nickname) {
-      alert("이메일과 비밀번호, 닉네임을 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "이메일과 비밀번호, 닉네임을 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
     // 추가: 이메일 유효성 검사
     if (!email) {
-      alert("이메일을 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "이메일을 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
     if (!emailRegex.test(email)) {
-      alert("올바른 이메일 형식이 아닙니다.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "올바른 이메일 형식이 아닙니다.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
     // 추가: 비밀번호 유효성 검사
     if (!password) {
-      alert("비밀번호를 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "비밀번호를 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     } else if (password.length < 6) {
-      alert("비밀번호 6자리 이상 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "비밀번호 6자리 이상 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
     // else if (!/^(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/.test(password)) {
@@ -39,52 +75,130 @@ function SignUp() {
     // }
 
     if (!password || !passwordConfirm) {
-      alert("비밀번호 또는 비밀번호 확인을 확인해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "비밀번호 또는 비밀번호 확인을 확인해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     } else if (password !== passwordConfirm) {
-      alert("비밀번호가 일치하지 않습니다.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "비밀번호가 일치하지 않습니다.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
 
     if (!nickname) {
-      alert("닉네임을 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "닉네임을 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
     try {
-      const { data: signUpData, error: signUpError } =
-        await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              user_name: nickname,
-            },
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            user_name: nickname,
           },
-        });
-      if (!signUpError) {
-        // 회원 가입 성공 시 추가 정보 업데이트
-        if (signUpData?.user) {
-          // .user 프로퍼티 확인
-          const { data: profileData, error: profileError } = await supabase
-            .from("profiles")
-            .upsert([
-              {
-                id: signUpData.user.id as string,
-                nickname,
-              },
-            ]);
-          alert("회원 가입 완료되었습니다.");
-          navigate("/home");
+        },
+      });
+
+      if (signUpError) {
+        if (signUpError.message === "User already registered") {
+          Swal.fire({
+            title: "회원가입 실패",
+            text: "이미 가입되어있는 정보입니다.",
+            icon: "error",
+          });
         } else {
-          alert("회원 가입 중 오류가 발생했습니다.");
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "회원 가입 중 오류가 발생했습니다.",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 1200,
+          });
         }
-      } else {
-        alert("이미 가입되어있는 정보입니다.");
+        return;
       }
-    } catch (error) {
-      alert("알 수 없는 오류가 발생했습니다.");
+
+      if (signUpData?.user) {
+        const { data: profileData, error: profileError } = await supabase.from("profiles").upsert([
+          {
+            id: signUpData.user.id as string,
+            nickname,
+          },
+        ]);
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "회원 가입 완료되었습니다.",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 1200,
+        });
+        navigate("/home");
+      } else {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "회원 가입 중 오류가 발생했습니다.",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 1200,
+        });
+      }
+    } catch (error: any) {
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "회원 가입 중 오류",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
     }
   };
+  //     if (!signUpError) {
+  //       // 회원 가입 성공 시 추가 정보 업데이트
+  //       if (signUpData?.user) {
+  //         // .user 프로퍼티 확인
+  //         const { data: profileData, error: profileError } = await supabase
+  //           .from("profiles")
+  //           .upsert([
+  //             {
+  //               id: signUpData.user.id as string,
+  //               nickname,
+  //             },
+  //           ]);
+  //         alert("회원 가입 완료되었습니다.");
+  //         navigate("/home");
+  //       } else {
+  //         alert("회원 가입 중 오류가 발생했습니다.");
+  //       }
+  //     } else {
+  //       alert("이미 가입되어있는 정보입니다.");
+  //     }
+  //   } catch (error) {
+  //     alert("알 수 없는 오류가 발생했습니다.");
+  //   }
+  // };
 
   return (
     <SignupContainer>
@@ -95,42 +209,18 @@ function SignUp() {
         <form onSubmit={signupHandler}>
           <div>
             <InputLabel className="emailtext">이메일</InputLabel>
-            <InputBox
-              type="email"
-              id="email"
-              placeholder="이메일"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <InputBox type="email" id="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div>
             <InputLabel>비밀번호</InputLabel>
-            <InputBox
-              type="password"
-              id="password"
-              placeholder="비밀번호"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <InputBox type="password" id="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} />
             <br />
-            <InputBox
-              type="password"
-              id="passwordConfirm"
-              placeholder="비밀번호 확인"
-              value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
-            />
+            <InputBox type="password" id="passwordConfirm" placeholder="비밀번호 확인" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
             <p>최소 6자리 이상</p>
           </div>
           <div>
             <InputLabel>닉네임</InputLabel>
-            <InputBox
-              type="text"
-              id="nickname"
-              placeholder="닉네임"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-            />
+            <InputBox type="text" id="nickname" placeholder="닉네임" value={nickname} onChange={(e) => setNickname(e.target.value)} />
           </div>
           <StButton type="submit">회원가입</StButton>
         </form>

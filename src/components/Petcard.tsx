@@ -17,22 +17,14 @@ const PetCard = React.memo(({ item, onRemoveFavorite }: PetCardProps) => {
         const user = JSON.parse(sessionStorage.getItem("user") || "");
         const { id: userId } = user;
         // 서버에서 즐겨찾기 상태 가져오기
-        const { data: existingFavorites, error: existingFavoritesError } =
-          await supabase
-            .from("favorites")
-            .select()
-            .eq("userId", userId)
-            .eq("animalId", item.ABDM_IDNTFY_NO);
+        const { data: existingFavorites, error: existingFavoritesError } = await supabase.from("favorites").select().eq("userId", userId).eq("animalId", item.ABDM_IDNTFY_NO);
         if (existingFavoritesError) {
-          console.error(
-            "Error fetching existing favorites:",
-            existingFavoritesError
-          );
+          // alert("기존 즐겨찾기 목록 가져오는 중 오류");
           return;
         }
         setIsFavorite(existingFavorites && existingFavorites.length > 0);
       } catch (error) {
-        console.error("Error fetching favorites:", error);
+        // alert("즐겨찾기 목록 가져오는 중 오류");
       }
     };
     fetchData();
@@ -77,9 +69,7 @@ const PetCard = React.memo(({ item, onRemoveFavorite }: PetCardProps) => {
         {/* <p>발견장소 : {item.DISCVRY_PLC_INFO} </p> */}
         {/* <p>특징: {item.SFETR_INFO}</p> */}
         {/* <p>상태: {item.STATE_NM}</p> */}
-        <DetailsMessage className="details-message">
-          눌러서 상세를 보세요!!
-        </DetailsMessage>
+        <DetailsMessage className="details-message">눌러서 상세를 보세요!!</DetailsMessage>
       </div>
     </Box>
   );

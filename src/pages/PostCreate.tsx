@@ -118,16 +118,28 @@ const OuterContainer = styled.div`
   top: 0;
   left: 0;
   right: 0;
+
+  /* @media screen and (max-width: 700px) {
+    height: 100vh;
+  } */
 `;
 
 const Container = styled.div`
-  padding: 100px;
+  padding-top: 70px;
   margin: 0 auto;
   background-color: #fdfaf6;
 
   h2 {
     text-align: center;
     margin-bottom: 40px;
+  }
+
+  @media screen and (max-width: 700px) {
+    height: 100vh;
+    position: fixed; /* 화면에 고정 */
+    left: 0; /* 화면 맨 왼쪽에 배치 */
+    right: 0; /* 화면 맨 오른쪽에 배치 */
+    overflow-y: auto; /* 내용이 넘칠 경우 스크롤 허용 */
   }
 `;
 
@@ -141,6 +153,13 @@ const FormButtons = styled.div`
   display: flex;
   gap: 10px;
   justify-content: center;
+  padding-bottom: 25px;
+
+  @media screen and (max-width: 700px) {
+    position: absolute;
+    width: 250px;
+    margin-top: 470px;
+  }
 `;
 
 const FormItem = styled.div`
@@ -158,6 +177,10 @@ const Input = styled.input`
   border-radius: 8px;
   text-align: center;
   font-size: large;
+
+  @media screen and (max-width: 700px) {
+    width: 350px;
+  }
 `;
 
 const SubmitButton = styled.button`

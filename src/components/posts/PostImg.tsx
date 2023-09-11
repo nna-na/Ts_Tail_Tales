@@ -18,14 +18,18 @@ async function uploadImageToSupabase(imageFile: File): Promise<string> {
     // 이미지 파일의 이름을 고유하게 만듭니다. 예를 들어 현재 시간을 사용할 수 있습니다.
     const uniqueName = `${Date.now()}_${imageFile.name}`;
 
-    const { data, error } = await supabase.storage.from("image").upload("images/" + uniqueName, imageFile, { cacheControl: "3600" });
+    const { data, error } = await supabase.storage
+      .from("image")
+      .upload("images/" + uniqueName, imageFile, { cacheControl: "3600" });
 
     if (error) {
       throw error;
     }
 
     // 이미지 URL을 가져오는 방법
-    const imageUrlObject = supabase.storage.from("image").getPublicUrl("images/" + uniqueName);
+    const imageUrlObject = supabase.storage
+      .from("image")
+      .getPublicUrl("images/" + uniqueName);
 
     if (imageUrlObject && imageUrlObject.data) {
       const imageUrl = imageUrlObject.data.publicUrl;
@@ -39,7 +43,10 @@ async function uploadImageToSupabase(imageFile: File): Promise<string> {
   }
 }
 
-export default function PostImg({ onContentChange, initialContent }: PostImgProps) {
+export default function PostImg({
+  onContentChange,
+  initialContent,
+}: PostImgProps) {
   const [content, setContent] = useState(initialContent);
   const quillRef = useRef<ReactQuill | null>(null);
 
@@ -85,11 +92,7 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
 
   return (
     <PostImgContainer>
-      <ReactQuill
-        style={{
-          width: "100%",
-          height: "90%",
-        }}
+      <StReactQuill
         value={content}
         onChange={handleContentChange}
         placeholder="내용을 입력해주세요"
@@ -99,12 +102,30 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
           }
         }}
         modules={{
-          toolbar: [[{ header: "1" }, { header: "2" }, { font: [] }], [{ list: "ordered" }, { list: "bullet" }], ["bold", "italic", "underline"], [{ align: [] }, { color: [] }, { background: [] }], ["image"]],
+          toolbar: [
+            [{ header: "1" }, { header: "2" }, { font: [] }],
+            [{ list: "ordered" }, { list: "bullet" }],
+            ["bold", "italic", "underline"],
+            [{ align: [] }, { color: [] }, { background: [] }],
+            ["image"],
+          ],
           ImageResize: {
             parchment: Quill.import("parchment"),
           },
         }}
-        formats={["header", "font", "size", "list", "bold", "italic", "underline", "align", "color", "background", "image"]}
+        formats={[
+          "header",
+          "font",
+          "size",
+          "list",
+          "bold",
+          "italic",
+          "underline",
+          "align",
+          "color",
+          "background",
+          "image",
+        ]}
       />
     </PostImgContainer>
   );
@@ -114,4 +135,18 @@ const PostImgContainer = styled.div`
   height: 450px;
   margin-bottom: 50px;
   background-color: white;
+
+  @media screen and (max-width: 700px) {
+    width: 370px;
+    height: 350px;
+  }
+`;
+
+const StReactQuill = styled(ReactQuill)`
+  width: 100%;
+  height: 91%;
+
+  @media screen and (max-width: 700px) {
+    height: 82%;
+  }
 `;

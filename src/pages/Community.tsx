@@ -19,14 +19,15 @@ interface Post {
   date: string;
 }
 
+const ITEMS_PER_PAGE = 9;
+
 export default function Community() {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
 
   const [posts, setPosts] = useState<Post[]>([]);
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
 
   const currentPosts = posts.slice(indexOfFirstItem, indexOfLastItem);
 
@@ -46,10 +47,7 @@ export default function Community() {
 
   const fetchPosts = async () => {
     try {
-      const { data: posts, error } = await supabase
-        .from("posts")
-        .select("*")
-        .order("date", { ascending: false });
+      const { data: posts, error } = await supabase.from("posts").select("*").order("date", { ascending: false });
 
       if (error) {
         console.error("게시물 가져오기 오류:", error);
@@ -89,10 +87,7 @@ export default function Community() {
             </thead>
             <tbody>
               {currentPosts.map((post, index) => (
-                <StyledRow
-                  key={post.id}
-                  onClick={() => handleRowClick(post.id)}
-                >
+                <StyledRow key={post.id} onClick={() => handleRowClick(post.id)}>
                   <td>{posts.length - (index + indexOfFirstItem)} </td>
                   <td>{post.title}</td>
                   <td>{post.userNickname}</td>
@@ -102,11 +97,7 @@ export default function Community() {
             </tbody>
           </Table>
           <PaginationContainer>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={Math.ceil(posts.length / itemsPerPage)}
-              setCurrentPage={setCurrentPage}
-            />
+            <Pagination currentPage={currentPage} totalPages={Math.ceil(posts.length / ITEMS_PER_PAGE)} setCurrentPage={setCurrentPage} />
           </PaginationContainer>
           {user?.email && (
             <CreateButton to="/create">

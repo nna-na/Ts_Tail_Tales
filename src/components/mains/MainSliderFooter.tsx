@@ -108,6 +108,12 @@ const Content = styled.div`
   padding: 20px;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 1349px) {
+    width: 90%;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
 `;
 
 const Text = styled.div`

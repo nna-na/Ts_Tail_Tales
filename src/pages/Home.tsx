@@ -88,7 +88,7 @@ function Home() {
       <Div>
         <FilteredSection>
           {/* <button onClick={() => handleCopyClipBoard(`${baseUrl}${location?.pathname}`)}>링크 복사</button> */}
-          <DeadlineText>"공고 마감일"</DeadlineText>이 얼마 남지 않은 친구들!
+          "공고 마감일"이 얼마 남지 않은 친구들!
         </FilteredSection>
         <CustomSlider items={nearingDeadline} />
         <Category
@@ -100,9 +100,8 @@ function Home() {
           }}
           onChange={changeHandler}
         />
-        <NewLifeSection className="filtered">
-          <span className="deadline">"새로운 삶"</span>을 기다리는 친구들!
-        </NewLifeSection>
+
+        <NewLifeSection className="filtered">"새로운 삶"을 기다리는 친구들!</NewLifeSection>
         <Container>
           {currentItems?.map((item: AnimalShelter) => (
             <>
@@ -126,7 +125,8 @@ const Div = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  height: 3600px;
+  // height: 3600px;
+  height: 100%;
 
   .filtered {
     font-size: 2.5em;
@@ -149,10 +149,14 @@ const Container = styled.div`
   justify-content: center;
   gap: 50px;
   margin-bottom: 20px;
-
-  flex-wrap: wrap;
   max-width: 1200px;
   margin: 0 auto;
+  flex-wrap: wrap;
+
+  @media (max-width: 770px) {
+    overflow-y: scroll;
+    max-height: calc(100vh - 150px);
+  }
 `;
 
 const FilteredSection = styled.div`
@@ -160,6 +164,7 @@ const FilteredSection = styled.div`
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  object-fit: cover;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -170,12 +175,14 @@ const FilteredSection = styled.div`
   height: 300px;
   object-fit: cover;
   color: white;
-`;
-
-const DeadlineText = styled.span`
-  font-weight: bolder;
-  color: white;
   font-weight: bold;
+
+  @media (max-width: 770px) {
+    background-image: url("/image/homes/home02.jpg");
+    font-size: 2.2em;
+    justify-content: center;
+    text-align: center;
+  }
 `;
 
 const NewLifeSection = styled.div`
@@ -191,5 +198,13 @@ const NewLifeSection = styled.div`
   margin-bottom: 30px;
   object-fit: cover;
   height: 300px;
+  font-weight: bold;
   filter: brightness(0.7);
+
+  @media (max-width: 770px) {
+    font-size: 2.2em;
+    justify-content: center;
+    text-align: center;
+    color: aliceblue;
+  }
 `;

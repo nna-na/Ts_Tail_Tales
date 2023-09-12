@@ -70,6 +70,7 @@ function Layout() {
         sessionStorage.removeItem("userNickname");
         sessionStorage.removeItem("userEmail");
         sessionStorage.removeItem("sweetalertShown");
+        sessionStorage.removeItem("user_profile");
       }
     });
 
@@ -114,7 +115,7 @@ function Layout() {
                   <>
                     <UserContainer>
                       <UserImage>
-                        <img src={user?.user_metadata.avatar_url || process.env.PUBLIC_URL + "/image/header/profile.jpg"} alt="User Avatar" />
+                        <img src={user?.user_metadata.avatar_url || user?.user_metadata.user_profile} alt="User Avatar" />
                       </UserImage>
                     </UserContainer>
                     <UserName>
@@ -162,15 +163,14 @@ function Layout() {
             {user && userNickname && (
               <UserContainer>
                 <UserImage>
-                  <img src={user?.user_metadata.avatar_url || process.env.PUBLIC_URL + "/image/header/profile.jpg"} alt="User Avatar" />
+                  <img src={user?.user_metadata.avatar_url || user?.user_metadata.user_profile} alt="User Avatar" />
                 </UserImage>
                 <UserSideName className="username">
-                  <span>
-                    <MenuItem to={`/mypage/${user.id}`}>{userNickname}님</MenuItem>, 환영합니다!
-                  </span>
+                  <div>{userNickname}님, 환영합니다!</div>
                 </UserSideName>
               </UserContainer>
             )}
+            {user && userNickname && <MenuItem to={`/mypage/${user.id}`}>마이 페이지</MenuItem>}
             <MenuItem to="/home">기다리는 친구들</MenuItem>
             <MenuItem to="/community">커뮤니티</MenuItem>
             <div>

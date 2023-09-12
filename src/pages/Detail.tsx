@@ -216,6 +216,10 @@ const DetailContainer = styled.div`
     border-radius: 20px;
     border: none;
     height: 680px;
+
+    @media (max-width: 770px) {
+      height: 400px;
+    }
   }
 
   .top {
@@ -228,7 +232,6 @@ const DetailContainer = styled.div`
 
     display: flex;
     flex-direction: column;
-    margin-top: 2rem;
 
     @media (min-width: 768px) {
       flex-direction: row;

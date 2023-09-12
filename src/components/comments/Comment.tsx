@@ -9,7 +9,6 @@ import usePageHook from "../../hooks/pageHook";
 import Swal from "sweetalert2";
 
 interface CommentProps {
-  // comments?: any[];
   comments?: string[];
   postId?: string;
 }
@@ -42,9 +41,6 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
       enabled: !!id,
     }
   );
-
-  // 아 여기네 중복으로 사용되고있나,,,?
-  // 넹그럼 저 Delete.tsx의 용도는 머져..?
 
   // const handleDelete = async (commentId: string) => {
   //   if (window.confirm("정말 삭제?")) {
@@ -133,7 +129,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                   }}
                 >
                   <img
-                    src={comment.avatar_url || "/image/header/profile.jpg"}
+                    src={comment.avatar_url || comment.user_profile}
                     alt="User Avatar"
                     style={{
                       width: "100%",

@@ -21,7 +21,6 @@ export default function PostDetail() {
     error,
   } = useQuery(["posts", id], async () => {
     const { data, error } = await supabase.from("posts").select("*").eq("id", id).single();
-
     if (error) {
       throw error;
     }

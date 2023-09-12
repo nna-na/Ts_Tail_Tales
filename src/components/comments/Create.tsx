@@ -103,7 +103,7 @@ export default function Create({ postId }: CreateProps) {
       userNickname: userNickname || user?.user_metadata.full_name,
       date: new Date().toISOString().slice(0, 19).replace("T", " "), // 현재 시간을 문자열로 변환
       email: user!.email,
-      avatar_url: user?.user_metadata.avatar_url || "",
+      avatar_url: user?.user_metadata.user_profile || user?.user_metadata.avatar_url,
     };
     createCommentMutation.mutate(newComment, {
       onSuccess: () => {

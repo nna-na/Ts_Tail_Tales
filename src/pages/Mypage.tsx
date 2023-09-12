@@ -121,8 +121,9 @@ function Mypage() {
         <LeftContent>
           {/* 좌측 컨텐츠 */}
           <h3>Your Profile</h3>
-          <MyProfile />
-          <AvatarImage src={userAvatar || process.env.PUBLIC_URL + "/image/header/profile.jpg"} alt="User Avatar" />
+          {userAvatar ? <AvatarImage src={userAvatar} alt="User Avatar" /> : <MyProfile />}
+          {/* <MyProfile />
+          <AvatarImage src={userAvatar || process.env.PUBLIC_URL + "/image/header/profile.jpg"} alt="User Avatar" /> */}
           <h4>{userNickname}님, 반가워요!</h4>
           <BottomText>
             동물 친구들이 당신과 함께라면,
@@ -193,7 +194,8 @@ const StDetailText = styled.div`
 `;
 
 const BackIcon = styled.span`
-  margin-right: 5px;
+  margin-left: 20px;
+  // margin-right: 5px;
   font-size: 20px;
   font-weight: bolder;
   border-radius: 50%;
@@ -202,13 +204,13 @@ const BackIcon = styled.span`
   transition: transform 0.3s ease;
 
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.7);
     color: #868686;
   }
 `;
 
 const MyPage = styled.div`
-  padding: 20px;
+  // padding: 20px;
   width: 100%;
   height: 100%;
   margin: 0 auto; /* 수평 가운데 정렬 */
@@ -221,7 +223,12 @@ const MyPage = styled.div`
 
 const ContentContainer = styled.div`
   display: flex;
-  align-items: flex-start; /* 위쪽 정렬 */
+  flex-direction: column;
+
+  @media (min-width: 1349px) {
+    flex-direction: row;
+  }
+  align-items: flex-start;
   height: 600px;
 
   div {
@@ -229,7 +236,7 @@ const ContentContainer = styled.div`
 `;
 
 const LeftContent = styled.div`
-  width: 25%;
+  min-width: 25%;
   // height: 100%;
   background-color: #746464;
   padding-top: 20px;
@@ -237,6 +244,10 @@ const LeftContent = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  @media (max-width: 1349px) {
+    width: 100%;
+  }
 
   /* background-image: url("/image/mypage/mypage01.jpg");
   background-size: cover; */
@@ -255,6 +266,11 @@ const LeftContent = styled.div`
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+
+    @media (max-width: 1349px) {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
   }
 
   h4 {
@@ -289,14 +305,25 @@ const RightContent = styled.div`
     font-weight: 500;
     line-height: normal;
   }
+
+  @media (max-width: 1349px) {
+    width: 100%;
+    // overflow-x: auto; /* 가로 스크롤 추가 */
+  }
 `;
 
 const Container = styled.div`
   display: flex;
   grid-template-columns: repeat(3, 1fr);
-  padding-right: 65px;
+  // padding-right: 65px;
   gap: 20px;
-  padding-top: 30px;
+  // padding-top: 30px;
+
+  @media (max-width: 1349px) {
+    width: 90%;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
 `;
 
 const AvatarImage = styled.img`
@@ -311,4 +338,8 @@ const BottomText = styled.h5`
   bottom: 15%;
   font-size: 16px;
   color: #746464;
+
+  @media (max-width: 1349px) {
+    display: none;
+  }
 `;

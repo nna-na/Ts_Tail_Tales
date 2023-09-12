@@ -1,42 +1,77 @@
 import { Avatar } from "antd";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "../supabase";
+import Swal from "sweetalert2";
 
 export default function MyProfile() {
-  const [Image, setImage] = useState("/image/header/profile.jpg");
-  const fileInput = useRef<HTMLInputElement | null>(null); // HTMLInputElement 타입으로 명시
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // 파일이 선택되면 이벤트 핸들러 실행
-    const selectedFile = e.target.files?.[0]; // 옵셔널 체이닝 연산자 사용
-    if (selectedFile) {
-      // 파일이 선택되면 선택된 파일을 처리하는 로직을 추가할 수 있습니다.
-      // 예를 들어, 이미지 업로드 등의 작업을 수행할 수 있습니다.
-      console.log("선택된 파일:", selectedFile);
-      // 선택된 파일을 화면에 표시하기 위해 이미지 URL 생성
-      const imageUrl = URL.createObjectURL(selectedFile);
-      // 이미지 URL을 상태에 설정하여 화면에 표시
-      setImage(imageUrl);
+  const [user, setUser] = useState<User | null>(null);
+  const [Image, setImage] = useState<string | null>(null);
+  const fileInput = useRef<HTMLInputElement | null>(null);
+  const [userAvatar, setUserAvatar] = useState("");
+
+  useEffect(() => {
+    const storedImage = sessionStorage.getItem("user");
+
+    if (storedImage) {
+      const parsedUser = JSON.parse(storedImage);
+      setUser(parsedUser);
+      const myProfile = parsedUser.user_metadata.user_profile;
+      setImage(myProfile);
+      console.log("myProfile", myProfile);
+    }
+  }, []);
+
+  const handleAvatarChange = async (event: any) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      try {
+        await uploadAvatarToSupabase(file);
+      } catch (error) {
+        console.error("Error uploading avatar:", error);
+      }
     }
   };
+
+  const uploadAvatarToSupabase = async (imageFile: any) => {
+    try {
+      const uniqueName = `${Date.now()}_${imageFile.name}`;
+      const { data, error } = await supabase.storage.from("image").upload(`profiles/${uniqueName}`, imageFile, {
+        cacheControl: "3600",
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      const imageUrlObject = supabase.storage.from("image").getPublicUrl(`profiles/${uniqueName}`);
+
+      if (imageUrlObject && imageUrlObject.data) {
+        const imageUrl = imageUrlObject.data.publicUrl;
+        setUserAvatar(imageUrl);
+
+        sessionStorage.setItem("user_profile", imageUrl);
+      } else {
+        throw new Error("Failed to obtain the image URL");
+      }
+    } catch (error) {
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "이미지 업로드 중 오류 발생",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
+      throw error;
+    }
+  };
+
   return (
     <>
-      <Avatar
-        src={Image}
-        style={{ margin: "20px" }}
-        size={200}
-        onClick={() => {
-          fileInput?.current?.click();
-        }} // 옵셔널 체이닝 연산자 사용
-      />
-      {/* 파일 입력(input type="file") 요소에 ref를 연결 */}
-      <input
-        type="file"
-        accept="image/*" // 이미지 파일만 선택 가능하도록 설정 (선택 사항)
-        style={{ display: "none" }} // 화면에 표시하지 않음
-        ref={fileInput}
-        onChange={handleFileInputChange} // 파일 선택 시 이벤트 핸들러 호출
-      />
+      <Avatar src={Image} style={{ margin: "20px" }} size={200} />
+      <input type="file" accept="image/*" style={{ display: "none" }} ref={fileInput} onChange={handleAvatarChange} />
+      <button style={{ display: "block", margin: "0 auto" }}>프로필 설정</button>
     </>
   );
 }

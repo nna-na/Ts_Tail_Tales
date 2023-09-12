@@ -5,6 +5,7 @@ import Quill from "quill";
 import ImageResize from "@looop/quill-image-resize-module-react";
 import { supabase } from "../../supabase"; // Supabase 클라이언트 설정 파일
 import { styled } from "styled-components";
+import Swal from "sweetalert2";
 
 Quill.register("modules/ImageResize", ImageResize);
 
@@ -34,7 +35,14 @@ async function uploadImageToSupabase(imageFile: File): Promise<string> {
       throw new Error("Failed to obtain the image URL");
     }
   } catch (error) {
-    alert("이미지 업로드 중 오류 발생");
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: "이미지 업로드 중 오류 발생",
+      showConfirmButton: false,
+      timerProgressBar: true,
+      timer: 1200,
+    });
     throw error;
   }
 }
@@ -70,7 +78,14 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
             quillEditor.setSelection(newIndex, 0);
           }
         } catch (error) {
-          alert("이미지 업로드 중 오류 발생");
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "이미지 업로드 중 오류 발생",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 1200,
+          });
         }
       }
     };
@@ -85,11 +100,7 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
 
   return (
     <PostImgContainer>
-      <ReactQuill
-        style={{
-          width: "100%",
-          height: "90%",
-        }}
+      <StReactQuill
         value={content}
         onChange={handleContentChange}
         placeholder="내용을 입력해주세요"
@@ -114,4 +125,18 @@ const PostImgContainer = styled.div`
   height: 450px;
   margin-bottom: 50px;
   background-color: white;
+
+  @media screen and (max-width: 700px) {
+    width: 370px;
+    height: 350px;
+  }
+`;
+
+const StReactQuill = styled(ReactQuill)`
+  width: 100%;
+  height: 91%;
+
+  @media screen and (max-width: 700px) {
+    height: 82%;
+  }
 `;

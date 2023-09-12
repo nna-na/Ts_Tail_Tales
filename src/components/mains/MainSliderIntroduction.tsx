@@ -65,7 +65,8 @@ const ImageContainer = styled.div`
   position: relative;
   overflow: hidden;
 
-  @media (min-width: 768px) {
+  @media (min-width: 1349px) {
+    width: 100%;
     padding: 0 2rem;
     background: #fdfaf6;
   }

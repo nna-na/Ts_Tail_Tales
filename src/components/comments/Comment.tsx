@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import React, { useState } from "react";
+import { useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import Edit from "./Edit";
-import Delete from "./Delete";
-import { supabase } from "../../supabase"; // Supabase 클라이언트 임포트
-import { User } from "@supabase/supabase-js";
+import { supabase } from "../../supabase";
 import Pagination from "../Pagination";
 import styled from "styled-components";
+import usePageHook from "../../hooks/pageHook";
+import Swal from "sweetalert2";
 
 interface CommentProps {
-  // comments?: any[];
   comments?: string[];
+  postId?: string;
 }
 
 export default function Comment({ comments: commentsProp }: CommentProps) {
   const { id } = useParams<{ id: string }>();
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [deleted, setDeleted] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [userNickname, setUserNickname] = useState<string | null>(null); // 변경된 부분
   const queryClient = useQueryClient();
+
+  const { currentPage, setCurrentPage, indexOfLastItem, indexOfFirstItem, itemsPerPage } = usePageHook(5);
+
   const {
     data: commentData,
     isLoading,
@@ -41,49 +42,57 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
     }
   );
 
-  useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-
-    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        setUser(session.user);
-        sessionStorage.setItem("user", JSON.stringify(session.user));
-      } else if (event === "SIGNED_OUT") {
-        setUser(null);
-        sessionStorage.removeItem("user");
-      }
-    });
-
-    return () => {
-      authSubscription.data.subscription.unsubscribe();
-    };
-  }, []);
+  // const handleDelete = async (commentId: string) => {
+  //   if (window.confirm("정말 삭제?")) {
+  //     try {
+  //       await supabase.from("comments").delete().eq("id", commentId);
+  //       queryClient.invalidateQueries(["comments", id]);
+  //     } catch (error) {
+  //       Swal.fire({
+  //         position: "center",
+  //         icon: "error",
+  //         title: "댓글 삭제 오류",
+  //         showConfirmButton: false,
+  //         timerProgressBar: true,
+  //         timer: 3000,
+  //       });
+  //     }
+  //   }
+  // };
 
   const handleDelete = async (commentId: string) => {
-    if (window.confirm("정말 삭제하시겠습니까?")) {
+    const result = await Swal.fire({
+      title: "정말 삭제하시겠습니까?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+    });
+
+    if (result.isConfirmed) {
       try {
         await supabase.from("comments").delete().eq("id", commentId);
         queryClient.invalidateQueries(["comments", id]);
       } catch (error) {
-        alert("댓글 삭제 오류");
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "댓글 삭제 오류",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
       }
     }
   };
-
-  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태 추가
-  const itemsPerPage = 5; // 페이지당 댓글 수
 
   const handlePageChange = (newPage: number): void => {
     setCurrentPage(newPage);
   };
 
-  const indexOfLastComment = currentPage * itemsPerPage;
-  const indexOfFirstComment = indexOfLastComment - itemsPerPage;
-
-  const currentComments = commentData!.slice(indexOfFirstComment, indexOfLastComment);
+  const currentComments = commentData?.slice(indexOfFirstItem, indexOfLastItem);
 
   if (isLoading) {
     return <div>로딩 중 ...</div>;
@@ -120,7 +129,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                   }}
                 >
                   <img
-                    src={comment.avatar_url || "/image/header/profile.jpg"}
+                    src={comment.avatar_url || comment.user_profile}
                     alt="User Avatar"
                     style={{
                       width: "100%",
@@ -151,14 +160,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                 )}
               </div>
               <br />
-              {editingCommentId !== comment.id ? (
-                <>
-                  <div style={{ fontSize: "20px" }}>{comment.content}</div>
-                  <br />
-                  <br />
-                </>
-              ) : null}
-              {editingCommentId === comment.id && (
+              {editingCommentId === comment.id ? (
                 <Edit
                   id={comment.id}
                   onUpdateComplete={() => {
@@ -166,6 +168,12 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                     setEditingCommentId(null);
                   }}
                 />
+              ) : (
+                <>
+                  <div style={{ fontSize: "20px" }}>{comment.content}</div>
+                  <br />
+                  <br />
+                </>
               )}
             </CommentContainer>
           ))}

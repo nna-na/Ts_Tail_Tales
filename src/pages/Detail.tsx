@@ -6,6 +6,7 @@ import { formatDate } from "../api/fetchData";
 import { FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import Swal from "sweetalert2";
 
 function Detail() {
   const location = useLocation();
@@ -20,7 +21,35 @@ function Detail() {
   }, []);
 
   const handleInquiryClick = () => {
-    alert("입양 문의하기 버튼이 클릭되었습니다.");
+    // 현재 창의 가로 너비를 가져옵니다.
+    const windowWidth = window.innerWidth;
+
+    // 가로 너비가 700px 이하인 경우 전화를 걸도록 처리합니다.
+    if (windowWidth <= 700) {
+      // SHTER_TELNO를 사용하여 전화 거는 로직을 여기에 추가하세요.
+      window.location.href = `tel:${item.SHTER_TELNO}`;
+    } else {
+      // 가로 너비가 700px보다 큰 경우 지도 링크 열기 로직을 수행합니다.
+      // const directionsUrl = createDirectionsUrl(item.SHTER_NM, item.REFINE_WGS84_LAT, item.REFINE_WGS84_LOGT);
+      // window.open(directionsUrl, "_blank");
+
+      Swal.fire({
+        title: `${item.SHTER_TELNO} 로 문의 해주세요!🐶`,
+        icon: "question",
+      });
+    }
+  };
+
+  const kakaoMapClick = () => {
+    // 입양 문의하기 버튼이 클릭되었을 때 길찾기 URL을 생성하고 이동
+    const directionsUrl = createDirectionsUrl(item.SHTER_NM, item.REFINE_WGS84_LAT, item.REFINE_WGS84_LOGT);
+    window.open(directionsUrl, "_blank");
+  };
+
+  // 길찾기 URL 생성 함수
+  const createDirectionsUrl = (destinationName: string, lat: string, log: string) => {
+    const destination = `${destinationName},${lat},${log}`;
+    return `https://map.kakao.com/link/to/${destination}`;
   };
 
   return (
@@ -69,10 +98,10 @@ function Detail() {
               </div>
               <div className="row">
                 <span>접수일시</span>
-                <span>{item.RECEPT_DE}</span>
+                <span>{formatDate(item.RECEPT_DE)}</span>
               </div>
               <div className="row">
-                <span>빌견장소</span>
+                <span>발견장소</span>
                 <span>{item.DISCVRY_PLC_INFO}</span>
               </div>
               <div className="row">
@@ -105,6 +134,7 @@ function Detail() {
           </div>
         </div>
         <InquiryButton onClick={handleInquiryClick}>입양 문의하기</InquiryButton>
+        <InquiryButton onClick={kakaoMapClick}>만나러 가는 길</InquiryButton>
         <div className="location">
           <p>
             <span>{item.SHTER_NM}</span>
@@ -186,6 +216,10 @@ const DetailContainer = styled.div`
     border-radius: 20px;
     border: none;
     height: 680px;
+
+    @media (max-width: 770px) {
+      height: 400px;
+    }
   }
 
   .top {
@@ -198,7 +232,6 @@ const DetailContainer = styled.div`
 
     display: flex;
     flex-direction: column;
-    margin-top: 2rem;
 
     @media (min-width: 768px) {
       flex-direction: row;

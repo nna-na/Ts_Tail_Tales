@@ -35,7 +35,7 @@ function MainSliderAnimals() {
               alt={`Image ${index}`}
               style={{
                 marginLeft: index === 0 ? 0 : "-40px",
-                transform: `translateX(${(index - currentImageIndex) * 100}px`,
+                transform: `translateX(${(index - currentImageIndex) * 100}%`,
                 transition: "transform 0.5s ease-in-out",
               }}
             />
@@ -53,6 +53,10 @@ const Container = styled.div`
   justify-content: center;
   min-height: 100vh;
   background-color: linear-gradient(to bottom, #f0f0f0);
+
+  @media (max-width: 1349px) {
+    width: 100%;
+  }
 `;
 const CenteredText = styled.div`
   text-align: center;
@@ -63,6 +67,10 @@ const ImageSlider = styled.div`
   width: 1200px;
   display: flex;
   overflow: hidden;
+
+  @media (max-width: 1349px) {
+    width: 100%;
+  }
 `;
 
 const Image = styled.img`

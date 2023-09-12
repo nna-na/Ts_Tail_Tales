@@ -5,8 +5,19 @@ import { supabase } from "../supabase";
 import styled from "styled-components";
 import Pagination from "../components/Pagination";
 import { useNavigate } from "react-router-dom";
+import usePageHook from "../hooks/pageHook";
+import Swal from "sweetalert2";
+import MyProfile from "../components/MyProfile";
 
-const ITEMS_PER_PAGE = 3;
+// 컴포넌트: 태그가 있음 -> 화면 그려줌 => 대문자로 시작해야 함 (규칙)
+// 일반 함수: 기능은 하지만 화면 그려주는 거 안함
+// 리액트 훅: use~~~~ 로 시작하는 함수 (리액트 기능을 사용하는 함수)
+// 커스텀 훅: 리액트 훅을 이용해서 나만의 훅을 만든 것
+
+/**
+ * 목적: page 관련된 코드를 따로 빼고 싶다
+ *
+ */
 
 function Mypage() {
   const [userEmail, setUserEmail] = useState("");
@@ -15,16 +26,10 @@ function Mypage() {
   const [favoriteAnimals, setFavoriteAnimals] = useState<AnimalShelter[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const { currentPage, setCurrentPage, indexOfLastItem, indexOfFirstItem, itemsPerPage } = usePageHook(3);
+  // const [currentPage, setCurrentPage] = useState(1);
 
   const navigate = useNavigate();
-
-  const handlePageChange = (newPage: number): void => {
-    setCurrentPage(newPage);
-  };
-
-  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
 
   const currentFavoriteAnimals = favoriteAnimals.slice(indexOfFirstItem, indexOfLastItem);
 
@@ -33,14 +38,9 @@ function Mypage() {
     const getUserInfo = async () => {
       const { data: userData, error: userError } = await supabase.auth.getUser();
 
-      if (userError) {
-        alert("사용자 정보 가져오는 중 오류 발생");
-        return;
-      }
-
       const user = userData?.user;
       const email = user?.email;
-      const nickname = user?.user_metadata.name;
+      const nickname = user?.user_metadata.name || user?.user_metadata.user_name;
       const avatar = user?.user_metadata.avatar_url;
 
       setUserEmail(email || ""); // 이메일을 상태에 저장
@@ -68,7 +68,14 @@ function Mypage() {
         const { data: favoriteData, error: favoriteError } = await supabase.from("favorites").select("animalId").eq("email", userEmail);
 
         if (favoriteError) {
-          alert("사용자 즐겨찾기 항목 가져오기 오류");
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "사용자 즐겨찾기 항목 가져오기 오류",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 1200,
+          });
           return;
         }
 
@@ -114,8 +121,14 @@ function Mypage() {
         <LeftContent>
           {/* 좌측 컨텐츠 */}
           <h3>Your Profile</h3>
-          <AvatarImage src={userAvatar || process.env.PUBLIC_URL + "/image/header/profile.jpg"} alt="User Avatar" />
+          {userAvatar ? <AvatarImage src={userAvatar} alt="User Avatar" /> : <MyProfile />}
+          {/* <MyProfile />
+          <AvatarImage src={userAvatar || process.env.PUBLIC_URL + "/image/header/profile.jpg"} alt="User Avatar" /> */}
           <h4>{userNickname}님, 반가워요!</h4>
+          <BottomText>
+            동물 친구들이 당신과 함께라면,
+            <br /> 언제나 활기찬 행복이 가득합니다
+          </BottomText>
         </LeftContent>
         <RightContent>
           {/* 우측 컨텐츠 */}
@@ -137,7 +150,7 @@ function Mypage() {
           ) : (
             <p>Loading...</p>
           )}
-          {!loading && <Pagination currentPage={currentPage} totalPages={Math.ceil(favoriteAnimals.length / ITEMS_PER_PAGE)} setCurrentPage={handlePageChange} />}
+          {!loading && <Pagination currentPage={currentPage} totalPages={Math.ceil(favoriteAnimals.length / itemsPerPage)} setCurrentPage={setCurrentPage} />}
         </RightContent>
       </ContentContainer>
     </MyPage>
@@ -181,7 +194,8 @@ const StDetailText = styled.div`
 `;
 
 const BackIcon = styled.span`
-  margin-right: 5px;
+  margin-left: 20px;
+  // margin-right: 5px;
   font-size: 20px;
   font-weight: bolder;
   border-radius: 50%;
@@ -190,13 +204,13 @@ const BackIcon = styled.span`
   transition: transform 0.3s ease;
 
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.7);
     color: #868686;
   }
 `;
 
 const MyPage = styled.div`
-  padding: 20px;
+  // padding: 20px;
   width: 100%;
   height: 100%;
   margin: 0 auto; /* 수평 가운데 정렬 */
@@ -209,19 +223,31 @@ const MyPage = styled.div`
 
 const ContentContainer = styled.div`
   display: flex;
-  align-items: flex-start; /* 위쪽 정렬 */
+  flex-direction: column;
+
+  @media (min-width: 1349px) {
+    flex-direction: row;
+  }
+  align-items: flex-start;
   height: 600px;
+
+  div {
+  }
 `;
 
 const LeftContent = styled.div`
-  width: 25%;
-  height: 100%;
+  min-width: 25%;
+  // height: 100%;
   background-color: #746464;
   padding-top: 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  @media (max-width: 1349px) {
+    width: 100%;
+  }
 
   /* background-image: url("/image/mypage/mypage01.jpg");
   background-size: cover; */
@@ -240,6 +266,11 @@ const LeftContent = styled.div`
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+
+    @media (max-width: 1349px) {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
   }
 
   h4 {
@@ -251,7 +282,8 @@ const RightContent = styled.div`
   width: 75%;
   height: 100%;
   background-color: #fdfaf6;
-  padding-top: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -273,18 +305,41 @@ const RightContent = styled.div`
     font-weight: 500;
     line-height: normal;
   }
+
+  @media (max-width: 1349px) {
+    width: 100%;
+    // overflow-x: auto; /* 가로 스크롤 추가 */
+  }
 `;
 
 const Container = styled.div`
   display: flex;
   grid-template-columns: repeat(3, 1fr);
-  padding-right: 65px;
+  // padding-right: 65px;
   gap: 20px;
+  // padding-top: 30px;
+
+  @media (max-width: 1349px) {
+    width: 90%;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
 `;
 
 const AvatarImage = styled.img`
-  width: 100px;
-  height: 100px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
   margin-top: 20px;
+`;
+
+const BottomText = styled.h5`
+  position: absolute;
+  bottom: 15%;
+  font-size: 16px;
+  color: #746464;
+
+  @media (max-width: 1349px) {
+    display: none;
+  }
 `;

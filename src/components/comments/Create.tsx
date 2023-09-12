@@ -4,40 +4,25 @@ import styled from "styled-components";
 import { v4 as uuid } from "uuid"; // uuid 패키지에서 v4 함수 임포트
 import { User } from "@supabase/supabase-js";
 import { supabase } from "../../supabase";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 interface CreateProps {
-  onCommentAdded: () => void;
+  // onCommentAdded: () => void;
   postId: string;
 }
-
-export default function Create({ onCommentAdded, postId }: CreateProps) {
+export default function Create({ postId }: CreateProps) {
   const [content, setContent] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [userNickname, setUserNickname] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
-  }, []);
-
-  useEffect(() => {
-    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        setUser(session.user);
-        sessionStorage.setItem("user", JSON.stringify(session.user));
-      } else if (event === "SIGNED_OUT") {
-        setUser(null);
-        setUserNickname(null);
-        sessionStorage.removeItem("user");
-      }
-    });
-
-    return () => {
-      authSubscription.data.subscription.unsubscribe();
-    };
   }, []);
 
   useEffect(() => {
@@ -58,43 +43,59 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       postId: string;
       avatar_url: string;
     }
-  >(
-    async (newComment) => {
-      try {
-        const { data, error } = await supabase.from("comments").upsert([newComment]);
-
-        if (error) {
-          alert("댓글 작성 중 오류 발생");
-          throw new Error("댓글 작성 오류");
-        }
-
-        // 반환값으로 Promise<void> 사용
-        return;
-      } catch (error) {
-        alert("댓글 작성 중 오류 발생");
-        throw error;
+  >(async (newComment) => {
+    try {
+      const { data, error } = await supabase.from("comments").insert([newComment]);
+      if (error) {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "댓글 작성 중 오류 발생",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+        throw new Error("댓글 작성 오류");
       }
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries("comments");
-      },
+      // 반환값으로 Promise<void> 사용
+      return;
+    } catch (error) {
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "댓글 작성 중 오류 발생",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 3000,
+      });
+      throw error;
     }
-  );
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!user) {
-      alert("로그인이 필요합니다.");
+      Swal.fire({
+        icon: "warning",
+        title: "로그인이 필요합니다.",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
       return;
     }
-
     if (!content) {
-      window.alert("내용을 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "내용을 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
-
     const newComment = {
       id: uuid(),
       postId,
@@ -102,19 +103,33 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       userNickname: userNickname || user?.user_metadata.full_name,
       date: new Date().toISOString().slice(0, 19).replace("T", " "), // 현재 시간을 문자열로 변환
       email: user!.email,
-      avatar_url: user?.user_metadata.avatar_url || "",
+      avatar_url: user?.user_metadata.user_profile || user?.user_metadata.avatar_url,
     };
-
-    try {
-      await createCommentMutation.mutateAsync(newComment);
-      alert("댓글이 작성되었습니다.");
-      setContent("");
-      onCommentAdded();
-    } catch (error) {
-      alert("댓글 작성 오류");
-    }
+    createCommentMutation.mutate(newComment, {
+      onSuccess: () => {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "댓글이 작성되었습니다.",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 1000,
+        });
+        setContent("");
+        queryClient.invalidateQueries(["comments"]);
+      },
+      onError: () => {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "댓글 작성 중 오류 발생",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
+      },
+    });
   };
-
   return (
     <CreateContainer>
       <CreateForm onSubmit={handleSubmit}>
@@ -134,26 +149,22 @@ const CreateContainer = styled.div`
   background-color: white;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 `;
-
 const CreateForm = styled.form`
   display: flex;
   flex-direction: column;
 `;
-
 const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 10px;
 `;
-
 const CreateTextarea = styled.textarea`
   padding: 8px;
   border: 1px solid white;
   border-radius: 8px;
   resize: none;
 `;
-
 const CreateButton = styled.button`
   background-color: #746464;
   color: white;

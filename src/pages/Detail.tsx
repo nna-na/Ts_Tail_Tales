@@ -35,7 +35,7 @@ function Detail() {
 
       Swal.fire({
         title: `${item.SHTER_TELNO} 로 문의 해주세요!🐶`,
-        icon: "question",
+        icon: "info",
       });
     }
   };

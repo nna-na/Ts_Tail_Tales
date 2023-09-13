@@ -170,7 +170,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                 />
               ) : (
                 <>
-                  <div style={{ fontSize: "20px" }}>{comment.content}</div>
+                  <div style={{ fontSize: "18px" }}>{comment.content}</div>
                   <br />
                   <br />
                 </>
@@ -191,6 +191,7 @@ const CommentContainer = styled.div`
   margin-bottom: 20px;
   background-color: white;
   border: 1px solid #fdfaf6;
+  font-family: "NanumSquareNeo-Regular";
 `;
 const EditButton = styled.button`
   background-color: #bdb7b0;
@@ -202,6 +203,8 @@ const EditButton = styled.button`
   text-decoration: none;
   font-size: 13px;
   margin-right: 10px;
+  font-family: "BMJUA-Regular";
+
   &:hover {
     background-color: #606060;
   }
@@ -217,6 +220,8 @@ const DeleteButton = styled.button`
   text-decoration: none;
   font-size: 13px;
   margin-right: 10px;
+  font-family: "BMJUA-Regular";
+
   &:hover {
     background-color: #606060;
   }

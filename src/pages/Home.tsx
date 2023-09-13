@@ -109,7 +109,9 @@ function Home() {
             </>
           ))}
         </Container>
-        <Pagination currentPage={currentPage} totalPages={Math.ceil(FilteredAnimals.length / itemsPerPage)} setCurrentPage={setCurrentPage} />
+        <PaginationWrap>
+          <Pagination currentPage={currentPage} totalPages={Math.ceil(FilteredAnimals.length / itemsPerPage)} setCurrentPage={setCurrentPage} />
+        </PaginationWrap>
       </Div>
     </FavoritesProvider>
   );
@@ -207,4 +209,8 @@ const NewLifeSection = styled.div`
     text-align: center;
     color: aliceblue;
   }
+`;
+
+const PaginationWrap = styled.div`
+  padding-bottom: 20px;
 `;

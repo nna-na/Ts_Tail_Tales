@@ -121,6 +121,10 @@ const Container = styled.div`
 const TitleText = styled.h1`
   color: white;
   margin-bottom: 7%;
+
+  @media (max-width: 768px) {
+    font-size: 30px;
+  }
 `;
 
 const ImageContainer = styled.div`

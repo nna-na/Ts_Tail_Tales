@@ -122,8 +122,8 @@ function Mypage() {
           {/* 좌측 컨텐츠 */}
           <h3>Your Profile</h3>
           {userAvatar ? <AvatarImage src={userAvatar} alt="User Avatar" /> : <MyProfile />}
-          {/* <MyProfile />
-          <AvatarImage src={userAvatar || process.env.PUBLIC_URL + "/image/header/profile.jpg"} alt="User Avatar" /> */}
+          {/* <MyProfile />*/}
+          {/* <AvatarImage src={userAvatar || process.env.PUBLIC_URL + "/image/header/profile.jpg"} alt="User Avatar" /> */}
           <h4>{userNickname}님, 반가워요!</h4>
           <BottomText>
             동물 친구들이 당신과 함께라면,
@@ -193,7 +193,7 @@ const StDetailText = styled.div`
   }
 `;
 
-const BackIcon = styled.span`
+const BackIcon = styled.button`
   margin-left: 20px;
   // margin-right: 5px;
   font-size: 20px;

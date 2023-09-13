@@ -4,7 +4,7 @@ import { styled } from "styled-components";
 function MainSliderAnimals() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const images = ["/image/mains/main2.jpg", "/image/mains/main3.jpeg", "/image/mains/main4.jpg", "/image/mains/main5.jpg", "/image/mains/main16.jpg", "/image/mains/main15.jpg", "/image/mains/main12.jpg", "/image/mains/main14.jpg", "/image/mains/main13.jpg", "/image/mains/main17.jpg"];
+  const images = ["/image/mains/main20.jpg", "/image/mains/main21.jpg", "/image/mains/main22.jpg", "/image/mains/main23.jpg", "/image/mains/main24.jpg", "/image/mains/main25.jpg", "/image/mains/main26.jpg", "/image/mains/main27.jpg"];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -50,17 +50,22 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  padding-top: 30px;
   min-height: 100vh;
   background-color: linear-gradient(to bottom, #f0f0f0);
 
-  @media (max-width: 1349px) {
+  @media (max-width: 650px) {
     width: 100%;
+    padding-top: 100px;
   }
 `;
 const CenteredText = styled.div`
   text-align: center;
   margin-bottom: 5%;
+
+  @media (max-width: 650px) {
+    padding-bottom: 40px;
+  }
 `;
 
 const ImageSlider = styled.div`
@@ -68,7 +73,7 @@ const ImageSlider = styled.div`
   display: flex;
   overflow: hidden;
 
-  @media (max-width: 1349px) {
+  @media (max-width: 650px) {
     width: 100%;
   }
 `;
@@ -80,6 +85,11 @@ const Image = styled.img`
   object-fit: cover;
   margin: 10px;
   transition: transform 0.5s ease;
+  margin-right: -200px;
+
+  @media (max-width: 650px) {
+    width: 75%;
+  }
 `;
 
 export default MainSliderAnimals;

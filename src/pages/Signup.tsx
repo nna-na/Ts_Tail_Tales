@@ -129,6 +129,15 @@ function SignUp() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
+      // const regex = /[!@#$%^&*(),.?":{}|<>ㄱ-ㅎㅏ-ㅣ가-힣]/;
+      // if (regex.test(file.name)) {
+      //   Swal.fire({
+      //     icon: "error",
+      //     text: "사진 이름에 특수 문자나 한글이 포함되어 있으면 안됩니다.",
+      //   });
+      // } else {
+      //   setProfileImage(file);
+      // }
       setProfileImage(file);
     }
   };
@@ -156,7 +165,7 @@ function SignUp() {
           </div>
           <div>
             <InputLabel>프로필 사진</InputLabel>
-            <input type="file" accept="image/*" onChange={handleImageChange} />
+            <InputBox type="file" accept="image/*" onChange={handleImageChange} />
           </div>
           <StButton type="submit">회원가입</StButton>
         </form>
@@ -239,7 +248,7 @@ const RightSide = styled.div`
     button {
       width: 100%;
       height: 44px;
-      margin: 5px 0;
+      margin: 5px 11px;
       cursor: pointer;
       font-size: 15px;
       border: none;
@@ -252,6 +261,10 @@ const RightSide = styled.div`
       &:hover {
         transform: scale(1.05);
       }
+    }
+    @media (max-width: 850px) {
+      width: 84%;
+      padding-right: 30px;
     }
   }
 `;
@@ -283,6 +296,7 @@ const InputBox = styled.input`
   font-size: 15px;
   display: inline-block;
   outline: none;
+  font-family: "NanumSquareNeo-Regular";
 
   &:focus {
     border: 2px solid #333;
@@ -300,6 +314,7 @@ const StButton = styled.button`
   background-color: #333;
   border: #333;
   color: white;
+  font-family: "BMJUA-Regular";
 `;
 
 const NoAccountMessage = styled.div`

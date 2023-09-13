@@ -303,6 +303,7 @@ const LogoutButton = styled.button`
   font-size: 20px;
   font-weight: bold;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.2), 1px -1px 0 rgba(0, 0, 0, 0.2), -1px 1px 0 rgba(0, 0, 0, 0.2), 1px 1px 0 rgba(0, 0, 0, 0.2);
+  font-family: "BMJUA-Regular";
 
   &:hover {
     color: #007bff;
@@ -363,6 +364,7 @@ const ButtonItem = styled.button`
   font-size: 20px;
   transition: color 0.2s;
   color: #333;
+  font-family: "BMJUA-Regular";
 
   &:hover {
     color: #007bff;

@@ -1,12 +1,24 @@
-@font-face {
+/* @font-face {
   font-family: "Dxcutecute-Regular";
   font-weight: normal;
   src: url("./fonts/Dxcutecute.ttf") format("truetype");
+} */
+
+@font-face {
+  font-family: "BMJUA-Regular";
+  font-weight: normal;
+  src: url("./fonts/BMJUA_ttf.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "NanumSquareNeo-Regular";
+  font-weight: normal;
+  src: url("./fonts/NanumSquareNeo-cBd.ttf") format("truetype");
 }
 
 body {
   margin: 0;
-  font-family: "Dxcutecute-Regular";
+  font-family: "BMJUA-Regular";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

@@ -96,7 +96,7 @@ export default function Community() {
               <tr>
                 <th className="no-border">No</th>
                 <th className="no-border">제목</th>
-                <th className="no-border">작성자</th>
+                <th className="no-border">자</th>
                 <th className="no-border">작성날짜</th>
               </tr>
             </thead>

@@ -221,6 +221,7 @@ const LoginFormContainer = styled.div`
       background: #e4dfd9;
       transition: transform 0.3s ease;
       cursor: pointer;
+      font-family: "NanumSquareNeo-Regular";
 
       &:focus {
         border-radius: 10px;
@@ -248,6 +249,7 @@ const LoginFormContainer = styled.div`
       background: #746464;
       box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s ease;
+      font-family: "BMJUA-Regular";
 
       &:hover {
         transform: scale(1.05);

@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid"; // uuid 패키지에서 v4 함수 임포트
 import { supabase } from "../supabase";
 import PostImg from "../components/posts/PostImg";
-import { FiArrowLeft } from "react-icons/fi";
 import Swal from "sweetalert2";
 
 export default function PostCreate() {
@@ -26,7 +25,7 @@ export default function PostCreate() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    console.log({ content });
     if (!title && !content.trim()) {
       Swal.fire({
         position: "center",
@@ -49,7 +48,7 @@ export default function PostCreate() {
       });
       return;
     }
-    if (!content.trim()) {
+    if (!content.trim() || content === "<p><br></p>") {
       Swal.fire({
         position: "center",
         icon: "warning",
@@ -158,9 +157,9 @@ const OuterContainer = styled.div`
   left: 0;
   right: 0;
 
-  /* @media screen and (max-width: 700px) {
-    height: 100vh;
-  } */
+  // @media screen and (max-width: 700px) {
+  //   height: 100vh;
+  // }
 `;
 
 const Container = styled.div`
@@ -197,7 +196,7 @@ const FormButtons = styled.div`
   @media screen and (max-width: 700px) {
     position: absolute;
     width: 250px;
-    margin-top: 470px;
+    margin-top: 550px;
   }
 `;
 
@@ -232,6 +231,7 @@ const SubmitButton = styled.button`
   border-radius: 999px;
   background: #746464;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  font-family: "BMJUA-Regular";
 
   ${(props) => (props.className === "backbtn" ? "background: #bdb7b0;" : "background: #746464;")}
 

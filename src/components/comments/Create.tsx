@@ -176,6 +176,8 @@ const CreateButton = styled.button`
   font-size: 13px;
   align-self: flex-end;
   width: fit-content;
+  font-family: "BMJUA-Regular";
+
   &:hover {
     background-color: #606060;
   }

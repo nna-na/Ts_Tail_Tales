@@ -164,6 +164,10 @@ const Textarea = styled.textarea`
   margin-bottom: 10px;
   border-radius: 8px;
   border: 1px solid white;
+
+  @media (max-width: 700px) {
+    width: 260px;
+  }
 `;
 const SubmitButton = styled.button`
   background-color: #bdb7b0;

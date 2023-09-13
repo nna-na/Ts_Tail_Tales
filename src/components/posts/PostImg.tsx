@@ -68,7 +68,7 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
         try {
           const imageUrl = await uploadImageToSupabase(file);
 
-          const quillEditor = quillRef.current?.getEditor();
+          const quillEditor = quillRef?.current?.getEditor();
           const range = quillEditor?.getSelection();
 
           if (quillEditor && range) {
@@ -92,8 +92,8 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
   };
 
   useEffect(() => {
-    if (quillRef.current) {
-      const toolbar = quillRef.current.getEditor().getModule("toolbar");
+    if (quillRef?.current) {
+      const toolbar = quillRef?.current.getEditor().getModule("toolbar");
       toolbar.addHandler("image", handleImage);
     }
   }, []);
@@ -128,7 +128,7 @@ const PostImgContainer = styled.div`
 
   @media screen and (max-width: 700px) {
     width: 370px;
-    height: 350px;
+    height: 420px;
   }
 `;
 
@@ -137,6 +137,6 @@ const StReactQuill = styled(ReactQuill)`
   height: 91%;
 
   @media screen and (max-width: 700px) {
-    height: 82%;
+    height: 85%;
   }
 `;

@@ -71,7 +71,7 @@ export default function MyProfile() {
     <>
       <Avatar src={Image} style={{ margin: "20px" }} size={200} />
       <input type="file" accept="image/*" style={{ display: "none" }} ref={fileInput} onChange={handleAvatarChange} />
-      <button style={{ display: "block", margin: "0 auto" }}>프로필 설정</button>
+      {/* <button style={{ display: "block", margin: "0 auto" }}>프로필 설정</button> */}
     </>
   );
 }

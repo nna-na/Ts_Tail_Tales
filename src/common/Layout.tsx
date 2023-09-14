@@ -37,7 +37,8 @@ function Layout() {
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
-      const nickname = parsedUser.user_metadata.user_name || parsedUser.user_metadata.full_name;
+
+      const nickname = parsedUser.user_metadata?.user_name || parsedUser.user_metadata?.full_name;
       setUserNickname(nickname);
     }
 

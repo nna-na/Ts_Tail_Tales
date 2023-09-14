@@ -129,15 +129,15 @@ function SignUp() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
-      // const regex = /[!@#$%^&*(),.?":{}|<>ㄱ-ㅎㅏ-ㅣ가-힣]/;
-      // if (regex.test(file.name)) {
-      //   Swal.fire({
-      //     icon: "error",
-      //     text: "사진 이름에 특수 문자나 한글이 포함되어 있으면 안됩니다.",
-      //   });
-      // } else {
-      //   setProfileImage(file);
-      // }
+      const regex = /^[a-zA-Z0-9\s-_---.]+$/;
+      if (!regex.test(file.name)) {
+        Swal.fire({
+          icon: "error",
+          text: "사진 이름에 특수 문자나 한글이 포함되어 있으면 안됩니다.",
+        });
+      } else {
+        setProfileImage(file);
+      }
       setProfileImage(file);
     }
   };

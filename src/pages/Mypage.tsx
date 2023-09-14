@@ -101,20 +101,25 @@ function Mypage() {
         }
         const imagePath = `https://livvtclsfcwcjiljzxhh.supabase.co/storage/v1/object/public/image/profiles/${userEmail}/${file.name}`;
         setUserAvatar(imagePath);
+
         // 사용자 정보 가져오기
         const { data: userData, error: userError } = await supabase.auth.getUser();
         if (userError) {
           console.error("사용자 정보 가져오기 오류:", userError);
           return;
         }
+
         // user_metadata 객체의 존재 여부 확인
-        const userMetadata = userData.user.user_metadata || {};
+        const userMetadata = userData.user || {};
+
         // user_metadata 객체에 user_profile 업데이트
-        userMetadata.user_profile = imagePath;
+        userMetadata.user_metadata.user_profile = imagePath;
+
         // user 키 안에 있는 user_metadata 객체를 완전히 대체
         const { data: updateddata, error: uadatederror } = await supabase.auth.updateUser({
           data: { user_profile: imagePath },
         });
+
         // 프로필 이미지 업로드 성공 메시지 등을 표시할 수 있습니다.
         Swal.fire({
           position: "center",
@@ -124,7 +129,6 @@ function Mypage() {
           timerProgressBar: true,
           timer: 1200,
         });
-        console.log(userMetadata.user_profile);
       } catch (error: any) {
         console.error("프로필 사진 업로드 중 오류:", error);
         // 업로드 오류에 대한 처리를 추가할 수 있습니다.

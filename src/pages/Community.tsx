@@ -96,7 +96,7 @@ export default function Community() {
               <tr>
                 <th className="no-border">No</th>
                 <th className="no-border">제목</th>
-                <th className="no-border">자</th>
+                <th className="no-border">작성자</th>
                 <th className="no-border">작성날짜</th>
               </tr>
             </thead>
@@ -169,6 +169,7 @@ const Table = styled.table`
     text-align: left;
     padding: 12px;
     font-weight: bold;
+    font-size: small;
     border: 2px solid #2c2626;
   }
 
@@ -194,12 +195,12 @@ const Table = styled.table`
 
   th:nth-child(3),
   td:nth-child(3) {
-    width: 10%;
+    width: 18%;
   }
 
   th:nth-child(4),
   td:nth-child(4) {
-    width: 15%;
+    // width: 15%;
   }
 
   th:nth-child(5),

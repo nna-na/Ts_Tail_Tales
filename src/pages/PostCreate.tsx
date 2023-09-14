@@ -174,7 +174,7 @@ const Container = styled.div`
 
   @media screen and (max-width: 700px) {
     height: 100vh;
-    position: fixed; /* 화면에 고정 */
+    // position: fixed; /* 화면에 고정 */
     left: 0; /* 화면 맨 왼쪽에 배치 */
     right: 0; /* 화면 맨 오른쪽에 배치 */
     overflow-y: auto; /* 내용이 넘칠 경우 스크롤 허용 */

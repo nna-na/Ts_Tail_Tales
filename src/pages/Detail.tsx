@@ -170,7 +170,6 @@ const StDetailDivContainer = styled.div`
 
 const StDetailText = styled.div`
   margin-top: 100px;
-  padding-left: 20px;
   color: black;
   .backBtn {
     background: none;
@@ -185,6 +184,10 @@ const StDetailText = styled.div`
 
   strong {
     color: #746464;
+  }
+
+  @media (max-width: 770px) {
+    padding-right: 35px;
   }
 `;
 const BackIcon = styled.button`

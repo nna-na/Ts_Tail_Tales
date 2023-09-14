@@ -129,7 +129,7 @@ const Container = styled.div`
 
 const StDetailText = styled.div`
   margin-top: 100px;
-  padding-left: 20px;
+  // padding-left: 20px;
   color: black;
 
   .backBtn {
